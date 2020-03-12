@@ -4,9 +4,17 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+black = "*"
+pre-commit = "*"
 
 [packages]
-django = "*"
+celery = "*"
+django = "~=2.2"
+django-heroku = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.6"
+
+[pipenv]
+allow_prereleases = true
