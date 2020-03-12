@@ -1,0 +1,135 @@
+{% load static %}
+<!doctype html>
+<html lang="en" class="h-100">
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta name="description" content="{% block meta_description %}Quantified Flu is a project to explore personal tracking and infectious disease{% endblock meta_description %}">
+
+      <title>{% block head_title %}Quantified Flu{% endblock head_title %}</title>
+
+
+
+    {# Application JavaScript - Note: popper is needed by bootstrap 4 #}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.8.0/parsley.min.js" integrity="sha256-ixgfZ1KX2FiT8fYtfpU1l3NgfV4X18K1XxyQkdIAd+E=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.full.min.js" integrity="sha256-FcVIknBiVRk5KLQeIBb9VQdtFRMqwffXyZ+D8q0gQro=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <link rel="icon" type="image/png" href="{% static 'img/favicon-32x32.png' %}">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    {# For internal CSS stylesheets. #}
+    {% block extra_css %}{% endblock %}
+
+  </head>
+
+  <body class="d-flex flex-column h-100">
+
+    <header>
+      <!-- Fixed navbar -->
+      <nav class="navbar navbar-expand-md fixed-top">
+        <div class="container d-flex">
+          <a class="navbar-brand" href="/">
+            <img class="navbar-img" src="{% static 'img/icon-192x192.png' %}" style="max-height:2rem;">
+            Quantified Flu
+          </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse text-right" id="navbarCollapse">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item mt-2 mt-md-0 mr-md-2">
+                <a class="nav-link" href="/">About</a>
+              </li>
+              <li class="nav-item mr-md-2">
+                <a class="nav-link" href="/">Contributing</a>
+              </li>
+              {% if not request.user.is_authenticated %}
+              <li class="nav-item mr-md-0">
+                <a href="{{ auth_url }}" class="btn btn-primary">
+                  Log in
+                </a>
+              </li>
+              {% else %}
+              <form class="form-inline mt-2 mt-md-0" action="{# url 'logout' #}" method="post">
+                {% csrf_token %}
+                <button class="btn btn-info" type="submit">Log out</button>
+              </form>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Page content -->
+    <main role="main" class="flex-shrink-0">
+      <div class="container">
+
+        {% block messages_block %}
+          {% if messages %}
+            <div class="mt-2">
+            {% for message in messages %}
+              <div class="alert {% if message.tags %}
+                  alert-{% ifequal message.tags 'error' %}danger{% else %}{{ message.tags }}{% endifequal %}
+                  {% endif %}">
+                {{ message }}
+              </div>
+            {% endfor %}
+            </div>
+          {% endif %}
+        {% endblock messages_block %}
+
+        {% block main %}
+        <h1 class="mt-5">Sample top header</h1>
+        <p class="lead">Sample lead paragraph text.</p>
+        <p>Sample standard paragraph text. This <a href="#">is a sample</a> link.</a> <code>This is some code.</code></p>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+          veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+          commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+          velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+          occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+          mollit anim id est laborum.
+        </p>
+        </p>
+        <div class="mb-2">
+          <btn class="btn btn-sm btn-primary">button 1</btn>
+          <btn class="btn btn-sm btn-secondary">button 2</btn>
+          <btn class="btn btn-sm btn-danger">button 3</btn>
+          <btn class="btn btn-sm btn-info">button 4</btn>
+        </div>
+        <div class="mb-2">
+          <btn class="btn btn-primary">button 1</btn>
+          <btn class="btn btn-secondary">button 2</btn>
+          <btn class="btn btn-danger">button 3</btn>
+          <btn class="btn btn-info">button 4</btn>
+        </div>
+        <div>
+          <btn class="btn btn-lg btn-primary">button 1</btn>
+          <btn class="btn btn-lg btn-secondary">button 2</btn>
+          <btn class="btn btn-lg btn-danger">button 3</btn>
+          <btn class="btn btn-lg btn-info">button 4</btn>
+        </div>
+        {% endblock main %}
+
+      </div>
+    </main>
+
+    <footer class="footer mt-auto pb-3 pt-5">
+      <div class="container">
+        <div class="text-center">
+          <a href="/">Item 1</a> |
+          <a href="/">Item 2</a> |
+          <a href="/">Item 3</a>
+        </div>
+      </div>
+    </footer>
+
+    {% block extra_modals %}{% endblock %}
+  </body>
+</html>
