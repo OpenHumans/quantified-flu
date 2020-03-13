@@ -1,9 +1,11 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.views.generic import TemplateView, FormView
 
 from openhumans.models import OpenHumansMember
 
 from .forms import RetrospectiveEventForm
+from .tasks import analyze_event
 
 
 class HomeView(TemplateView):
@@ -15,14 +17,17 @@ class HomeView(TemplateView):
         return context
 
 
-class AddRetrospectiveEventView(FormView):
+class AddRetrospectiveEventView(LoginRequiredMixin, FormView):
     template_name = "retrospective/addevent.html"
     form_class = RetrospectiveEventForm
     success_url = "/"
+    login_url = "/"
 
     def form_valid(self, form):
         # This method is called when valid form data has been POSTed.
         # It should return an HttpResponse.
         form.instance.member = self.request.user.openhumansmember
-        form.save()
+        event = form.save()
+        print("ANALYZING EVENT {}".format(event.id))
+        analyze_event.delay(event.id)
         return super().form_valid(form)

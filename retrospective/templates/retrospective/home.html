@@ -2,8 +2,14 @@
 
 {% block main %}
 
+{% if request.user.is_authenticated %}
 <p class="mt-4">
   <a href="{% url 'add-event' %}">Add an event to analyze.</a>
 </p>
+{% else %}
+<p class="mt-4">
+  Please log in.
+</p>
+{% endif %}
 
 {% endblock main %}

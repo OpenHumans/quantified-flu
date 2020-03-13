@@ -15,3 +15,9 @@ class RetrospectiveEvent(models.Model):
     member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
     date = models.DateField()
     certainty = models.IntegerField(choices=CERTAINTY_CHOICES)
+
+
+class RetrospectiveEventAnalysis(models.Model):
+    event = models.OneToOneField(RetrospectiveEvent, on_delete=models.CASCADE)
+    graph_data = models.TextField()
+    graph_image = models.FileField()

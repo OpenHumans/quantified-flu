@@ -27,8 +27,9 @@ urlpatterns = [
     path("", include("retrospective.urls")),
 ]
 
-# Needed to load static files in local development.
+# Needed for static and media files in local development.
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # openhumans URLs
 urlpatterns += [path("openhumans/", include("openhumans.urls"))]

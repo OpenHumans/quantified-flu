@@ -13,6 +13,7 @@ django = "~=2.2"
 django-heroku = "*"
 gunicorn = "*"
 django-open-humans = "*"
+redis = "*"
 
 [requires]
 python_version = "3.6"

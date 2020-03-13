@@ -121,12 +121,19 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_URL = "/static/"
 
+MEDIA_ROOT = os.path.join(BASE_DIR, "managedfiles")
+MEDIA_URL = "/files/"
+
 # openhumans configurations
 OPENHUMANS_APP_BASE_URL = os.getenv("OPENHUMANS_APP_BASE_URL", "http://localhost:5000")
 OPENHUMANS_CLIENT_ID = os.getenv("OPENHUMANS_CLIENT_ID", "your_client_id")
 OPENHUMANS_CLIENT_SECRET = os.getenv("OPENHUMANS_CLIENT_SECRET", "your_client_secret")
 
 LOGIN_REDIRECT_URL = "/"
+
+# celery setup
+CELERY_BROKER_URL = os.getenv("REDIS_URL")
+CELERY_TASK_SERIALIZER = "json"
 
 # Configure Django App for Heroku.
 if ON_HEROKU:
