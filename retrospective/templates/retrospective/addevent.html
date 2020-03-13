@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<p>
+  When did your illness start? Date format: YYYY-MM-DD
+</p>
+
+<form method="POST" action="">
+  {% csrf_token %}
+  {{ form }}
+  <input type="submit" value="Analyze this event">
+</form>
+
+{% endblock main %}
