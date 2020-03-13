@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+{%for event in events%}
+  <p>
+    {{event.date}}:
+      {%for analysis in event.retrospectiveeventanalysis_set.all%}
+        <a href='{% url 'view_graph' analysis.id%}'>{{analysis.graph_type}} graphs</a>
+      {%endfor%}
+  </p>
+{%endfor%}
+
+
+{% endblock main %}

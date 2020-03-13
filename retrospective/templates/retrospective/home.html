@@ -5,6 +5,7 @@
 {% if request.user.is_authenticated %}
 <p class="mt-4">
   <a href="{% url 'add-event' %}">Add an event to analyze.</a>
+  <a href="{% url 'view-events' %}">View graphs of your existing events.</a>
 </p>
 {% else %}
 <p class="mt-4">

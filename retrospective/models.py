@@ -18,6 +18,6 @@ class RetrospectiveEvent(models.Model):
 
 
 class RetrospectiveEventAnalysis(models.Model):
-    event = models.OneToOneField(RetrospectiveEvent, on_delete=models.CASCADE)
+    event = models.ForeignKey(RetrospectiveEvent, on_delete=models.CASCADE)
     graph_data = models.TextField()
-    graph_image = models.FileField()
+    graph_type = models.TextField(default="")
