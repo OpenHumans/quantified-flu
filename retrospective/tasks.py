@@ -1,8 +1,5 @@
-import uuid
-
 from celery import shared_task
 from celery.decorators import task
-from django.core.files.uploadedfile import SimpleUploadedFile
 
 from .models import RetrospectiveEvent, RetrospectiveEventAnalysis
 
@@ -25,24 +22,17 @@ def analyze_event(event_id):
             fitbit_data = i
 
     if oura_data:
-        oura_dataframe = oura_parser(oura_data, event.date)
-        print(oura_dataframe.head())
+        oura_df = oura_parser(oura_data, event.date)
+        new_analysis = RetrospectiveEventAnalysis(
+            event=event, graph_data=oura_df.to_json(orient="records"), graph_type="Oura"
+        )
+        new_analysis.save()
 
     if fitbit_data:
-        fitbit_dataframe = fitbit_parser(fitbit_data, event.date)
-        print(fitbit_dataframe.head())
-
-    placeholder_text = "Event reported on {} for project member {}".format(
-        event.date, oh_member.oh_id
-    )
-    # UUID for unique filename, to avoid overwriting other files.
-    file_uuid = uuid.uuid1()
-    placeholder_file = SimpleUploadedFile(
-        "{}-placeholder-filename.txt".format(file_uuid.hex),
-        "Placeholder file content for event {}.".format(event.id).encode("utf-8"),
-    )
-
-    new_analysis = RetrospectiveEventAnalysis(
-        event=event, graph_data=placeholder_text, graph_image=placeholder_file
-    )
-    new_analysis.save()
+        fitbit_df = fitbit_parser(fitbit_data, event.date)
+        new_analysis = RetrospectiveEventAnalysis(
+            event=event,
+            graph_data=fitbit_df.to_json(orient="records"),
+            graph_type="Fitbit",
+        )
+        new_analysis.save()

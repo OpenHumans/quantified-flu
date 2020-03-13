@@ -33,11 +33,14 @@ def oura_parser(oura_object, event_date):
                 temperature = entry["temperature_delta"]
                 bedtime_start = arrow.get(entry["bedtime_start"])
                 for hr in entry["hr_5min"]:
-                    period.append(p)
-                    timestamp.append(bedtime_start)
-                    temperature_delta.append(temperature)
-                    heart_rate.append(hr)
+                    if int(hr) != 0:
+                        period.append(str(p))
+                        timestamp.append(bedtime_start)
+                        temperature_delta.append(temperature)
+                        heart_rate.append(hr)
                     bedtime_start = bedtime_start.shift(minutes=+5)
+
+    timestamp = [i.format("YYYY-MM-DD HH:mm:ss") for i in timestamp]
 
     dataframe = pd.DataFrame(
         data={
@@ -47,6 +50,7 @@ def oura_parser(oura_object, event_date):
             "temperature_delta": temperature_delta,
         }
     )
+
     return dataframe
 
 
@@ -76,6 +80,7 @@ def fitbit_parser(fitbit_object, event_date):
                     timestamp.append(entry["dateTime"])
                     heart_rate.append(entry["value"]["restingHeartRate"])
 
+    timestamp = [i.format("YYYY-MM-DD HH:mm:ss") for i in timestamp]
     dataframe = pd.DataFrame(
         data={"period": period, "timestamp": timestamp, "heart_rate": heart_rate,}
     )
