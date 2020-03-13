@@ -18,7 +18,17 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from .views import logout_user
+
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("logout/", logout_user, name="logout"),
     path("", include("retrospective.urls")),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
+
+# Needed to load static files in local development.
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# openhumans URLs
+urlpatterns += [path("openhumans/", include("openhumans.urls"))]

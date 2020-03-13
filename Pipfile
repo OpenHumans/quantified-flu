@@ -12,6 +12,7 @@ celery = "*"
 django = "~=2.2"
 django-heroku = "*"
 gunicorn = "*"
+django-open-humans = "*"
 
 [requires]
 python_version = "3.6"

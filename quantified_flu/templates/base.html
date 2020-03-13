@@ -30,7 +30,7 @@
 
     <header>
       <!-- Fixed navbar -->
-      <nav class="navbar navbar-expand-md fixed-top">
+      <nav class="navbar navbar-light navbar-expand-md fixed-top">
         <div class="container d-flex">
           <a class="navbar-brand" href="/">
             <img class="navbar-img" src="{% static 'img/icon-192x192.png' %}" style="max-height:2rem;">
@@ -49,14 +49,14 @@
               </li>
               {% if not request.user.is_authenticated %}
               <li class="nav-item mr-md-0">
-                <a href="{{ auth_url }}" class="btn btn-primary">
+                <a href="{{ openhumans_login_url }}" class="btn btn-primary btn-sm mt-md-1 mt-0">
                   Log in
                 </a>
               </li>
               {% else %}
-              <form class="form-inline mt-2 mt-md-0" action="{# url 'logout' #}" method="post">
+              <form class="mt-md-1 mt-0" action="{% url 'logout' %}" method="post">
                 {% csrf_token %}
-                <button class="btn btn-info" type="submit">Log out</button>
+                <button class="btn btn-info btn-sm float-right" type="submit">Log out</button>
               </form>
               {% endif %}
             </ul>
@@ -66,7 +66,7 @@
     </header>
 
     <!-- Page content -->
-    <main role="main" class="flex-shrink-0">
+    <main role="main" class="flex-shrink-0" style="padding-top:60px">
       <div class="container">
 
         {% block messages_block %}
@@ -84,7 +84,7 @@
         {% endblock messages_block %}
 
         {% block main %}
-        <h1 class="mt-5">Sample top header</h1>
+        <h1 class="mt-2">Sample top header</h1>
         <p class="lead">Sample lead paragraph text.</p>
         <p>Sample standard paragraph text. This <a href="#">is a sample</a> link.</a> <code>This is some code.</code></p>
         <p>

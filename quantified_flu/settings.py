@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # third party apps
+    "openhumans",
     # local app modules
     "quantified_flu",
     "retrospective",
@@ -116,10 +118,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-
 STATIC_URL = "/static/"
+
+# openhumans configurations
+OPENHUMANS_APP_BASE_URL = os.getenv("OPENHUMANS_APP_BASE_URL", "http://localhost:5000")
+OPENHUMANS_CLIENT_ID = os.getenv("OPENHUMANS_CLIENT_ID", "your_client_id")
+OPENHUMANS_CLIENT_SECRET = os.getenv("OPENHUMANS_CLIENT_SECRET", "your_client_secret")
+
+LOGIN_REDIRECT_URL = "/"
 
 # Configure Django App for Heroku.
 if ON_HEROKU:
