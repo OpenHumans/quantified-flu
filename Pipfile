@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 black = "*"
 pre-commit = "*"
+ipython = "*"
 
 [packages]
 celery = "*"
@@ -14,6 +15,8 @@ django-heroku = "*"
 gunicorn = "*"
 django-open-humans = "*"
 redis = "*"
+pandas = "*"
+arrow = "*"
 
 [requires]
 python_version = "3.6"
