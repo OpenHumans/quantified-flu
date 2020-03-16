@@ -2,14 +2,42 @@
 
 {% block main %}
 
-{%for event in events%}
-  <p>
-    {{event.date}}:
+<h1> Check out your sick events</h1>
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Date</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {%for event in events%}
+    <tr>
+      <th scope="row">{{event.date}}</th>
+      <td>
       {%for analysis in event.retrospectiveeventanalysis_set.all%}
-        <a href='{% url 'view_graph' analysis.id%}'>{{analysis.graph_type}} graphs</a>
+        <a class="btn btn-primary" href='{% url 'view_graph' analysis.id%}'>view <i>{{analysis.graph_type}}</i> graph</a>
       {%endfor%}
+      </td>
+      <td>
+        <form action="{% url 'delete_event' event.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" value="delete event" class="btn btn-danger ">delete event</button>
+        </form>
+      </td>
+    </tr>
+    {%endfor%}
+  </tbody>
+</table>
+
+  <p>
+
+
   </p>
-{%endfor%}
+
 
 
 {% endblock main %}
