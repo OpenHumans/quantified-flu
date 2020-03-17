@@ -1,16 +1,78 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block main %}
 
+{% if not request.user.is_authenticated %}
+
+<div class="jumbotron">
+  <img class="img-fluid" src="{% static 'img/example_graph.png' %}">
+  <h1 class="display-4">Welcome to the <i>Quantified Flu</i>!</h1>
+  <p class="lead">
+    Our question is: Do most of us show consistent physiological signals prior to falling sick with a cold or flu?
+    And can wearables pick up on those changes, even if we personally can not?
+  </p>
+  <hr class="my-4">
+  <p>
+    To answer this question we're trying to do a retrospective study, using your historic wearable data.
+    In order to participate you need to…
+    <ul>
+     <li>…have either used a Fitbit that measures your heart rate or an Oura ring in the past,</li>
+     <li>…remember at least one data of when you fell sick,</li>
+     <li>…have collected data with your wearable for some weeks before & after you felt sick.</li>
+   </ul>
+  </p>
+
+
+  <hr class="my-4">
+  <p >
+    Click the log in button below to get started. The secure management of your wearable data etc.
+    will be done by <i>Open Humans</i> and you can easily create an account as part of the login-procedure.
+  </p>
+    <a class="btn btn-primary btn-lg" href="{{ openhumans_login_url }}" role="button">Get started</a>
+
+</div>
+
+{% endif %}
+
 {% if request.user.is_authenticated %}
-<p class="mt-4">
-  <a href="{% url 'add-event' %}">Add an event to analyze.</a>
-  <a href="{% url 'view-events' %}">View graphs of your existing events.</a>
-</p>
-{% else %}
-<p class="mt-4">
-  Please log in.
-</p>
+
+  <h2>Visualize your physiological signals before & after falling sick</h2>
+
+  {%if missing_sources|length == 2%}
+  <div class="alert alert-danger" role="alert">
+    You haven't connected any wearable yet. You will not be able to graph any events
+    if you don't add at least one! To do so click the links below.
+  </div>
+  {%endif%}
+  {%for ms in missing_sources%}
+    {%if ms == 'oura'%}
+      <div class="alert alert-warning" role="alert">
+        You haven't connected an <i>Oura Ring</i> to your account yet.
+        <a href="https://oura.openhumans.org">Add yours now</a>!
+      </div>
+    {%elif ms == 'fitbit'%}
+      <div class="alert alert-warning" role="alert">
+        You haven't connected a <i>Fitbit</i> to your account yet.
+        <a href="https://fitbit.openhumans.org">Add yours now</a>!
+    </div>
+    {%endif%}
+  {%endfor%}
+
+  <img class="img-fluid" src="{% static 'img/example_graph.png' %}">
+  <p>
+    Any sickness events you will enter will be visualized for varitions in your
+    heart rate (and body temperature where available) like in this example graph.
+
+    <b>Get started by adding your sickness events below!</b>
+  </p>
+
+
+  <p class="mt-4">
+    <a class="btn btn-primary btn-sm mt-md-1 mt-0" href="{% url 'add-event' %}">Add a sickness event to analyze</a>
+    <a class="btn btn-info btn-sm mt-md-1 mt-0" href="{% url 'view-events' %}">View graphs of your existing events</a>
+  </p>
+
 {% endif %}
 
 {% endblock main %}

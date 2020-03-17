@@ -30,7 +30,10 @@ def oura_parser(oura_object, event_date):
             if (sdate >= arrow.get(sd_dict[p]["period_start"])) and (
                 sdate <= arrow.get(sd_dict[p]["period_end"])
             ):
-                temperature = entry["temperature_delta"]
+                if "temperature_delta" in entry.keys():
+                    temperature = entry["temperature_delta"]
+                else:
+                    temperature = 0
                 bedtime_start = arrow.get(entry["bedtime_start"])
                 for hr in entry["hr_5min"]:
                     if int(hr) != 0:

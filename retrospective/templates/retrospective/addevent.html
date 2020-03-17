@@ -2,14 +2,38 @@
 
 {% block main %}
 
+<h2> Add Sickness event</h2>
+
+
 <p>
-  When did your illness start? Date format: YYYY-MM-DD
+  Please add when your illness started below and also annotate how certain you are about the starting date.
 </p>
 
+<p>
+  The date format should be: YYYY-MM-DD. That means March 13 2020 would be
+  2020-03-13.
+</p>
+
+<p>
 <form method="POST" action="">
   {% csrf_token %}
   {{ form }}
-  <input type="submit" value="Analyze this event">
+  <input type="submit" value="Analyze this event" class="btn btn-primary">
 </form>
+</p>
+
+<h3>How am I supposed to remember when I fell sick?!</h3>
+<p>
+  Here are some tips that might help you remember when you fell sick:
+</p>
+
+<p>
+  <ol>
+   <li>Did you travel right before/after you fell sick? Are those travel dates on your calendar?</li>
+   <li>Did you have to call in sick with your employer? Did you email/text them about it and can find those messages?</li>
+   <li>Did you tweet about being sick in bed? Did you tell friends? Check if you can find text records of it, the Twitter search is great!</li>
+   <li>Do you have tips to be added here? Be in touch with us and we'll add them!</li>
+  </ol>
+</p>
 
 {% endblock main %}
