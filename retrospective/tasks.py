@@ -2,7 +2,9 @@ from celery import shared_task
 from celery.decorators import task
 
 from .models import RetrospectiveEvent, RetrospectiveEventAnalysis
-
+from import_data.models import FitbitMember, OuraMember
+from import_data.celery_fitbit import fetch_fitbit_data
+from import_data.celery_oura import fetch_oura_data
 from .activity_parsers import oura_parser, fitbit_parser
 
 
@@ -36,3 +38,19 @@ def analyze_event(event_id):
             graph_type="Fitbit",
         )
         new_analysis.save()
+
+
+@task
+def update_fitbit_data(fitbit_member_id):
+    fitbit_member = FitbitMember.objects.get(id=fitbit_member_id)
+    restart_job = fetch_fitbit_data(fitbit_member)
+    if restart_job:
+        update_fitbit_data.apply_async(args=[fitbit_member.id], countdown=3600)
+        print("queued job after running into limitation")
+
+
+@shared_task
+def update_oura_data(oura_member_id):
+    oura_user = OuraMember.objects.get(id=oura_member_id)
+    print("trying to update {}".format(oura_user.id))
+    fetch_oura_data(oura_user)
