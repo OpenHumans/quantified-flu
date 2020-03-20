@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "openhumans",
     # local app modules
     "quantified_flu",
+    "checkin",
     "retrospective",
 ]
 

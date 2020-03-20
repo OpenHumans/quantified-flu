@@ -25,7 +25,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("logout/", logout_user, name="logout"),
     path("", HomeView.as_view(), name="home"),
-    path("retrospective", include("retrospective.urls")),
+    path("retrospective/", include("retrospective.urls")),
+    path("checkin/", include("checkin.urls")),
 ]
 
 # Needed for static and media files in local development.

@@ -1,0 +1,11 @@
+<h2>Schedule check-ins</h2>
+<p>
+  Schedule a daily check-in to report how you're feeling. We'll send an email with a
+  quick link to report you're fine – or a link to report symptoms, if you've come
+  down with something.
+</p>
+<form method="POST" action="{% url 'checkin:schedule' %}">
+  {% csrf_token %}
+  {{ checkin_form }}
+  <input type="submit" value="Schedule check-in" class="btn btn-primary">
+</form>

@@ -6,6 +6,8 @@ from .views import view_graph_json, view_graph, view_events, delete_event
 from .views import about
 
 
+app_name = "retrospective"
+
 urlpatterns = [
     path("add-event", AddRetrospectiveEventView.as_view(), name="add-event"),
     path("graph_json/<analysis_id>/", view_graph_json, name="json_graph"),

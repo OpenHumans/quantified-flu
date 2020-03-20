@@ -7,7 +7,7 @@
 <div class='retrospective_graph_temp'></div>
 
 <script>
-  d3.json('{% url 'json_graph' analysis_id=analysis_id %}', function(data) {
+  d3.json('{% url 'retrospective:json_graph' analysis_id=analysis_id %}', function(data) {
     {% if analysis_type == 'Oura' %}
     data = MG.convert.date(data, 'timestamp', "%Y-%m-%d %H:%M:%S");
     {% elif analysis_type == 'Fitbit' %}

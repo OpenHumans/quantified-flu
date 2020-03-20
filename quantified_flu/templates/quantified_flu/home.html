@@ -37,8 +37,6 @@
 
 {% if request.user.is_authenticated %}
 
-  <h2>Visualize your physiological signals before & after falling sick</h2>
-
   {%if missing_sources|length == 2%}
   <div class="alert alert-danger" role="alert">
     You haven't connected any wearable yet. You will not be able to graph any events
@@ -59,19 +57,15 @@
     {%endif%}
   {%endfor%}
 
-  <img class="img-fluid" src="{% static 'img/example_graph.png' %}">
-  <p>
-    Any sickness events you will enter will be visualized for varitions in your
-    heart rate (and body temperature where available) like in this example graph.
+  <div class="row pt-2">
+    <div class="col-md">
+      {% include 'retrospective/partials/home-panel.html' %}
+    </div>
+    <div class="col-md">
+      {% include 'checkin/partials/home-panel.html' %}
+    </div>
+  </div>
 
-    <b>Get started by adding your sickness events below!</b>
-  </p>
-
-
-  <p class="mt-4">
-    <a class="btn btn-primary btn-sm mt-md-1 mt-0" href="{% url 'add-event' %}">Add a sickness event to analyze</a>
-    <a class="btn btn-info btn-sm mt-md-1 mt-0" href="{% url 'view-events' %}">View graphs of your existing events</a>
-  </p>
 
 {% endif %}
 

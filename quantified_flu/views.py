@@ -5,6 +5,8 @@ from django.views.generic import TemplateView
 
 from openhumans.models import OpenHumansMember
 
+from checkin.models import CheckinSchedule
+from checkin.forms import CheckinScheduleForm
 from .helpers import identify_missing_sources
 
 
@@ -27,8 +29,16 @@ class HomeView(TemplateView):
         context = super().get_context_data(*args, **kwargs)
         context["openhumans_login_url"] = OpenHumansMember.get_auth_url()
         if self.request.user.is_authenticated:
-            missing_sources = identify_missing_sources(
-                self.request.user.openhumansmember
-            )
+            openhumansmember = self.request.user.openhumansmember
+
+            missing_sources = identify_missing_sources(openhumansmember)
             context["missing_sources"] = missing_sources
+
+            try:
+                schedule = CheckinSchedule.objects.get(member=openhumansmember)
+                checkin_form = CheckinScheduleForm(instance=schedule)
+            except CheckinSchedule.DoesNotExist:
+                checkin_form = CheckinScheduleForm()
+            context["checkin_form"] = checkin_form
+
         return context

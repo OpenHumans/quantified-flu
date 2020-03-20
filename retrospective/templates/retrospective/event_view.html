@@ -19,11 +19,11 @@
       <th scope="row">{{event.date}}</th>
       <td>
       {%for analysis in event.retrospectiveeventanalysis_set.all%}
-        <a class="btn btn-primary" href='{% url 'view_graph' analysis.id%}'>view <i>{{analysis.graph_type}}</i> graph</a>
+        <a class="btn btn-primary" href='{% url 'retrospective:view_graph' analysis.id%}'>view <i>{{analysis.graph_type}}</i> graph</a>
       {%endfor%}
       </td>
       <td>
-        <form action="{% url 'delete_event' event.id %}" method="post">
+        <form action="{% url 'retrospective:delete_event' event.id %}" method="post">
           {% csrf_token %}
           <button type="submit" value="delete event" class="btn btn-danger ">delete event</button>
         </form>
