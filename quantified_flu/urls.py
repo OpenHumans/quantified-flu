@@ -18,13 +18,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from .views import logout_user
+from .views import logout_user, HomeView
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("logout/", logout_user, name="logout"),
-    path("", include("retrospective.urls")),
+    path("", HomeView.as_view(), name="home"),
+    path("retrospective", include("retrospective.urls")),
 ]
 
 # Needed for static and media files in local development.

@@ -5,29 +5,29 @@
 
 {% if not request.user.is_authenticated %}
 
-<div class="jumbotron">
+<div class="jumbotron p-4">
   <img class="img-fluid" src="{% static 'img/example_graph.png' %}">
-  <h1 class="display-4">Welcome to the <i>Quantified Flu</i>!</h1>
+  <h1 class="display-4 mt-3">Welcome to the <i>Quantified Flu</i>!</h1>
   <p class="lead">
-    Our question is: Do most of us show consistent physiological signals prior to falling sick with a cold or flu?
-    And can wearables pick up on those changes, even if we personally can not?
+    Can wearables warn us that we're about to get sick? Help us find out!
+  </p>
+  <p>
+    We have two ways you can contribute…
   </p>
   <hr class="my-4">
+  <h3>Report past illness</h3>
   <p>
-    To answer this question we're trying to do a retrospective study, using your historic wearable data.
-    In order to participate you need to…
-    <ul>
-     <li>…have either used a Fitbit that measures your heart rate or an Oura ring in the past,</li>
-     <li>…remember at least one data of when you fell sick,</li>
-     <li>…have collected data with your wearable for some weeks before & after you felt sick.</li>
-   </ul>
+    Report when you got sick and share your wearable device data: we'll plot your data!
   </p>
-
-
+  <h3>Track symptoms going forward</h3>
+  <p>
+    Sign up for daily check-ins to tell us if you got sick, as well as symptoms and viral test results.
+  </p>
   <hr class="my-4">
   <p >
-    Click the log in button below to get started. The secure management of your wearable data etc.
-    will be done by <i>Open Humans</i> and you can easily create an account as part of the login-procedure.
+    Click the button below to log in and get started. Secure management of your wearable data and 
+    account information will be done by <i>Open Humans</i>. You can easily create an account as part
+    of the login process.
   </p>
     <a class="btn btn-primary btn-lg" href="{{ openhumans_login_url }}" role="button">Get started</a>
 

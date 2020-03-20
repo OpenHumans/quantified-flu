@@ -28,6 +28,8 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
     {# For internal CSS stylesheets. #}
     {% block extra_css %}{% endblock %}
 
@@ -37,7 +39,7 @@
 
     <header>
       <!-- Fixed navbar -->
-      <nav class="navbar navbar-light navbar-expand-md fixed-top">
+      <nav class="navbar navbar-light navbar-expand-md fixed-top" style="background-image: linear-gradient(#FFFFFFFF, #ffffffdd, #ffffffbb, #ffffff00)">
         <div class="container d-flex">
           <a class="navbar-brand" href="/">
             <img class="navbar-img" src="{% static 'img/icon-192x192.png' %}" style="max-height:2rem;">
@@ -128,7 +130,7 @@
       <div class="container">
         <div class="text-center">
           This website is a test deployment managed by <a href="https://github.com/madprime/">Mad Price Ball</a> & <a href="https://github.com/gedankenstuecke/">Bastian Greshake Tzovaras</a> |
-          <a href="/">view our code</a>
+          <a href="https://github.com/madprime/quantified-flu/">view our code</a>
         </div>
       </div>
     </footer>
