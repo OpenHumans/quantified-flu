@@ -26,6 +26,7 @@ urlpatterns = [
     path("", HomeView.as_view(), name="home"),
     path("about/", about, name="about"),
     path("retrospective/", include("retrospective.urls")),
+    path("import_data/", include("import_data.urls")),
     path("checkin/", include("checkin.urls")),
 ]
 

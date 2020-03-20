@@ -34,6 +34,11 @@ class HomeView(TemplateView):
 
             missing_sources = identify_missing_sources(openhumansmember)
             context["missing_sources"] = missing_sources
+            context["fitbit_auth_url"] = (
+                "https://www.fitbit.com/oauth2/authorize?response_type=code&client_id="
+                + settings.FITBIT_CLIENT_ID
+                + "&scope=activity%20nutrition%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight"
+            )
 
             try:
                 schedule = CheckinSchedule.objects.get(member=openhumansmember)

@@ -1,3 +1,7 @@
+import arrow
+from datetime import timedelta
+
+
 def identify_missing_sources(oh_member):
     missing_sources = {"oura": True, "fitbit": True}
     for i in oh_member.list_files():
@@ -6,3 +10,16 @@ def identify_missing_sources(oh_member):
         if i["basename"] == "fitbit-data.json" and i["source"] == "direct-sharing-102":
             missing_sources.pop("fitbit", None)
     return list(missing_sources.keys())
+
+
+def get_fitbit_file(oh_member):
+    for dfile in oh_member.list_files():
+        if "QF-Fitbit" in dfile["metadata"]["tags"]:
+            return dfile["download_url"]
+    return ""
+
+
+def check_update(fitbit_member):
+    if fitbit_member.last_submitted < (arrow.now() - timedelta(hours=1)):
+        return True
+    return False
