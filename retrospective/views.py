@@ -47,10 +47,6 @@ def view_events(request):
     return render(request, "retrospective/event_view.html", context)
 
 
-def about(request):
-    return render(request, "retrospective/about.html")
-
-
 @login_required(login_url="/")
 def delete_event(request, event_id):
     if request.method == "POST":

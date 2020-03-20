@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.views.generic import TemplateView
+from django.shortcuts import render
 
 from openhumans.models import OpenHumansMember
 
@@ -42,3 +43,7 @@ class HomeView(TemplateView):
             context["checkin_form"] = checkin_form
 
         return context
+
+
+def about(request):
+    return render(request, "retrospective/about.html")

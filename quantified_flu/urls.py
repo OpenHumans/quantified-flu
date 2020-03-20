@@ -18,13 +18,13 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from .views import logout_user, HomeView
-
+from .views import logout_user, HomeView, about
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("logout/", logout_user, name="logout"),
     path("", HomeView.as_view(), name="home"),
+    path("about/", about, name="about"),
     path("retrospective/", include("retrospective.urls")),
     path("checkin/", include("checkin.urls")),
 ]
