@@ -5,6 +5,7 @@ from django.db import models
 from openhumans.models import OpenHumansMember
 from django.conf import settings
 from datetime import timedelta
+import os
 
 # Create your models here.
 
@@ -72,3 +73,37 @@ class FitbitMember(models.Model):
             self.save()
             return True
         return False
+
+
+class OuraMember(models.Model):
+    member = models.OneToOneField(
+        OpenHumansMember, on_delete=models.CASCADE, related_name="oura_user"
+    )
+    access_token = models.TextField()
+    refresh_token = models.TextField()
+    expiration_time = models.DateTimeField()
+
+    def get_access_token(self):
+        if arrow.utcnow() >= self.expiration_time:
+            self.refresh_tokens()
+        return self.access_token
+
+    def refresh_tokens(self):
+        res = requests.post(
+            "https://api.ouraring.com/oauth/token",
+            data={
+                "grant_type": "refresh_token",
+                "client_id": os.getenv("OURA_CLIENT_ID"),
+                "client_secret": os.getenv("OURA_CLIENT_SECRET"),
+                "refresh_token": self.refresh_token,
+            },
+        ).json()
+        if "access_token" not in res.keys():
+            print("failed updating {}".format(self.user.oh_member.oh_id))
+        else:
+            self.access_token = res["access_token"]
+            self.refresh_token = res["refresh_token"]
+            self.expiration_time: arrow.utcnow().shift(
+                seconds=res["expires_in"]
+            ).datetime
+            self.save()

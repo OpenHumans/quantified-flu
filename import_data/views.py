@@ -1,11 +1,13 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 import requests
 import base64
 from django.conf import settings
-from .models import FitbitMember
-from retrospective.tasks import update_fitbit_data
+from .models import FitbitMember, OuraMember
+from retrospective.tasks import update_fitbit_data, update_oura_data
 import arrow
 from django.contrib import messages
+import os
+import urllib.parse
 
 
 fitbit_authorize_url = "https://www.fitbit.com/oauth2/authorize"
@@ -111,4 +113,67 @@ def update_fitbit(request):
                 "data"
             ),
         )
+        return redirect("/")
+
+
+# OURA IMPORT AND MANAGEMENT
+
+
+def authorize_oura(request):
+    auth_endpoint = "https://cloud.ouraring.com/oauth/authorize?"
+    scopes = [
+        "personal",
+        "daily",
+    ]
+    auth_params = {
+        "client_id": os.getenv("OURA_CLIENT_ID"),
+        "redirect_uri": request.build_absolute_uri(
+            reverse("import_data:complete-oura")
+        ),
+        "scope": " ".join(scopes),
+        "response_type": "code",
+        "state": os.getenv("SECRET_KEY"),
+    }
+    return redirect(auth_endpoint + urllib.parse.urlencode(auth_params))
+
+
+def complete_oura(request):
+
+    if request.GET.get("state") != os.getenv("SECRET_KEY") or request.GET.get("error"):
+        return redirect("info")
+
+    res = requests.post(
+        "https://api.ouraring.com/oauth/token",
+        data={
+            "grant_type": "authorization_code",
+            "code": request.GET.get("code"),
+            "redirect_uri": request.build_absolute_uri(
+                reverse("import_data:complete-oura")
+            ),
+            "client_id": os.getenv("OURA_CLIENT_ID"),
+            "client_secret": os.getenv("OURA_CLIENT_SECRET"),
+        },
+    ).json()
+
+    OuraMember.objects.update_or_create(
+        member=request.user.openhumansmember,
+        defaults={
+            "access_token": res["access_token"],
+            "refresh_token": res["refresh_token"],
+            "expiration_time": arrow.utcnow().shift(seconds=res["expires_in"]).datetime,
+        },
+    )
+    update_oura_data.delay(request.user.openhumansmember.oura_user.id)
+    return redirect("/")
+
+
+def remove_oura(request):
+    if request.method == "POST":
+        request.user.openhumansmember.oura_user.delete()
+        return redirect("/")
+
+
+def update_oura(request):
+    if request.method == "POST":
+        update_oura_data.delay(request.user.openhumansmember.oura_user.id)
         return redirect("/")

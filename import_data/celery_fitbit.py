@@ -361,5 +361,5 @@ def replace_fitbit(oh_member, fitbit_data, old_fid):
         f.flush()
         f.seek(0)
         oh_member.upload(stream=f, filename="QF-fitbit-data.json", metadata=metadata)
-
-    oh_member.delete_single_file(file_id=old_fid)
+    if old_fid:
+        oh_member.delete_single_file(file_id=old_fid)
