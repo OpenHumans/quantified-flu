@@ -1,11 +1,35 @@
 <h2>Schedule check-ins</h2>
 <p>
-  Schedule a daily check-in to report how you're feeling. We'll send an email with a
-  quick link to report you're fine – or a link to report symptoms, if you've come
-  down with something.
+  We'll send an email with a quick link to report you're fine – or a link to
+  report symptoms, if you've come down with something.
 </p>
+{% if request.user.openhumansmember.checkinschedule %}
+  {% if request.user.openhumansmember.checkinschedule.active %}
+  <p>
+    <b>Check-ins: active.</b>
+  </p>
+  <p>
+    The form below shows your current schedule. Use it to change the schedule, or turn off check-ins.
+  </p>
+  {% else %}
+  <p>
+    <b>Check-ins: off.</b>
+  </p>
+  <p>
+    Use the form to schedule check-ins.
+  </p>
+  {% endif %}
+{% endif %}
 <form method="POST" action="{% url 'checkin:schedule' %}">
   {% csrf_token %}
   {{ checkin_form }}
-  <input type="submit" value="Schedule check-in" class="btn btn-primary">
+  <br>
+  <input type="submit" value="Schedule check-ins" class="btn btn-primary mt-2">
 </form>
+{% if request.user.openhumansmember.checkinschedule and request.user.openhumansmember.checkinschedule.active %}
+<hr>
+<form method="POST" action="{% url 'checkin:cancel' %}">
+  {% csrf_token %}
+  <input type="submit" value="Turn off check-ins" class="btn btn-sm btn-danger">
+</form>
+{% endif %}

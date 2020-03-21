@@ -54,7 +54,6 @@ def delete_event(request, event_id):
         event = RetrospectiveEvent.objects.get(pk=event_id)
         if event.member == oh_member:
             event.delete()
-            return redirect("/view-events/")
         else:
             messages.warning(request, "Permission denied!")
-            return redirect("/")
+        return redirect("/")

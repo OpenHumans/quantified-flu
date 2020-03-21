@@ -7,8 +7,6 @@ from django.conf import settings
 from datetime import timedelta
 import os
 
-# Create your models here.
-
 
 class FitbitMember(models.Model):
     """

@@ -1,13 +1,45 @@
+{% load static %}
+
 <h2>Visualize past events</h2>
+
+{% if openhumansmember.retrospectiveevent_set.all %}
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Date</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for event in openhumansmember.retrospectiveevent_set.all %}
+  <tr>
+    <th scope="row">{{event.date}}</th>
+    <td>
+    {%for analysis in event.retrospectiveeventanalysis_set.all%}
+      <a class="btn btn-primary btn-sm mt-1 py-0" href='{% url 'retrospective:view_graph' analysis.id%}'>view <i>{{analysis.graph_type}}</i> graph</a>
+    {%endfor%}
+    </td>
+    <td>
+      <form action="{% url 'retrospective:delete_event' event.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" value="delete event" class="btn btn-danger btn-sm mt-1 py-0">delete event</button>
+      </form>
+    </td>
+  </tr>
+  {%endfor%}
+  </tbody>
+</table>
+<p class="text-muted text-small">Note: analyses take a minute – try reloading if you don't see them above.</p>
+{% else %}
+<img class="img-fluid mb-3" src="{% static 'img/example_graph.png' %}">
+
 <p>
-  Past sickness events you will add will be visualized for varitions in your
-  heart rate (and body temperature where available) like in this example graph.
-
-  <b>Get started by adding your sickness events below!</b>
+  Add an event to get a visualization of how heart rate (and temperature)
+  varied relative to getting sick.
 </p>
-
+{% endif %}
 
 <p class="mt-4">
-  <a class="btn btn-primary btn-sm mt-md-1 mt-0" href="{% url 'retrospective:add-event' %}">Add a sickness event to analyze</a>
-  <a class="btn btn-info btn-sm mt-md-1 mt-0" href="{% url 'retrospective:view-events' %}">View graphs of your existing events</a>
+  <a class="btn btn-primary mt-md-1 mt-0" href="{% url 'retrospective:add-event' %}">Add a sickness event to analyze</a>
 </p>

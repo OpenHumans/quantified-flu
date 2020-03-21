@@ -8,6 +8,7 @@ from openhumans.models import OpenHumansMember
 
 from checkin.models import CheckinSchedule
 from checkin.forms import CheckinScheduleForm
+from retrospective.models import RetrospectiveEvent
 from .helpers import identify_missing_sources
 
 
@@ -28,24 +29,39 @@ class HomeView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context["openhumans_login_url"] = OpenHumansMember.get_auth_url()
+
         if self.request.user.is_authenticated:
             openhumansmember = self.request.user.openhumansmember
 
-            missing_sources = identify_missing_sources(openhumansmember)
-            context["missing_sources"] = missing_sources
-            context["fitbit_auth_url"] = (
-                "https://www.fitbit.com/oauth2/authorize?response_type=code&client_id="
-                + settings.FITBIT_CLIENT_ID
-                + "&scope=activity%20nutrition%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight"
-            )
-
+            # checkin_form
             try:
                 schedule = CheckinSchedule.objects.get(member=openhumansmember)
                 checkin_form = CheckinScheduleForm(instance=schedule)
             except CheckinSchedule.DoesNotExist:
                 checkin_form = CheckinScheduleForm()
-            context["checkin_form"] = checkin_form
+
+            # fitbit_auth_url
+            fitbit_auth_url = (
+                "https://www.fitbit.com/oauth2/authorize?response_type=code&client_id="
+                + settings.FITBIT_CLIENT_ID
+                + "&scope=activity%20nutrition%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight"
+            )
+
+            # missing_sources
+            missing_sources = identify_missing_sources(openhumansmember)
+
+            context.update(
+                {
+                    "checkin_form": checkin_form,
+                    "fitbit_auth_url": fitbit_auth_url,
+                    "missing_sources": missing_sources,
+                    "openhumansmember": openhumansmember,
+                }
+            )
+
+        # Not logged in.
+        else:
+            context.update({"openhumans_login_url": OpenHumansMember.get_auth_url()})
 
         return context
 

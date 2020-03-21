@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.views.generic import UpdateView
 
 from .forms import CheckinScheduleForm
@@ -33,9 +33,7 @@ def cancel_checkins(request):
     Cancel checkins
     """
     if request.method == "POST":
-        schedule = CheckinSchedule.objects.get(
-            member=self.request.user.openhumansmember
-        )
+        schedule = CheckinSchedule.objects.get(member=request.user.openhumansmember)
         schedule.active = False
         schedule.save()
     return redirect("/")
