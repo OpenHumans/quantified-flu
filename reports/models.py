@@ -39,6 +39,7 @@ VIRUS_CHOICES = [
     ("rhinovirus", "Test result: Rhinovirus"),
 ]
 
+
 # Does a "no symptom" quick report create an empty symptom report, or is it
 # recorded separately?
 class SymptomReport(models.Model):
