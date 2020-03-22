@@ -1,4 +1,8 @@
+import datetime
+import secrets
+
 from django.db import models
+from django.utils.timezone import now
 
 from openhumans.models import OpenHumansMember
 
@@ -18,16 +22,11 @@ SYMPTOM_CHOICES = [
     ("runny nose", "Runny nose"),
 ]
 
-# TODO: Should we survey people that can't measure?
 FEVER_CHOICES = [
     ("none", "No fever"),
-    ("low", "Low grade fever (below 38C / 100.4F)"),
-    ("moderate", "Moderate fever (up to 38.9C / 102.1F"),
-    ("high", "High fever (39.0C / 102.2F and above"),
-    ("maybe_none", "Don't feel feverish"),
-    ("maybe_low", "Might feel feverish"),
-    ("maybe_moderate", "Feverish"),
-    ("maybe_low", "Extremely feverish"),
+    ("low", "Maybe feverish"),
+    ("moderate", "Feverish"),
+    ("high", "High fever"),
 ]
 
 # TODO: What's the right list of viruses? (This is placeholder.)
@@ -42,20 +41,29 @@ VIRUS_CHOICES = [
 ]
 
 
+def create_token():
+    return secrets.token_urlsafe(16)
+
+
+TOKEN_EXPIRATION_MINUTES = 1440  # default expiration is one day
+
+
 # Does a "no symptom" quick report create an empty symptom report, or is it
 # recorded separately?
 class SymptomReport(models.Model):
     member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
-    created = models.DateTime(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
     symptoms = models.CharField(max_length=20, choices=SYMPTOM_CHOICES)
-    fever = models.CharField(max_length=20, choices=FEVER_CHOICES)
+    fever_guess = models.CharField(max_length=20, choices=FEVER_CHOICES)
+    fever = models.DecimalField(max_digits=4, decimal_places=1, blank=True)
     other_symptoms = models.TextField(blank=True)
     notes = models.TextField(blank=True)
 
 
 class DiagnosisReport(models.Model):
     member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
-    created = models.DateTime(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    date_tested = models.DateField()
     virus = models.CharField(max_length=20, choices=VIRUS_CHOICES)
 
 
@@ -64,5 +72,17 @@ class DiagnosisReport(models.Model):
 # to identify users for a report without requiring login.
 class ReportToken(models.Model):
     member = models.OneToOneField(OpenHumansMember, on_delete=models.CASCADE)
-    created = models.DateTime(auto_now_add=True)
-    token = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    token = models.TextField(default=create_token)
+    minutes_valid = models.IntegerField(default=TOKEN_EXPIRATION_MINUTES)
+
+    def is_valid(self):
+        expires = self.created + datetime.timedelta(minutes=self.minutes_valid)
+        if expires > now():
+            return True
+        return False
+
+    def valid_member(self):
+        if self.is_valid():
+            return self.member
+        return None

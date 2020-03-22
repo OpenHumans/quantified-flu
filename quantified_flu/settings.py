@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "checkin",
     "retrospective",
     "import_data",
+    "reports",
 ]
 
 MIDDLEWARE = [

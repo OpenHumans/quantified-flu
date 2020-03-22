@@ -28,6 +28,7 @@ urlpatterns = [
     path("retrospective/", include("retrospective.urls")),
     path("import_data/", include("import_data.urls")),
     path("checkin/", include("checkin.urls")),
+    path("report/", include("reports.urls")),
 ]
 
 # Needed for static and media files in local development.

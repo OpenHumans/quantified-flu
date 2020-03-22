@@ -1,8 +1,11 @@
 from django.core.management.base import BaseCommand
+from django.shortcuts import reverse
 from checkin.models import CheckinSchedule
 import datetime
 import pytz
 import arrow
+
+from reports.models import ReportToken
 
 
 class Command(BaseCommand):
@@ -22,4 +25,11 @@ class Command(BaseCommand):
             print("scheduled: {}, now: {}".format(scheduled_time_utc, current_time_utc))
             if scheduled_time_utc == current_time_utc:
                 print("SHOULD SEND CHECKIN FOR {}".format(c.member.oh_id))
-                # # TODO: actually send todo message somehow ;)
+                token = ReportToken(member=c.member)
+                token.save()
+                url1 = reverse("reports:symptoms") + "?token={}".format(token.token)
+                url2 = reverse("reports:diagnosis") + "?token={}".format(token.token)
+                print(url1)
+                print(url2)
+                # # TODO: turn URLs into email
+                # ... and add a URL ... and model? which records a no-symptom report?
