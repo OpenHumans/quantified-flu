@@ -110,8 +110,10 @@ For each connected data source, display info on how to get files & manage connec
         </a>
       </p>
       <p>
-        <!-- TODO: implement removing Fitbit connection -->
-        <a href="#" class="btn btn-sm btn-danger">Remove Fitbit</a>
+        <form action="{% url 'import_data:remove-fitbit' %}" method='post'>
+          {%csrf_token%}
+          <button type='submit' class="btn btn-sm btn-danger">Remove Fitbit</button>
+        </form>
       </p>
       {% else %}
       <p>
@@ -132,7 +134,7 @@ For each connected data source, display info on how to get files & manage connec
   {% if 'oura' not in missing_sources %}
     <div class="col-md-6">
       <h3>Manage Oura</h3>
-      {% if request.user.openhumansmember.oura_member %}
+      {% if request.user.openhumansmember.oura_user %}
       <p>
         <b>Your data files:</b> If our data retrieval has worked, your
         data file (<code>"QF-oura-data.json"</code>) should be
@@ -142,7 +144,10 @@ For each connected data source, display info on how to get files & manage connec
         </a>
       </p>
       <!-- TODO: implement removing Oura connection -->
-      <a href="#" class="btn btn-sm btn-danger">Remove Oura</a>
+      <form action="{% url 'import_data:remove-oura' %}" method='post'>
+        {%csrf_token%}
+        <button type='submit' class="btn btn-sm btn-danger">Remove Oura</button>
+      </form>
       {% else %}
       <p>
         <b>Your data files:</b> You've shared Oura data via the

@@ -5,6 +5,10 @@ from django.views.generic import UpdateView
 from .forms import CheckinScheduleForm
 from .models import CheckinSchedule
 
+# TODO: The scheduling view doesn't work and breaks if you submit something!
+# It only works if you manually create a Checkin object belonging to the user
+# manually. The creation of the object fails.
+
 
 class CheckinScheduleView(LoginRequiredMixin, UpdateView):
     model = CheckinSchedule

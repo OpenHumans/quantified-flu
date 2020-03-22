@@ -32,12 +32,15 @@ FEVER_CHOICES = [
 
 # TODO: What's the right list of viruses? (This is placeholder.)
 # Should this be two Qs? 1. virus list 2. best guess vs test result
+# made a stab at this - bastian
 VIRUS_CHOICES = [
-    ("maybe_coronavirus", "I think it was Coronavirus"),
-    ("coronavirus", "Test result: Coronavirus"),
-    ("maybe_rhinovirus", "I hink it was Rhinovirus"),
-    ("rhinovirus", "Test result: Rhinovirus"),
+    ("maybe_coronavirus", "suspect Coronavirus"),
+    ("coronavirus", "Coronavirus, confirmed by test"),
+    ("maybe_influenza", "suspect Influenza"),
+    ("influenza", "Influenza, confirmed by test"),
+    ("cold", "Common cold"),
 ]
+
 
 # Does a "no symptom" quick report create an empty symptom report, or is it
 # recorded separately?
