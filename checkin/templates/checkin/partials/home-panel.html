@@ -37,6 +37,9 @@
 <script>
 function setSelectedIndex(s, valsearch)
 {
+// True if timezone not previously set (i.e. new user)
+if (1 == {% if not form.timezone %}1{% else %}0{% endif %})
+{
 // Loop through all the items in drop down list
 for (i = 0; i< s.options.length; i++)
 {
@@ -47,9 +50,9 @@ s.options[i].selected = true;
 break;
 }
 }
+}
 return;
 };
 var tz = jstz.determine();
 setSelectedIndex(document.getElementById("id_timezone"),tz.name());
-setSelectedIndex(document.getElementById("id_time"),'19:00');
 </script>

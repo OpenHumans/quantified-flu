@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, render
 from django.views.generic import UpdateView
@@ -12,7 +13,7 @@ from .models import CheckinSchedule
 
 class CheckinScheduleView(LoginRequiredMixin, UpdateView):
     model = CheckinSchedule
-    fields = ["timezone", "time"]
+    fields = ["timezone", "time_string"]
     template_name = "checkin/schedule.html"
     success_url = "/"
     login_url = "/"
@@ -29,6 +30,9 @@ class CheckinScheduleView(LoginRequiredMixin, UpdateView):
         form.instance.active = True
         form.instance.member = self.request.user.openhumansmember
         form.save()
+        messages.add_message(
+            self.request, messages.SUCCESS, "Check-in schedule updated."
+        )
         return super().form_valid(form)
 
 
