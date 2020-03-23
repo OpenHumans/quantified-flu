@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<h1>About</h1>
+
+<div class="row">
+  <div class='col-md-6'>
+    <div class='panel panel-default'>
+      <div class='panel-heading'>
+        <h2 class=panel-title>What's the goal of the <em>Quantified Flu</em>?</h2>
+      </div>
+
+      <div class='panel-body'>
+        <p>
+          The question we want to answer is: <b>Can the various physiological parameters tracked by our wearables help to predict when we’re getting sick?</b>
+          With the COVID-19 pandemic influencing all of our lives right now, this questions seems more timely than ever. But it's not only the pandemic, the question
+          equally applies to the flu and the common cold!
+        </p>
+        <p>
+          There is some <a href='https://evidation.com/research/influenza-surveillance-using-wearable-mobile-health-devices/'>preliminary data</a> which shows
+          that the data from wearables (like resting heart rate and sleep quality) might be predictive of coming down with a cold. Which offers a great opportunity
+          for a collective citizen science approach!
+        </p>
+      </div>
+    </div>
+
+    <div class='panel panel-default'>
+      <div class='panel-heading'>
+        <h3 class='panel-title'>Our approach</h3>
+      </div>
+      <div class='panel-body'>
+        <p>
+          Do you <b>have a wearable that you use regularly</b>? And maybe even <b>have used it in the past, while you were sick</b>? We would <b>love to collect those data</b> and <b>analyze it with your help</b>!
+
+        </p>
+
+        <p>
+          There is <b>two ways how you can use <em>Quantified Flu</em></b>:
+            <ol>
+              <li><b>Report past illnesses:</b> Report when you got sick in the past and share your wearable device data. <b>We'll make a plot of your data for you!</b></li>
+              <li><b>Track symptoms going forward:</b> Sign up for daily check-ins to tell us if you got sick, your symptoms and viral test results.</li>
+            </ol>
+        </p>
+
+        <p>
+          In the longer run we want to use these data to learn whether all those wearable signals can be used to train algorithms to predict when someone is falling sick,
+          before the person is even consciously aware of it.
+        </p>
+      </div>
+    </div>
+    <div class='panel panel-default'>
+      <div class='panel-heading'>
+        <h2 class='panel-title'>Who will be able to access the aggregated data?</h2>
+      </div>
+      <div class='panel-body'>
+        <p>
+          We might share the aggregated and de-identified data with individual researchers, for the expressed purpose of:
+          <ul>
+            <li>correlating the wearable data with the onset of sickness events</li>
+            <li>gaining a better understanding of how sickness impacts our bodies prior and after onset</li>
+            <li>building predictive models that use wearable data to forecast falling sick</li>
+          </ul>
+          Our goal is to involve you as participants in making the decisions of with whom to share the data and for which purposes.
+          We are currently in the process of establishing workflows for this.
+        </p>
+      </div>
+    </div>
+    <div class='panel panel-default'>
+      <div class='panel-heading'>
+        <h2 class='panel-title'>Which wearables are supported?</h2>
+      </div>
+      <div class='panel-body'>
+        <p>
+          Right now we support the following wearable devices:
+          <ul>
+            <li>All wearables by <i>Fitbit</i></li>
+            <li>The <i>Oura</i> Ring</li>
+          </ul>
+          There are many popular wearables, so if your wearable of choice is missing: Let us know <a href="mailto:support@openhumans.org">via email</a> or by <a href='https://slackin.openhumans.org'>joining our Slack</a>.
+          If you're a programmer and would like to add support for your own wearable: Amazing!
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class='col-md-6'>
+    <div class='panel panel-default'>
+      <div class='panel-heading'>
+        <h2 class='panel-title'>Who's behind this?</h2>
+      </div>
+      <div class='panel-body'>
+        <p>
+          This effort and the website are being run and maintained by
+          <a href="https://github.com/madprime/">Mad Price Ball</a> & <a href="https://github.com/gedankenstuecke/">Bastian Greshake Tzovaras</a> on behalf of <a href='http://openhumansfoundation.org'>the Open Humans Foundation</a>.
+          As such this project is covered by Open Humans'
+                    <a href='https://www.openhumans.org/terms/'>Terms of Use</a> and
+                    <a href='https://www.openhumans.org/data-use/'>Data Use Policy</a>.
+                    You can always get in touch with us at
+                    <a href="mailto:support@openhumans.org">support@openhumans.org</a>.
+        </p>
+      </div>
+    </div>
+    <div class='panel panel-default'>
+      <div class='panel-heading'>
+        <h2 class='panel-title'>Thanks & Acknowledgements</h2>
+      </div>
+      <div class='panel-body'>
+        <p>
+          Many people contributed to ideate and realize this project, including <a href='https://forum.quantifiedself.com/t/using-resting-heart-rate-for-early-warning-of-coronavirus-infection/7864'>the <i>Quantified Self</i> forum<a>,
+            and <a href='https://blog.openhumans.org/2020/02/28/self-research-panel-video-join-next-on-mar-10/'>the discussions of the Open Humans community calls</a>.
+        </p>
+
+        <p>
+          Thanks for their support goes to:
+          <ul>
+            <li>Gary Wolf</li>
+            <li>Ernesto Ramirez</li>
+            <li>Katarzyna Wac</li>
+            <li>…</li>
+          </ul>
+        </p>
+      </div>
+    </div>
+
+    <div class='panel panel-default'>
+      <div class='panel-heading'>
+        <h2 class='panel-title'>I want to get more involved, are there more ways to contribute?</h2>
+      </div>
+      <div class='panel-body'>
+        <p>
+          That is amazing, thank you so much for that. There are multiple further ways to help out and we're looking for people in all areas.
+          Some easy ways to get involved are:
+        </p>
+        <p>
+          <ul>
+            <li><b>Spread the word!</b> Let others know that this exists!</li>
+            <li><b><a href='https://slackin.openhumans.org'>Join our Slack</a>!</b> Chat with others interested in the <i>#QuantifiedFlu</i> channel</li>
+            <li><b>Improve this website!</b> There are open issues like improving the data visualizations, support for more wearables etc. <a href='https://github.com/madprime/quantified-flu/issues'>Look at our issues on GitHub</a></li>
+            <li><b>Analyze data!</b> Once we start aggregating data we'll need data scientists willing to help us go through the data! Get in touch with us to learn more!</li>
+          </ul>
+        </p>
+        </div>
+      </div>
+      <div class="panel panel-default">
+          <div class="panel-heading">
+            <h2 class="panel-title">Data management</h2>
+          </div>
+          <div class="panel-body">
+          <p>
+            This site can access and store various types of data for visitors
+            and associated with connected accounts.
+          </p>
+          <p>
+            When you connect an Oura and/or Fitbit account, this site will access the
+            following data and store it as an archive in your Open Humans
+            account.
+          </p>
+          <ol>
+            <li>Your profile (age, weight, gender)</li>
+            <li>Your sleep records</li>
+            <li>Your activity records</li>
+            <li>Your readiness records</li>
+          </ol>
+          <p>
+            The site also stores the following data when you connect accounts
+            from Oura and Open Humans.
+          </p>
+          <ol>
+            <li>an anonymous identifier for your Open Humans account</li>
+            <li>authentication credentials that allow us to read &amp; write your Oura archive on Open Humans</li>
+            <li>authentication credentials that allow us to read your data from Oura</li>
+          </ol>
+          <p>
+            Finally, this site's hoster
+            <i><a href='https://www.heroku.com'>Heroku</a></i> stores and gives
+            us access to the IP addresses of visitors, and pages visited on
+            this site. These logs may be stored for up to a week.
+          </p>
+          <p>
+            You can always delete your account and all associated data from
+            the <a href="#"><i>Dashboard</i></a>.
+            This includes the Open Humans and Oura/Fitbit authentication credentials,
+            i.e. we won't be able to access your Open Humans &amp; Oura/Fitbit
+            accounts any longer.
+          </p>
+          <p>
+            Removing the authorization on Open Humans does not automatically
+            delete your Oura archive on Open Humans; if you want this to occur,
+            you should delete your account here before withdrawing from
+            <a href="https://www.openhumans.org/activity/quantified-flu/">this
+            project</a> in the Open Humans site.
+          </p>
+          </div>
+        </div>
+  </div>
+</div>
+{% endblock main %}

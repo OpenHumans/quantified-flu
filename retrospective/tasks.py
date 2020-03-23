@@ -14,24 +14,31 @@ def analyze_event(event_id):
     oh_member = event.member
     oh_member_files = oh_member.list_files()
 
-    oura_data = None
-    fitbit_data = None
+    oura_data = []
+    fitbit_data = []
 
     for i in oh_member_files:
         if i["source"] == "direct-sharing-184" and i["basename"] == "oura-data.json":
-            oura_data = i
+            oura_data.append(i)
         if i["basename"] == "fitbit-data.json" and i["source"] == "direct-sharing-102":
-            fitbit_data = i
+            fitbit_data.append(i)
+        if i["source"] == "direct-sharing-39" and i["basename"] == "QF-oura-data.json":
+            oura_data.append(i)
+        if (
+            i["basename"] == "QF-fitbit-data.json"
+            and i["source"] == "direct-sharing-39"
+        ):
+            fitbit_data.append(i)
 
-    if oura_data:
-        oura_df = oura_parser(oura_data, event.date)
+    for i in oura_data:
+        oura_df = oura_parser(i, event.date)
         new_analysis = RetrospectiveEventAnalysis(
             event=event, graph_data=oura_df.to_json(orient="records"), graph_type="Oura"
         )
         new_analysis.save()
 
-    if fitbit_data:
-        fitbit_df = fitbit_parser(fitbit_data, event.date)
+    for i in fitbit_data:
+        fitbit_df = fitbit_parser(i, event.date)
         new_analysis = RetrospectiveEventAnalysis(
             event=event,
             graph_data=fitbit_df.to_json(orient="records"),
