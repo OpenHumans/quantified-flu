@@ -15,7 +15,7 @@ from reports.models import ReportToken
 def create_token_url(url_name, token):
     return urljoin(
         settings.OPENHUMANS_APP_BASE_URL,
-        reverse(url_name) + "?token={}".format(token.token),
+        reverse(url_name) + "?login_token={}".format(token.token),
     )
 
 
@@ -39,7 +39,6 @@ class Command(BaseCommand):
                 token = ReportToken(member=c.member)
                 token.save()
                 print(create_token_url("reports:symptoms", token))
-                print(create_token_url("reports:diagnosis", token))
                 print(create_token_url("reports:no-symptoms", token))
                 # # TODO: turn URLs into email
                 # ... and add a URL ... and model? which records a no-symptom report?

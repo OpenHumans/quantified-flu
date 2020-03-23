@@ -32,9 +32,8 @@ FEVER_CHOICES = [
     ("high", "High fever"),
 ]
 
-# TODO: What's the right list of viruses? (This is placeholder.)
-# Should this be two Qs? 1. virus list 2. best guess vs test result
-# made a stab at this - bastian
+"""
+# TODO: Implement reporting of diagnostic testing.
 VIRUS_CHOICES = [
     ("maybe_coronavirus", "suspect Coronavirus"),
     ("coronavirus", "Coronavirus, confirmed by test"),
@@ -42,6 +41,7 @@ VIRUS_CHOICES = [
     ("influenza", "Influenza, confirmed by test"),
     ("cold", "Common cold"),
 ]
+"""
 
 
 def create_token():
@@ -62,6 +62,22 @@ class Symptom(models.Model):
         return self.label
 
 
+"""
+# TODO: Implement reporting of diagnostic testing.
+class DiagnosticTest(models.Model):
+
+    label = models.CharField(max_length=20, choices=VIRUS_CHOICES, unique=True)
+    tested = models.BooleanField(null=True, blank=True)
+    available = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.label
+
+    def __unicode__(self):
+        return self.label
+"""
+
+
 class SymptomReport(models.Model):
     member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
@@ -69,6 +85,11 @@ class SymptomReport(models.Model):
     fever_guess = models.CharField(max_length=20, choices=FEVER_CHOICES, null=True)
     fever = models.DecimalField(max_digits=4, decimal_places=1, null=True, blank=True)
     other_symptoms = models.TextField(blank=True, default="")
+    suspected_virus = models.TextField(
+        blank=True,
+        default="",
+        help_text="Any guess on what infection you have? (flu, cold, norovirus, coronavirus, etc.)",
+    )
     notes = models.TextField(blank=True, default="")
 
     # Represents reports which were simple "report nothing" clicks.
@@ -81,11 +102,15 @@ class SymptomReport(models.Model):
                 raise ValidationError
 
 
+"""
+# TODO: Implement reporting of diagnostic testing.
 class DiagnosisReport(models.Model):
     member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     date_tested = models.DateField()
-    virus = models.CharField(max_length=20, choices=VIRUS_CHOICES)
+    diagnosis = ManyToManyField(Diagnosis)
+    notes = models.TextField(blank=True, default="")
+"""
 
 
 class ReportToken(models.Model):
