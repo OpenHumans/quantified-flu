@@ -29,7 +29,9 @@ class Command(BaseCommand):
                 token.save()
                 url1 = reverse("reports:symptoms") + "?token={}".format(token.token)
                 url2 = reverse("reports:diagnosis") + "?token={}".format(token.token)
+                url3 = reverse("reports:no-symptoms") + "?token={}".format(token.token)
                 print(url1)
                 print(url2)
+                print(url3)
                 # # TODO: turn URLs into email
                 # ... and add a URL ... and model? which records a no-symptom report?

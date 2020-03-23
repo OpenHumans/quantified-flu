@@ -1,28 +1,38 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect
-from django.views.generic import CreateView
+from django.views.generic import CreateView, TemplateView
 
 from .models import DiagnosisReport, SymptomReport, ReportToken
 
 
 class CheckTokenMixin:
-    def get(self, request, *args, **kwargs):
-        print("IN GET")
-        token = request.GET.get("token", None)
-        member = None
-        if token:
-            print("HAS TOKEN PARAM")
+    def dispatch(self, request, *args, **kwargs):
+        """Get and check token from GET & POST, store token and member in instance."""
+        self.member = None
+        self.token = request.GET.get("token", None)
+        if not self.token:
+            self.token = request.POST.get("token", None)
+        if self.token:
             try:
-                token = ReportToken.objects.get(token=token)
-                print("TOKEN FOUND")
-                if token.is_valid():
-                    print("TOKEN VALID")
-                    member = token.member
+                token_obj = ReportToken.objects.get(token=self.token)
+                if token_obj.is_valid():
+                    self.member = token_obj.member
             except ReportToken.DoesNotExist:
                 pass
-        if not member == self.request.user.openhumansmember:
-            # TODO: add messages to tell user token was invalid/missing
+        if not self.member:
+            messages.add_message(
+                request,
+                messages.WARNING,
+                "Invalid or missing token for submitting a report.",
+            )
             return redirect("/")
-        return super().get(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, *args, **kwargs):
+        """Pass token as context to templates to enable re-sending within form."""
+        context = super().get_context_data(*args, **kwargs)
+        context.update({"token": self.token})
+        return context
 
 
 class ReportSymptomsView(CheckTokenMixin, CreateView):
@@ -31,10 +41,22 @@ class ReportSymptomsView(CheckTokenMixin, CreateView):
     fields = ["symptoms", "fever_guess", "fever", "other_symptoms", "notes"]
 
     def form_valid(self, form):
-        form.instance.active = True
-        form.instance.member = self.request.user.openhumansmember
+        form.instance.member = self.member
         form.save()
         return super().form_valid(form)
+
+
+class ReportNoSymptomsView(CheckTokenMixin, TemplateView):
+    template_name = "reports/no-symptoms.html"
+
+    def get(self, request, *args, **kwargs):
+        """Loading with valid token immediately creates a no-symptom report."""
+        print(self.member)
+        report = SymptomReport(report_none=True, member=self.member)
+        report.save()
+        messages.add_message(request, messages.SUCCESS, "No symptom report saved!")
+        print(report)
+        return super().get(request, *args, **kwargs)
 
 
 class ReportDiagnosisView(CheckTokenMixin, CreateView):
@@ -43,7 +65,6 @@ class ReportDiagnosisView(CheckTokenMixin, CreateView):
     fields = ["date_tested", "virus"]
 
     def form_valid(self, form):
-        form.instance.active = True
         form.instance.member = self.request.user.openhumansmember
         form.save()
         return super().form_valid(form)
