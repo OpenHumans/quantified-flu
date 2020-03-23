@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.views.generic import CreateView, TemplateView
 
+from .forms import SymptomReportForm
 from .models import DiagnosisReport, SymptomReport, ReportToken
 
 
@@ -36,13 +37,14 @@ class CheckTokenMixin:
 
 
 class ReportSymptomsView(CheckTokenMixin, CreateView):
-    model = SymptomReport
+    form_class = SymptomReportForm
     template_name = "reports/symptoms.html"
-    fields = ["symptoms", "fever_guess", "fever", "other_symptoms", "notes"]
+    success_url = "/"
 
     def form_valid(self, form):
         form.instance.member = self.member
         form.save()
+        messages.add_message(self.request, messages.SUCCESS, "Symptom report recorded")
         return super().form_valid(form)
 
 

@@ -3,6 +3,7 @@ import secrets
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.forms.widgets import CheckboxSelectMultiple
 from django.utils.timezone import now
 
 from openhumans.models import OpenHumansMember
@@ -51,17 +52,22 @@ TOKEN_EXPIRATION_MINUTES = 1440  # default expiration is one day
 
 
 class Symptom(models.Model):
-    symptom = models.CharField(max_length=20, choices=SYMPTOM_CHOICES)
+    label = models.CharField(max_length=20, choices=SYMPTOM_CHOICES, unique=True)
+    available = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.label
+
+    def __unicode__(self):
+        return self.label
 
 
-# Does a "no symptom" quick report create an empty symptom report, or is it
-# recorded separately?
 class SymptomReport(models.Model):
     member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     symptoms = models.ManyToManyField(Symptom)
     fever_guess = models.CharField(max_length=20, choices=FEVER_CHOICES, null=True)
-    fever = models.DecimalField(max_digits=4, decimal_places=1, null=True)
+    fever = models.DecimalField(max_digits=4, decimal_places=1, null=True, blank=True)
     other_symptoms = models.TextField(blank=True, default="")
     notes = models.TextField(blank=True, default="")
 
@@ -82,9 +88,6 @@ class DiagnosisReport(models.Model):
     virus = models.CharField(max_length=20, choices=VIRUS_CHOICES)
 
 
-# TODO: Plan is to pass these tokens in the links of check-in reminders
-# (as parameters in URLs), and use them (in a hidden form field)
-# to identify users for a report without requiring login.
 class ReportToken(models.Model):
     member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)

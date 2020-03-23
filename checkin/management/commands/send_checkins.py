@@ -1,11 +1,22 @@
+import datetime
+from urllib.parse import urljoin
+
+import arrow
+import pytz
+
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.shortcuts import reverse
-from checkin.models import CheckinSchedule
-import datetime
-import pytz
-import arrow
 
+from checkin.models import CheckinSchedule
 from reports.models import ReportToken
+
+
+def create_token_url(url_name, token):
+    return urljoin(
+        settings.OPENHUMANS_APP_BASE_URL,
+        reverse(url_name) + "?token={}".format(token.token),
+    )
 
 
 class Command(BaseCommand):
@@ -27,11 +38,8 @@ class Command(BaseCommand):
                 print("SHOULD SEND CHECKIN FOR {}".format(c.member.oh_id))
                 token = ReportToken(member=c.member)
                 token.save()
-                url1 = reverse("reports:symptoms") + "?token={}".format(token.token)
-                url2 = reverse("reports:diagnosis") + "?token={}".format(token.token)
-                url3 = reverse("reports:no-symptoms") + "?token={}".format(token.token)
-                print(url1)
-                print(url2)
-                print(url3)
+                print(create_token_url("reports:symptoms", token))
+                print(create_token_url("reports:diagnosis", token))
+                print(create_token_url("reports:no-symptoms", token))
                 # # TODO: turn URLs into email
                 # ... and add a URL ... and model? which records a no-symptom report?
