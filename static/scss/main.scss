@@ -1,0 +1,21 @@
+$qf-brand-verylight: #eeeeff;
+$qf-brand: #4c4cff;
+$qf-brand-dark: #3333dd;
+
+
+.btn-primary {
+    background-color: $qf-brand;
+    border-color: $qf-brand-dark;
+    color: white;
+
+    &:hover, &:focus {
+        background-color: $qf-brand-dark;
+        border-color: $qf-brand-dark;
+        border-color: $qf-brand-dark;
+        color: white;
+    }
+}
+
+.jumbotron {
+    background-color: $qf-brand-verylight;
+}

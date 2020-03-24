@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+
+{% if not request.user.is_authenticated %}
+
+<h1 class="mt-3 text-center">Welcome to the <i>Quantified Flu</i>!</h1>
+<h4 class="text-center text-muted">Can wearables warn us when we're getting sick? Help us find out!</h4>
+
+<img class="img-fluid mb-3" src="{% static 'img/example_graph.png' %}">
+<p>
+  We have two ways you can contribute…
+</p>
+<h3>Report past illness</h3>
+<p>
+  Report when you got sick and share your wearable device data. <b>We'll make plot your data for you!</b>
+</p>
+<h3>Track symptoms going forward</h3>
+<p>
+  <b>Sign up for daily check-ins</b> to tell us if you got sick, as well as symptoms and viral test results.
+</p>
+<hr class="my-4">
+<p>
+  Click the button below to log in and get started.
+</p>
+<p>
+  Accounts are managed via Open Humans, which enables you to securely store, access, and manage your
+  wearable data. You can easily create an account as part of the login process.
+</p>
+<a class="btn btn-primary btn-lg" href="{{ openhumans_login_url }}" role="button">Get started</a>
+
+{% endif %}
+
+{% if request.user.is_authenticated %}
+
+{% if missing_sources|length == 2 %}
+<h2>Data Sources</h2>
+<p>
+  You can connect these data sources to correlate them with reported illness.
+</p>
+<div class="row">
+  <div class="col-md">
+    <a class="btn btn-primary btn-lg" href="{{fitbit_auth_url}}">
+      Connect Fitbit account
+    </a>
+  </div>
+  <div class="col-md">
+    <a href="{%url 'import_data:authorize-oura' %}" class="btn btn-primary btn-lg">
+      Connect Oura account
+    </a>
+  </div>
+</div>
+<hr>
+{% endif %}
+
+<div class="row pt-2">
+  <div class="col-md">
+    {% include 'retrospective/partials/home-panel.html' %}
+    <hr class="d-md-none">
+  </div>
+  <div class="col-md">
+    {% include 'checkin/partials/home-panel.html' %}
+  </div>
+</div>
+
+{% comment %}
+If at least one data source has been connected, management of data sources is
+moved to below the "actions" (retrospective analysis & scheduling check-ins).
+{% endcomment %}
+{% if missing_sources|length < 2 %}
+<hr>
+<h2>Data Sources</h2>
+  {% comment %}
+  If at least one data source remains unconnected, these are offered with
+  less prominent links at the top of Data Sources.
+  {% endcomment %}
+  {% if missing_sources|length >= 1 %}
+  <p>
+    You've connected data! You can also add data another source:
+    {% for source in missing_sources %}
+      {% if source == 'fitbit' %}
+      <a href="{{fitbit_auth_url}}">
+        Connect Fitbit account
+      </a>
+      {% endif %}
+      {% if source == 'oura' %}
+      <a href="{% url 'import_data:authorize-oura' %}">
+        Connect Oura account
+      </a>
+      {% endif %}
+    {% endfor %}
+  </p>
+  {% endif %}
+
+{% comment %}
+For each connected data source, display info on how to get files & manage connection.
+{% endcomment %}
+<div class="row">
+  {% if 'fitbit' not in missing_sources %}
+    <div class="col-md-6">
+      <h3>Manage Fitbit</h3>
+      {% if request.user.openhumansmember.fitbit_member %}
+      <p>
+        <b>Your data files:</b> If our data retrieval has worked, your
+        data file (<code>"QF-fitbit-data.json"</code>) should be
+        available in your Open Humans account here:<br>
+        <a href="https://www.openhumans.org/activity/quantified-flu/#activity-panel-data">
+          www.openhumans.org/activity/quantified-flu/
+        </a>
+      </p>
+      <p>
+        <form action="{% url 'import_data:remove-fitbit' %}" method='post'>
+          {%csrf_token%}
+          <button type='submit' class="btn btn-sm btn-danger">Remove Fitbit</button>
+        </form>
+      </p>
+      {% else %}
+      <p>
+        <b>Your data files:</b> You've shared Fitbit data via the
+        Open Humans importer app. Your data file (<code>"fitbit-data.json"</code>)
+        should be available in your Open Humans account here:<br>
+        <a href="https://www.openhumans.org/activity/fitbit-connection/#activity-panel-data">
+          www.openhumans.org/activity/fitbit-connection/
+        </a>
+      </p>
+      <p>
+        You can manage this connection at:<br>
+      <a href="https://fitbit.openhumans.org">fitbit.openhumans.org</a>
+      </p>
+      {% endif %}
+    </div>
+  {% endif %}
+  {% if 'oura' not in missing_sources %}
+    <div class="col-md-6">
+      <h3>Manage Oura</h3>
+      {% if request.user.openhumansmember.oura_user %}
+      <p>
+        <b>Your data files:</b> If our data retrieval has worked, your
+        data file (<code>"QF-oura-data.json"</code>) should be
+        available in your Open Humans account here:<br>
+        <a href="https://www.openhumans.org/activity/quantified-flu/#activity-panel-data">
+          www.openhumans.org/activity/quantified-flu/
+        </a>
+      </p>
+      <!-- TODO: implement removing Oura connection -->
+      <form action="{% url 'import_data:remove-oura' %}" method='post'>
+        {%csrf_token%}
+        <button type='submit' class="btn btn-sm btn-danger">Remove Oura</button>
+      </form>
+      {% else %}
+      <p>
+        <b>Your data files:</b> You've shared Oura data via the
+        Open Humans importer app. Your data file (<code>"oura-data.json"</code>)
+        should be available in your Open Humans account here:<br>
+        <a href="https://www.openhumans.org/activity/oura-connect/#activity-panel-data">
+          www.openhumans.org/activity/oura-connect/
+        </a>
+      </p>
+      <p>
+        You can manage this connection at:<br>
+      <a href="https://oura.openhumans.org">oura.openhumans.org</a>
+      </p>
+      {% endif %}
+    </div>
+  {% endif %}
+</div> <!-- .row -->
+{% endif %} {# if missing_sources < 2 #}
+
+<div class="row">
+  <div class="col-md-6">
+    <h3>Account Management</h3>
+    <form action="{% url 'delete-account' %}" method='post'>
+      {%csrf_token%}
+      <button type='submit' class="btn btn-sm btn-danger">Delete Account</button>
+    </form>
+    <p>
+      This deletes your account on <em>Quantified Flu</em>, along with the retrospective sick events
+      you have entered and all ongoing symptom recordings. <b>Caution: This data will be gone for good!</b>
+      </p>
+    <p>
+      If you have connected any wearables we will stop
+      downloading the data, but existing data will remain in your <em>Open Humans</em> account.
+    </p>
+  </div>
+</div>
+
+{% endif %} {# if user.is_authenticated #}
+
+{% endblock main %}

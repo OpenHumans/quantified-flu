@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<h2> Report Symptoms</h2>
+
+{{ form.fields }}
+
+<form method="POST" action="">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="Report Symptoms" class="btn btn-primary">
+</form>
+
+{% endblock main %}

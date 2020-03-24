@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 import django_heroku
 import os
+from requests_respectful import RespectfulRequester
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -43,7 +44,10 @@ INSTALLED_APPS = [
     "openhumans",
     # local app modules
     "quantified_flu",
+    "checkin",
     "retrospective",
+    "import_data",
+    "reports",
 ]
 
 MIDDLEWARE = [
@@ -135,6 +139,28 @@ LOGIN_REDIRECT_URL = "/"
 CELERY_BROKER_URL = os.getenv("REDIS_URL")
 CELERY_TASK_SERIALIZER = "json"
 
+FITBIT_CLIENT_ID = os.getenv("FITBIT_CLIENT_ID")
+FITBIT_CLIENT_SECRET = os.getenv("FITBIT_CLIENT_SECRET")
+
 # Configure Django App for Heroku.
 if ON_HEROKU:
     django_heroku.settings(locals())
+
+REMOTE = False
+if REMOTE:
+    from urllib.parse import urlparse
+
+    url_object = urlparse(os.getenv("REDIS_URL"))
+    RespectfulRequester.configure(
+        redis={
+            "host": url_object.hostname,
+            "port": url_object.port,
+            "password": url_object.password,
+            "database": 0,
+        },
+        safety_threshold=5,
+    )
+
+# Requests Respectful (rate limiting, waiting)
+rr = RespectfulRequester()
+rr.register_realm("Fitbit", max_requests=3600, timespan=3600)

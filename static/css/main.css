@@ -1,0 +1,17 @@
+.btn-primary {
+  background-color: #4c4cff;
+  border-color: #3333dd;
+  color: white;
+}
+.btn-primary:hover, .btn-primary:focus {
+  background-color: #3333dd;
+  border-color: #3333dd;
+  border-color: #3333dd;
+  color: white;
+}
+
+.jumbotron {
+  background-color: #eeeeff;
+}
+
+/*# sourceMappingURL=main.css.map */

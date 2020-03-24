@@ -6,3 +6,6 @@ staticfiles/*
 managedfiles/*
 
 .vscode/*
+
+.DS_Store
+dump.rdb
