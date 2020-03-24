@@ -146,7 +146,7 @@ FITBIT_CLIENT_SECRET = os.getenv("FITBIT_CLIENT_SECRET")
 if ON_HEROKU:
     django_heroku.settings(locals())
 
-REMOTE = False
+REMOTE = os.getenv("REDIS_URL")
 if REMOTE:
     from urllib.parse import urlparse
 
