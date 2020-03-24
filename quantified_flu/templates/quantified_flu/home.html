@@ -21,6 +21,12 @@
   <b>Sign up for daily check-ins</b> to tell us if you got sick, as well as symptoms and viral test results.
 </p>
 <hr class="my-4">
+<h3>Using your data for good</h3>
+<p>
+  We will <b>share the aggregated and deidentified data</b> with researchers and publicly, to maximize the impact of your data!
+  This includes some weeks of wearable data around the sick dates, as well as the reported symptoms. But of course you can always opt-out of this!
+</p>
+<hr class="my-4">
 <p>
   Click the button below to log in and get started.
 </p>
@@ -166,25 +172,6 @@ For each connected data source, display info on how to get files & manage connec
   {% endif %}
 </div> <!-- .row -->
 {% endif %} {# if missing_sources < 2 #}
-
-<div class="row">
-  <div class="col-md-6">
-    <h3>Account Management</h3>
-    <form action="{% url 'delete-account' %}" method='post'>
-      {%csrf_token%}
-      <button type='submit' class="btn btn-sm btn-danger">Delete Account</button>
-    </form>
-    <p>
-      This deletes your account on <em>Quantified Flu</em>, along with the retrospective sick events
-      you have entered and all ongoing symptom recordings. <b>Caution: This data will be gone for good!</b>
-      </p>
-    <p>
-      If you have connected any wearables we will stop
-      downloading the data, but existing data will remain in your <em>Open Humans</em> account.
-    </p>
-  </div>
-</div>
-
 {% endif %} {# if user.is_authenticated #}
 
 {% endblock main %}

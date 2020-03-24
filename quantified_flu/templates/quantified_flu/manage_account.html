@@ -1,14 +1,48 @@
 {% extends 'base.html' %}
 
 {% block main %}
+
 <h2>Manage account settings</h2>
 
-<form method="POST" action="{% url 'manage-account' %}">
-  {% csrf_token %}
-  {{ form }}
-  <br>
-  <input type="submit"
-    value="Update account settings"
-    class="btn btn-primary mt-2">
-</form>
+<div class="row">
+  <div class="col-md-6">
+    <h3>Data access management</h3>
+
+    <form method="POST" action="{% url 'manage-account' %}">
+      <p>
+      {% csrf_token %}
+      {{ form }}
+        <small class='form-text text-muted'>
+          <i>Public Data</i> means that you allow us to share your aggregated and de-identified
+          data with researchers and potentially make them in a larger aggregate publicly available.
+          <br/><br/>
+          Data that are shared like this are: wearable sensor data for 3 weeks before/after sick event,
+          timing of sick events, symptom logs.
+        </small>
+      </p>
+      <input type="submit"
+        value="Update account settings"
+        class="btn btn-primary mt-2">
+    </form>
+
+
+  </div>
+  <div class="col-md-6">
+    <h3>Account deletion</h3>
+    <p>
+    <form action="{% url 'delete-account' %}" method='post'>
+      {%csrf_token%}
+      <button type='submit' class="btn btn-sm btn-danger">Delete Account</button>
+    </form>
+    </p>
+    <p>
+      This deletes your account on <em>Quantified Flu</em>, along with the retrospective sick events
+      you have entered and all ongoing symptom recordings. <b>Caution: This data will be gone for good!</b>
+      </p>
+    <p>
+      If you have connected any wearables we will stop
+      downloading new data, but existing data will <a href='https://www.openhumans.org/activity/quantified-flu/'>remain in your <em>Open Humans</em> account</a>.
+    </p>
+  </div>
+</div>
 {% endblock main %}

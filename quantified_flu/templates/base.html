@@ -61,6 +61,7 @@
                 </a>
               </li>
               {% else %}
+                <a class='nav-link' href="{% url 'manage-account' %}">Manage Account</a>
               <form class="mt-md-1 mt-0" action="{% url 'logout' %}" method="post">
                 {% csrf_token %}
                 <button class="btn btn-info btn-sm float-right" type="submit">Log out</button>

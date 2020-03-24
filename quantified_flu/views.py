@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 from django.views.generic import TemplateView, UpdateView
 from django.shortcuts import render
 from django.urls import reverse_lazy
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 from openhumans.models import OpenHumansMember
 
 from checkin.models import CheckinSchedule
@@ -85,7 +85,8 @@ def about(request):
     return render(request, "quantified_flu/about.html")
 
 
-class ManageAccountView(UpdateView):
+class ManageAccountView(LoginRequiredMixin, UpdateView):
+    login_url = "/"
     model = Account
     fields = ["public_data"]
     template_name = "quantified_flu/manage_account.html"
