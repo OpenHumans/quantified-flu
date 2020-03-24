@@ -1,14 +1,18 @@
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import logout
 from django.shortcuts import redirect
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, UpdateView
 from django.shortcuts import render
+from django.urls import reverse_lazy
 
 from openhumans.models import OpenHumansMember
 
 from checkin.models import CheckinSchedule
 from checkin.forms import CheckinScheduleForm
 from retrospective.models import RetrospectiveEvent
+
+from .models import Account
 from .helpers import identify_missing_sources
 
 
@@ -79,6 +83,27 @@ class HomeView(TemplateView):
 
 def about(request):
     return render(request, "quantified_flu/about.html")
+
+
+class ManageAccountView(UpdateView):
+    model = Account
+    fields = ["public_data"]
+    template_name = "quantified_flu/manage_account.html"
+    success_url = reverse_lazy("manage-account")
+
+    def get_object(self):
+        try:
+            return Account.objects.get(member=self.request.user.openhumansmember)
+        except Account.DoesNotExist:
+            account = Account(member=self.request.user.openhumansmember)
+            return account
+
+    def form_valid(self, form):
+        return_value = super().form_valid(form)
+        messages.add_message(
+            self.request, messages.SUCCESS, "Account settings updated."
+        )
+        return return_value
 
 
 def delete_account(request):

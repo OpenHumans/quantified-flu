@@ -18,11 +18,12 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from .views import logout_user, HomeView, about, delete_account
+from .views import logout_user, HomeView, about, delete_account, ManageAccountView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("logout/", logout_user, name="logout"),
+    path("manage_account/", ManageAccountView.as_view(), name="manage-account"),
     path("", HomeView.as_view(), name="home"),
     path("about/", about, name="about"),
     path("retrospective/", include("retrospective.urls")),

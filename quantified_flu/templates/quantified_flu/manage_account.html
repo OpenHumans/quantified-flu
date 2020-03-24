@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<h2>Manage account settings</h2>
+
+<form method="POST" action="{% url 'manage-account' %}">
+  {% csrf_token %}
+  {{ form }}
+  <br>
+  <input type="submit"
+    value="Update account settings"
+    class="btn btn-primary mt-2">
+</form>
+{% endblock main %}
