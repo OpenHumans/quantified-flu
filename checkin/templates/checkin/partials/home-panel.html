@@ -58,5 +58,7 @@ break;
 return;
 };
 var tz = jstz.determine();
+{% if not schedule_exists %}
 setSelectedIndex(document.getElementById("id_timezone"),tz.name());
+{% endif %}
 </script>

@@ -48,8 +48,10 @@ class HomeView(TemplateView):
             try:
                 schedule = CheckinSchedule.objects.get(member=openhumansmember)
                 checkin_form = CheckinScheduleForm(instance=schedule)
+                schedule_exists = True
             except CheckinSchedule.DoesNotExist:
                 checkin_form = CheckinScheduleForm()
+                schedule_exists = False
 
             # fitbit_auth_url
             fitbit_auth_url = (
@@ -64,6 +66,7 @@ class HomeView(TemplateView):
                     "fitbit_auth_url": fitbit_auth_url,
                     "missing_sources": self.missing_sources,
                     "openhumansmember": openhumansmember,
+                    "schedule_exists": schedule_exists,
                 }
             )
 
