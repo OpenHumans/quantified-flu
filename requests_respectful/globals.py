@@ -1,4 +1,3 @@
-import yaml
 import copy
 
 from redis import StrictRedis, ConnectionError
@@ -20,7 +19,7 @@ default_config = {
 
 try:
     with open("requests-respectful.config.yml", "r") as f:
-        config = yaml.load(f)
+        config = f.read()
 
     if "safety_threshold" not in config:
         config["safety_threshold"] = default_config.get("safety_threshold")
