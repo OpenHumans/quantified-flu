@@ -27,6 +27,17 @@ def logout_user(request):
 class HomeView(TemplateView):
     template_name = "quantified_flu/home.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            try:
+                self.missing_sources = identify_missing_sources(
+                    self.request.user.openhumansmember
+                )
+            except Exception:
+                logout(request)
+                return redirect("/")
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
 
@@ -47,14 +58,11 @@ class HomeView(TemplateView):
                 + "&scope=activity%20nutrition%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight"
             )
 
-            # missing_sources
-            missing_sources = identify_missing_sources(openhumansmember)
-
             context.update(
                 {
                     "checkin_form": checkin_form,
                     "fitbit_auth_url": fitbit_auth_url,
-                    "missing_sources": missing_sources,
+                    "missing_sources": self.missing_sources,
                     "openhumansmember": openhumansmember,
                 }
             )
