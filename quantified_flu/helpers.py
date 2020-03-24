@@ -15,7 +15,7 @@ def identify_missing_sources(oh_member):
     # Check data imported by this app.
     if hasattr(oh_member, "fitbit_member"):
         missing_sources.pop("fitbit", None)
-    if hasattr(oh_member, "oura_member"):
+    if hasattr(oh_member, "oura_user"):
         missing_sources.pop("oura", None)
 
     return list(missing_sources.keys())
