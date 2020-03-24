@@ -79,3 +79,9 @@ class HomeView(TemplateView):
 
 def about(request):
     return render(request, "quantified_flu/about.html")
+
+
+def delete_account(request):
+    if request.method == "POST":
+        request.user.delete()
+        return redirect("/")
