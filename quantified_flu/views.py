@@ -82,7 +82,8 @@ class HomeView(TemplateView):
 
 
 def about(request):
-    return render(request, "quantified_flu/about.html")
+    context = {"openhumans_login_url": OpenHumansMember.get_auth_url()}
+    return render(request, "quantified_flu/about.html", context)
 
 
 class ManageAccountView(LoginRequiredMixin, UpdateView):
