@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block main %}
-
+{% load static %}
 <h1>About</h1>
 
 <div class="row">
@@ -107,8 +107,12 @@
       <div class='panel-body'>
         <p>
           This effort and the website are being run and maintained by
-          <a href="https://github.com/madprime/">Mad Price Ball</a> & <a href="https://github.com/gedankenstuecke/">Bastian Greshake Tzovaras</a> on behalf of <a href='http://openhumansfoundation.org'>the Open Humans Foundation</a>.
-          As such this project is covered by Open Humans'
+          <a href="https://github.com/madprime/">Mad Price Ball</a> (Executive Director of the <em>Open Humans Foundation</em>)
+          & <a href="https://github.com/gedankenstuecke/">Bastian Greshake Tzovaras</a>
+          (<a href='https://research.cri-paris.org/profile?id=10186318-66a4-466d-82ae-ee1f423b0fac'>Research Fellow at the <em>Center for Research & Interdisciplinarity</em></a> in Paris), on behalf of <a href='http://openhumansfoundation.org'>the Open Humans Foundation</a>.
+        </p>
+        <p>
+          This project is covered by the Open Humans'
                     <a href='https://www.openhumans.org/terms/'>Terms of Use</a> and
                     <a href='https://www.openhumans.org/data-use/'>Data Use Policy</a>.
                     You can always get in touch with us at
@@ -122,17 +126,24 @@
       </div>
       <div class='panel-body'>
         <p>
-          Many people contributed to ideate and realize this project, including <a href='https://forum.quantifiedself.com/t/using-resting-heart-rate-for-early-warning-of-coronavirus-infection/7864'>the <i>Quantified Self</i> forum<a>,
+          <a href='https://www.openhumans.org/'><img class="w-50 p-3" src="{% static 'img/oh_logo.png' %}"/></a><a href='https://www.cri-paris.org'><img class="w-50 p-3" src="{% static 'img/cri_logo.png' %}"/></a>
+          Financial support for this project comes from the <em><a href='https://www.openhumans.org/'>Open Humans Foundation</a></em>
+          (funding for the technical infrastructure and time of Mad Price Ball),
+          as well as the <em><a href='https://www.cri-paris.org'>CRI Paris</a></em> (time of Bastian Greshake Tzovaras).
+        </p>
+        <p>
+          Furthermore, many people volunteered and contributed to ideating and realizing this project, including <a href='https://forum.quantifiedself.com/t/using-resting-heart-rate-for-early-warning-of-coronavirus-infection/7864'>the <i>Quantified Self</i> forum<a>,
             and <a href='https://blog.openhumans.org/2020/02/28/self-research-panel-video-join-next-on-mar-10/'>the discussions of the Open Humans community calls</a>.
         </p>
 
         <p>
-          Thanks for their support goes to:
+          Amongst many others, our thanks go to:
           <ul>
             <li>Gary Wolf</li>
             <li>Ernesto Ramirez</li>
             <li>Katarzyna Wac</li>
-            <li>…</li>
+            <li>Chris Ball</li>
+            <li>Beau Gunderson</li>
           </ul>
         </p>
       </div>
