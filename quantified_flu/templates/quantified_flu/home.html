@@ -9,10 +9,11 @@
 <h4 class="text-center text-muted">Whether COVID-19, the flu or the common cold: Can wearables warn us when we're getting sick? Help us find out!</h4>
 
 <img class="img-fluid mb-3" src="{% static 'img/example_graph.png' %}">
-<h2>We have two ways you can contribute…</h2>
+<p>We have two ways you can contribute…</p>
 <h3>Report past illness</h3>
 <p>
-  Report when you got sick and share your wearable device data. <b>We'll plot your data for you!</b>. Currently we support <em>Fitbit</em> and <em>Oura Ring</em> wearables.
+  Report when you got sick and share your wearable device data. <b>We'll plot your data for you!</b> Currently we support <em>Fitbit</em> & <em>Oura Ring</em> wearables.
+  <a href='https://docs.google.com/forms/d/e/1FAIpQLSdDjzLyL_HJ79ij4GbepqeNYAyYf4LWapXFyIDFwMRdXOBBXg/viewform'>Ask us to add support for your wearable</a>, if yours is missing so far!
 </p>
 <h3>Track symptoms going forward</h3>
 <p>
@@ -26,14 +27,12 @@
 </p>
 <hr class="my-4">
 <p>
-  Click the button below to log in and get started.
+  <a class="btn btn-primary btn-lg" href="{{ openhumans_login_url }}" role="button">Get started</a>
 </p>
 <p>
-  Accounts are managed via Open Humans, which enables you to securely store, access, and manage your
+  Click the button above to get started. Accounts are managed via Open Humans, which enables you to securely store, access, and manage your
   wearable data. You can easily create an account as part of the login process.
 </p>
-<a class="btn btn-primary btn-lg" href="{{ openhumans_login_url }}" role="button">Get started</a>
-
 {% endif %}
 
 {% if request.user.is_authenticated %}
