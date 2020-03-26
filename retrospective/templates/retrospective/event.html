@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<h2>Sickness event: {{ object.date }}</h2>
+
+<p>
+<b>Notes:</b> {{ object.notes }}
+</p>
+
+<p>
+<a href="{% url 'retrospective:edit_event' object.id %}" class="btn btn-sm btn-info">Edit event</a>
+</p>
+
+<hr>
+
+{% for analysis in object.retrospectiveeventanalysis_set.all %}
+
+<h3>
+{% if analysis.graph_type == 'Oura' %}Oura
+{% elif analysis.graph_type == 'Fitbit' %}Fitbit
+{% endif %}</h3>
+
+<div class="retrospective_graph_{{ analysis.id }}"></div>
+<div class='retrospective_graph_temp_{{ analysis.id }}'></div>
+
+<script>
+  d3.json('{% url 'retrospective:json_graph' analysis_id=analysis.id %}', function(data) {
+    {% if analysis.graph_type == 'Oura' %}
+    data = MG.convert.date(data, 'timestamp', "%Y-%m-%d %H:%M:%S");
+    {% elif analysis.graph_type == 'Fitbit' %}
+    data = MG.convert.date(data, 'timestamp', "%Y-%m-%d");
+    {%endif%}
+
+    var marker_date = data[0]['period'];
+    var markers = [{
+        'timestamp': new Date(marker_date),
+        'label': 'Reported sick incident'
+    }];
+    MG.data_graphic({
+      title: "Heart rate evolution",
+      description: "Nightly heart rate evolution over time",
+      data: data,
+      chart_type: 'point',
+      width: 600,
+      height: 450,
+      top: 50,
+      right: 60,
+      full_width: true,
+      target: ".retrospective_graph_{{ analysis.id }}",
+      x_accessor: "timestamp",
+      y_accessor: 'heart_rate',
+      aggregate_rollover: true,
+      x_label : 'date',
+      y_label : 'heart rate',
+      markers: markers,
+      });
+    {% if analysis.graph_type == 'Oura' %}
+      MG.data_graphic({
+        title: "Temperature evolution",
+        description: "The body temperature difference as measured by Oura",
+        data: data,
+        chart_type: 'point',
+        width: 600,
+        height: 450,
+        top: 50,
+        left: 50,
+        right: 60,
+        full_width: true,
+        target: ".retrospective_graph_temp_{{ analysis.id }}",
+        x_accessor: "timestamp",
+        y_accessor: 'temperature_delta',
+        aggregate_rollover: true,
+        x_label : 'date',
+        y_label : 'body temperature',
+        markers: markers,
+        });
+    {%endif%}
+  });
+
+  </script>
+{% endfor %}
+{% endblock main %}

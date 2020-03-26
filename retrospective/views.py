@@ -1,27 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect
-from django.views.generic import CreateView
+from django.shortcuts import render, redirect, reverse
+from django.views.generic import CreateView, DetailView, UpdateView
 from django.http import HttpResponse
 from django.contrib import messages
 
 from .tasks import analyze_event
 from .models import RetrospectiveEventAnalysis, RetrospectiveEvent
-
-
-class AddRetrospectiveEventView(LoginRequiredMixin, CreateView):
-    model = RetrospectiveEvent
-    fields = ["date", "certainty"]
-    template_name = "retrospective/addevent.html"
-    success_url = "/"
-    login_url = "/"
-
-    def form_valid(self, form):
-        form.instance.member = self.request.user.openhumansmember
-        event = form.save()
-        print("ANALYZING EVENT {}".format(event.id))
-        analyze_event.delay(event.id)
-        return super().form_valid(form)
 
 
 def view_graph_json(request, analysis_id):
@@ -45,6 +30,38 @@ def view_events(request):
     events = RetrospectiveEvent.objects.filter(member=request.user.openhumansmember)
     context = {"events": events}
     return render(request, "retrospective/event_view.html", context)
+
+
+class AddRetrospectiveEventView(LoginRequiredMixin, CreateView):
+    model = RetrospectiveEvent
+    fields = ["date", "certainty"]
+    template_name = "retrospective/add_event.html"
+    success_url = "/"
+    login_url = "/"
+
+    def form_valid(self, form):
+        form.instance.member = self.request.user.openhumansmember
+        event = form.save()
+        print("ANALYZING EVENT {}".format(event.id))
+        analyze_event.delay(event.id)
+        return super().form_valid(form)
+
+
+# TODO: Make visible if public data is allowed.
+class RetrospectiveEventDetailView(LoginRequiredMixin, DetailView):
+    model = RetrospectiveEvent
+    pk_url_kwarg = "event_id"
+    template_name = "retrospective/event.html"
+
+
+class EditRetrospectiveEventView(LoginRequiredMixin, UpdateView):
+    model = RetrospectiveEvent
+    fields = ["notes"]
+    pk_url_kwarg = "event_id"
+    template_name = "retrospective/edit_event.html"
+
+    def get_success_url(self):
+        return reverse("retrospective:view_event", kwargs={"event_id": self.object.id})
 
 
 @login_required(login_url="/")

@@ -15,6 +15,7 @@ class RetrospectiveEvent(models.Model):
     member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
     date = models.DateField()
     certainty = models.IntegerField(choices=CERTAINTY_CHOICES)
+    notes = models.TextField(blank=True)
 
 
 class RetrospectiveEventAnalysis(models.Model):
