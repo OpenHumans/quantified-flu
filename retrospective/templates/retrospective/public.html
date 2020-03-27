@@ -16,6 +16,26 @@
   community Slack. You can use this site to create an account in the Slack: <a href="https://slackin.openhumans.org">slackin.openhumans.org</a>)
 </p>
 
+{% if request.user.is_authenticated %}
+  {% if request.user.openhumansmember.account and not request.user.openhumansmember.account.public_data %}
+  <div class="alert alert-dark">
+    <b>Your data is not in this data set.</b> Public data sharing is optional. You can manage this
+    in your <a href="{% url 'manage-account' %}">account settings</a>.
+  </div>
+  {% else %}
+  <div class="alert alert-success">
+    <b>Thank you for sharing your data!</b> Your data is part of this data set. Public data sharing is
+    optional; you can manage this in your <a href="{% url 'manage-account' %}">account settings</a>.
+  </div>
+  {% endif %}
+{% else %}
+<p>
+  A big thank-you to contributors that have shared their data
+  with the project. 💖 Public data is optional; if you're a contributor,
+  log in to manage this in your account settings.
+</p>
+{% endif %}
+
 <hr>
 
 <p>Click the links below to explore retrospective reports.</p>
