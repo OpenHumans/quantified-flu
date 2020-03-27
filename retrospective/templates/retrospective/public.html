@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<h2>Public retrospective reports</h2>
+
+<ul>
+  {% for event in object_list %}
+  <li>
+    <a href="{% url 'retrospective:view_event' event.id %}">{{ event.date }}</a>
+  </li>
+  {% endfor %}
+</ul>
+
+{% endblock main %}

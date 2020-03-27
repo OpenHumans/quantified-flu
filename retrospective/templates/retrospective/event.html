@@ -8,9 +8,11 @@
 <b>Notes:</b> {{ object.notes }}
 </p>
 
+{% if request.user.openhumansmember == object.member %}
 <p>
 <a href="{% url 'retrospective:edit_event' object.id %}" class="btn btn-sm btn-info">Edit event</a>
 </p>
+{% endif %}
 
 <hr>
 

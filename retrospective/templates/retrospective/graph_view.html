@@ -7,12 +7,12 @@
 <div class='retrospective_graph_temp'></div>
 
 <script>
-  d3.json('{% url 'retrospective:json_graph' analysis_id=analysis_id %}', function(data) {
-    {% if analysis_type == 'Oura' %}
+  d3.json('{% url 'retrospective:json_graph' analysis_id=object.id %}', function(data) {
+    {% if object.graph_type == 'Oura' %}
     data = MG.convert.date(data, 'timestamp', "%Y-%m-%d %H:%M:%S");
-    {% elif analysis_type == 'Fitbit' %}
+    {% elif object.graph_type == 'Fitbit' %}
     data = MG.convert.date(data, 'timestamp', "%Y-%m-%d");
-    {%endif%}
+    {% endif %}
 
     var marker_date = data[0]['period'];
     var markers = [{
@@ -37,7 +37,7 @@
       y_label : 'heart rate',
       markers: markers,
       });
-    {% if analysis_type == 'Oura' %}
+    {% if object.graph_type == 'Oura' %}
       MG.data_graphic({
         title: "Temperature evolution",
         description: "The body temperature difference as measured by Oura",
