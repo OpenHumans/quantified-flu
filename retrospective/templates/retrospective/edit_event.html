@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<h2> Edit Sickness event</h2>
+
+<p>
+  Use this form to update information about a sickness event.
+</p>
+
+<form method="POST" action="">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="Update event notes" class="btn btn-primary">
+</form>
+
+<hr>
+
+<form action="{% url 'retrospective:delete_event' object.id %}" method="post">
+  {% csrf_token %}
+  <button type="submit" value="delete event" class="btn btn-danger btn-sm mt-1 py-0">delete event</button>
+</form>
+
+
+{% endblock main %}

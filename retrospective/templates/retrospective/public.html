@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<h2>Public retrospective reports</h2>
+
+<p>
+  <b>Interested in analyzing this data yourself?</b> Each retrospective event report has data available via
+  JSON endpoints. You can use this page's own JSON endpoint to automate data retrieval
+  from these: <a href="{% url 'retrospective:public_json' %}">{% url 'retrospective:public_json' %}</a>
+</p>
+<p>
+  <b>Please share your visualizations and discoveries with us!</b> People are excited to hear what you've
+  done – we'd love to share what others have done. (One place to connect is the
+  <a href="https://app.slack.com/client/T48QEEVTJ/CV5USP9BP">#quantifiedflu channel</a> in the Open Humans
+  community Slack. You can use this site to create an account in the Slack: <a href="https://slackin.openhumans.org">slackin.openhumans.org</a>)
+</p>
+
+<hr>
+
+<p>Click the links below to explore retrospective reports.</p>
+
+<ul>
+  {% for event in object_list %}
+  <li>
+    <a href="{% url 'retrospective:view_event' event.id %}">{{ event.date }}</a>
+  </li>
+  {% endfor %}
+</ul>
+
+{% endblock main %}
