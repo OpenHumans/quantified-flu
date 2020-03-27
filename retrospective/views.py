@@ -139,7 +139,12 @@ class PublicRetrospectiveEventsView(ListView):
     def get(self, request, *args, **kwargs):
         if self.as_json:
             data = [
-                reverse("retrospective:view_event_json", kwargs={"event_id": x.id})
+                {
+                    "event_id": x.id,
+                    "json_path": reverse(
+                        "retrospective:view_event_json", kwargs={"event_id": x.id}
+                    ),
+                }
                 for x in self.get_queryset()
             ]
             return HttpResponse(json.dumps(data), content_type="application/json")
