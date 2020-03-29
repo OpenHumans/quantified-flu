@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<h2>Symptom Check-ins</h2>
+
+<p>
+  To see if we can predict getting sick, we need good data on when you get sick! If you schedule
+  check-ins, and we'll send an email with a quick link to report you're fine – or
+  a link to report symptoms.
+</p>
+
+{% include 'checkin/partials/schedule-form.html' %}
+
+{% endblock main %}

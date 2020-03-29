@@ -63,7 +63,27 @@
     <hr class="d-md-none">
   </div>
   <div class="col-md">
-    {% include 'checkin/partials/home-panel.html' %}
+    <h3>Report symptoms</h3>
+    <a href="{% url 'reports:symptoms' %}" class="btn btn-primary">Report symptoms</a>
+    <hr>
+    <h4>Schedule check-ins</h4>
+    {% if not openhumansmember.checkinschedule or not openhumansmember.checkinschedule.active %}
+    <p>
+      To see if we can predict getting sick, we need good data on when you get sick! If you schedule
+      check-ins, and we'll send an email with a quick link to report you're fine – or
+      a link to report symptoms.
+    </p>
+    {% with checkin_form as form %}
+      {% include 'checkin/partials/schedule-form.html' %}
+    {% endwith %}
+    {% else %}
+    <p>
+      <b>Check-ins scheduled:</b> {{ checkin_form.instance.time }} {{ checkin_form.instance.timezone }}
+    </p>
+    <p>
+      <a href="{% url 'checkin:schedule' %}" class="btn btn-secondary">Update schedule</a>
+    </p>
+    {% endif %}
   </div>
 </div>
 
