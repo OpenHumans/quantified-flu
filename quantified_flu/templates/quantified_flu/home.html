@@ -63,8 +63,15 @@
     <hr class="d-md-none">
   </div>
   <div class="col-md">
-    <h3>Report symptoms</h3>
-    <a href="{% url 'reports:symptoms' %}" class="btn btn-primary">Report symptoms</a>
+    <h3>Symptom reports</h3>
+    <p>
+      <b>Note: "no symptoms" reports are also important!</b> By tracking if and when you have
+      symptoms of illness, we can develop better models to understand this data.
+    </p>
+    <a href="{% url 'reports:symptoms' %}" class="btn btn-primary">Report now</a>
+    {% if openhumansmember.symptomreport_set.all %}
+    <a href="{% url 'reports:list' %}" class="btn btn-primary">View past reports</a>
+    {% endif %}
     <hr>
     <h4>Schedule check-ins</h4>
     {% if not openhumansmember.checkinschedule or not openhumansmember.checkinschedule.active %}

@@ -1,7 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
-from django.views.generic import CreateView, TemplateView
+from django.views.generic import CreateView, ListView, TemplateView
+
+from checkin.models import CheckinSchedule
 
 from .forms import SymptomReportForm
 from .models import SymptomReport, ReportToken  # TODO: add DiagnosisReport
@@ -58,6 +60,25 @@ class ReportNoSymptomsView(CheckTokenMixin, TemplateView):
         report.save()
         messages.add_message(request, messages.SUCCESS, "No symptom report saved!")
         return super().get(request, *args, **kwargs)
+
+
+class ReportListView(ListView):
+    template_name = "reports/list.html"
+
+    def get_queryset(self):
+        return SymptomReport.objects.filter(member=self.request.user.openhumansmember)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+
+        try:
+            timezone = self.request.user.openhumansmember.checkinschedule.timezone
+        except CheckinSchedule.DoesNotExist:
+            timezone = "Etc/UTC"
+
+        context.update({"timezone": timezone})
+
+        return context
 
 
 """
