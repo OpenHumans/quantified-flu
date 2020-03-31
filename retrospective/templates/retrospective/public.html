@@ -40,12 +40,28 @@
 
 <p>Click the links below to explore retrospective reports.</p>
 
-<ul>
+<table class="table table-sm">
+  <thead>
+    <th>Date</th>
+    <th>Certainty</th>
+    <th>Data sources</th>
+  </thead>
   {% for event in object_list %}
-  <li>
-    <a href="{% url 'retrospective:view_event' event.id %}">{{ event.date }}</a>
+  <tr>
+    <td>
+      <a href="{% url 'retrospective:view_event' event.id %}">{{ event.date }}</a>
+    </td>
+    <td>
+      {{ event.get_certainty_display }}
+    </td>
+    <td>
+      {% for analysis in event.retrospectiveeventanalysis_set.all %}
+      {{ analysis.graph_type }}{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+    </td>
+    </td>
   </li>
   {% endfor %}
-</ul>
+</table>
 
 {% endblock main %}
