@@ -3,6 +3,12 @@
 <h2>Visualize past events</h2>
 
 {% if openhumansmember.retrospectiveevent_set.all %}
+{% if missing_sources|length == 2 %}
+<div class="alert alert-danger" role="alert">
+  <b>No connected data!</b> If you haven't added a data source, there's no data to graph.
+  See buttons above to add a data source.
+</div>
+{% endif %}
 <table class="table">
   <tbody>
   {% for event in openhumansmember.retrospectiveevent_set.all %}
@@ -15,7 +21,6 @@
   {% endfor %}
   </tbody>
 </table>
-<p class="text-muted text-small">Note: analyses take a minute – try reloading if you don't see them above.</p>
 {% else %}
 <img class="img-fluid mb-3" src="{% static 'img/example_graph.png' %}">
 
