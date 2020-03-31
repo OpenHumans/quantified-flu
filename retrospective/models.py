@@ -17,7 +17,10 @@ class RetrospectiveEvent(models.Model):
     member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
     date = models.DateField()
     certainty = models.IntegerField(choices=CERTAINTY_CHOICES)
-    notes = models.TextField(blank=True)
+    notes = models.TextField(
+        blank=True,
+        help_text="Notes about this illness, e.g. do you know or believe it was a cold, flu, or coronavirus infection?",
+    )
 
     def as_json(self):
         graph_data = {
