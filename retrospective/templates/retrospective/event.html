@@ -5,6 +5,10 @@
 <h2>Sickness event: {{ object.date }}</h2>
 
 <p>
+  <b>Certainty:</b> {{ object.get_certainty_display }} ({{ object.certainty }}/5)
+</p>
+
+<p>
 <b>Notes:</b> {{ object.notes }}
 </p>
 
