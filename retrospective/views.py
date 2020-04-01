@@ -37,7 +37,7 @@ def view_events(request):
 
 class AddRetrospectiveEventView(LoginRequiredMixin, CreateView):
     model = RetrospectiveEvent
-    fields = ["date", "certainty"]
+    fields = ["date", "certainty", "notes"]
     template_name = "retrospective/add_event.html"
     success_url = "/"
     login_url = "/"

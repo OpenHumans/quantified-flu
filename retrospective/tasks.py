@@ -1,11 +1,22 @@
 from celery import shared_task
 from celery.decorators import task
 
+from django.contrib.auth import get_user_model
+
 from .models import RetrospectiveEvent, RetrospectiveEventAnalysis
 from import_data.models import FitbitMember, OuraMember
 from import_data.celery_fitbit import fetch_fitbit_data
 from import_data.celery_oura import fetch_oura_data
 from .activity_parsers import oura_parser, fitbit_parser
+
+User = get_user_model()
+
+
+def analyze_existing_events(user_id):
+    user = User.objects.get(id=user_id)
+    events = RetrospectiveEvent.objects.filter(member=user.openhumansmember)
+    for event in events:
+        analyze_event.delay(event_id=event.id)
 
 
 @task
@@ -54,6 +65,8 @@ def update_fitbit_data(fitbit_member_id):
     if restart_job:
         update_fitbit_data.apply_async(args=[fitbit_member.id], countdown=3600)
         print("queued job after running into limitation")
+    else:
+        analyze_existing_events(fitbit_member.member.user.id)
 
 
 @shared_task
@@ -61,3 +74,4 @@ def update_oura_data(oura_member_id):
     oura_user = OuraMember.objects.get(id=oura_member_id)
     print("trying to update {}".format(oura_user.id))
     fetch_oura_data(oura_user)
+    analyze_existing_events(oura_user.member.user.id)
