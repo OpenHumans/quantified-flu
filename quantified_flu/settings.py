@@ -145,9 +145,7 @@ FITBIT_CLIENT_SECRET = os.getenv("FITBIT_CLIENT_SECRET")
 # Configure Django App for Heroku.
 if ON_HEROKU:
     django_heroku.settings(locals())
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
+
 
 REMOTE = os.getenv("REMOTE")
 if REMOTE:
@@ -163,6 +161,10 @@ if REMOTE:
         },
         safety_threshold=5,
     )
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
 
 # Requests Respectful (rate limiting, waiting)
 rr = RespectfulRequester()
