@@ -4,6 +4,12 @@
 
 <h2> Report Symptoms</h2>
 
+{% if not request.GET.login_token %}
+<p>
+  <a class="btn btn-success btn-large" href="{% url 'reports:no-symptoms' %}">Report no symptoms</a>
+</p>
+{% endif %}
+
 <form method="POST" action="">
   {% csrf_token %}
   {{ form.as_p }}

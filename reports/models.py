@@ -51,6 +51,24 @@ def create_token():
 TOKEN_EXPIRATION_MINUTES = 1440  # default expiration is one day
 
 
+class ReportToken(models.Model):
+    member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+    token = models.TextField(default=create_token)
+    minutes_valid = models.IntegerField(default=TOKEN_EXPIRATION_MINUTES)
+
+    def is_valid(self):
+        expires = self.created + datetime.timedelta(minutes=self.minutes_valid)
+        if expires > now():
+            return True
+        return False
+
+    def valid_member(self):
+        if self.is_valid():
+            return self.member
+        return None
+
+
 class Symptom(models.Model):
     label = models.CharField(max_length=20, choices=SYMPTOM_CHOICES, unique=True)
     available = models.BooleanField(default=False)
@@ -82,7 +100,9 @@ class SymptomReport(models.Model):
     member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     symptoms = models.ManyToManyField(Symptom)
-    fever_guess = models.CharField(max_length=20, choices=FEVER_CHOICES, null=True)
+    fever_guess = models.CharField(
+        max_length=20, choices=FEVER_CHOICES, null=True, blank=True
+    )
     fever = models.DecimalField(max_digits=4, decimal_places=1, null=True, blank=True)
     other_symptoms = models.TextField(blank=True, default="")
     suspected_virus = models.TextField(
@@ -94,6 +114,7 @@ class SymptomReport(models.Model):
 
     # Represents reports which were simple "report nothing" clicks.
     report_none = models.BooleanField(default=False)
+    token = models.ForeignKey(ReportToken, null=True, on_delete=models.SET_NULL)
 
     def clean(self):
         """Ensure that nothing is "reported" when report_none is True."""
@@ -111,21 +132,3 @@ class DiagnosisReport(models.Model):
     diagnosis = ManyToManyField(Diagnosis)
     notes = models.TextField(blank=True, default="")
 """
-
-
-class ReportToken(models.Model):
-    member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
-    token = models.TextField(default=create_token)
-    minutes_valid = models.IntegerField(default=TOKEN_EXPIRATION_MINUTES)
-
-    def is_valid(self):
-        expires = self.created + datetime.timedelta(minutes=self.minutes_valid)
-        if expires > now():
-            return True
-        return False
-
-    def valid_member(self):
-        if self.is_valid():
-            return self.member
-        return None
