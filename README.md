@@ -1,4 +1,4 @@
-# Quantified Flu 
+# Quantified Flu
 
 ![](/static/img/example_graph.png)
 
@@ -8,7 +8,7 @@ We are trying to collect some data to answer the following question: **Can the v
 
 This question [came up in the *Quantified Self* forum](https://forum.quantifiedself.com/t/using-resting-heart-rate-for-early-warning-of-coronavirus-infection/7864/16), whether resting heart rate could be used as an early indicator for #covid19 infection. Some preliminary analysis for regular colds & flu-like symptoms showed that it's complicated, as resting heart rate can be fickle for lots of reasons. Body temperature data as measured by the Oura ring seems to be a better indicator, [as highlighted by a #covid19 patient here](https://perjantaikokki.fi/2020/03/14/greetings-from-a-corona-positive-patient-from-quarantine/).
 
-To get a better understanding of **whether our wearables can help predict cold/flu/etc onsets** we are planning to do a **retrospective study using wearable data that's annotated with metadata about disease onset times**. 
+To get a better understanding of **whether our wearables can help predict cold/flu/etc onsets** we are planning to do a **retrospective study using wearable data that's annotated with metadata about disease onset times**.
 
 ## The current state
 
