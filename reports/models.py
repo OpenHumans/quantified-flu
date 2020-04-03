@@ -122,6 +122,22 @@ class SymptomReport(models.Model):
             if self.fever_guess or self.fever or self.other_symptoms or self.notes:
                 raise ValidationError
 
+    @property
+    def severity(self):
+        """Rough attempt to assess "severity" for a report, for display purposes"""
+        num_symptoms = self.symptoms.all().count()
+        if self.report_none or (
+            num_symptoms == 0 and (not self.fever_guess) or self.fever_guess == "none"
+        ):
+            return 0
+        if num_symptoms <= 2 and (not self.fever_guess or self.fever_guess == "none"):
+            return 1
+        if not self.fever_guess or self.fever_guess in ["none", "low"]:
+            return 2
+        if self.fever_guess == "moderate":
+            return 3
+        return 4
+
 
 """
 # TODO: Implement reporting of diagnostic testing.

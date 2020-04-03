@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import login, logout
+from django.contrib.auth import get_user_model, login, logout
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, RedirectView
@@ -8,6 +8,8 @@ from checkin.models import CheckinSchedule
 
 from .forms import SymptomReportForm
 from .models import SymptomReport, ReportToken  # TODO: add DiagnosisReport
+
+User = get_user_model()
 
 
 class CheckTokenMixin:
@@ -73,9 +75,13 @@ class ReportListView(ListView):
     template_name = "reports/list.html"
 
     def get_queryset(self):
-        return SymptomReport.objects.filter(
-            member=self.request.user.openhumansmember
-        ).order_by("-created")
+        self.user_id = None
+        if "user_id" in self.kwargs:
+            self.user_id = self.kwargs["user_id"]
+            member = User.objects.get(id=self.user_id).openhumansmember
+        else:
+            member = self.request.user.openhumansmember
+        return SymptomReport.objects.filter(member=member).order_by("-created")
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -85,7 +91,7 @@ class ReportListView(ListView):
         except CheckinSchedule.DoesNotExist:
             timezone = "Etc/UTC"
 
-        context.update({"timezone": timezone})
+        context.update({"timezone": timezone, "user_id": self.user_id})
 
         return context
 

@@ -14,5 +14,6 @@ urlpatterns = [
     # path("diagnosis", ReportDiagnosisView.as_view(), name="diagnosis"),
     path("no-symptoms", ReportNoSymptomsView.as_view(), name="no-symptoms"),
     path("symptoms", ReportSymptomsView.as_view(), name="symptoms"),
+    path("list/<user_id>", ReportListView.as_view(), name="list-for-user"),
     path("list", ReportListView.as_view(), name="list"),
 ]
