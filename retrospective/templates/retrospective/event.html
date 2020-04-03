@@ -47,6 +47,7 @@
 <h3>
 {% if analysis.graph_type == 'Oura' %}Oura
 {% elif analysis.graph_type == 'Fitbit' %}Fitbit
+{% elif analysis.graph_type == 'Fitbit Intraday' %}Fitbit Intraday
 {% endif %}</h3>
 
 <div class="retrospective_graph_{{ analysis.id }}"></div>
@@ -58,6 +59,8 @@
     data = MG.convert.date(data, 'timestamp', "%Y-%m-%d %H:%M:%S");
     {% elif analysis.graph_type == 'Fitbit' %}
     data = MG.convert.date(data, 'timestamp', "%Y-%m-%d");
+    {% elif analysis.graph_type == 'Fitbit Intraday' %}
+    data = MG.convert.date(data, 'timestamp', "%Y-%m-%d %H:%M:%S+00:00");
     {%endif%}
 
     var marker_date = data[0]['period'];
