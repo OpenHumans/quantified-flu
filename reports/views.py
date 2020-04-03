@@ -1,7 +1,13 @@
+import json
+import pytz
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.utils.timezone import now
 from django.views.generic import CreateView, ListView, RedirectView
 
 from checkin.models import CheckinSchedule
@@ -73,12 +79,12 @@ class ReportNoSymptomsView(CheckTokenMixin, RedirectView):
 
 class ReportListView(ListView):
     template_name = "reports/list.html"
+    as_json = False
+    user = None
 
     def get_queryset(self):
-        self.user_id = None
-        if "user_id" in self.kwargs:
-            self.user_id = self.kwargs["user_id"]
-            member = User.objects.get(id=self.user_id).openhumansmember
+        if self.user:
+            member = self.user.openhumansmember
         else:
             member = self.request.user.openhumansmember
         return SymptomReport.objects.filter(member=member).order_by("-created")
@@ -89,11 +95,36 @@ class ReportListView(ListView):
         try:
             timezone = self.request.user.openhumansmember.checkinschedule.timezone
         except CheckinSchedule.DoesNotExist:
-            timezone = "Etc/UTC"
+            timezone = pytz.timezone("UTC")
 
-        context.update({"timezone": timezone, "user_id": self.user_id})
+        user_id = self.user.id if self.user else self.user
+
+        context.update({"timezone": timezone, "user_id": user_id})
 
         return context
+
+    def get_as_json(self):
+        context_data = self.get_context_data()
+        data = {
+            "reports": [json.loads(r.as_json()) for r in context_data["object_list"]],
+            "user_id": context_data["user_id"],
+            "timezone": context_data["timezone"].tzname(dt=None),
+        }
+        return json.dumps(data)
+
+    def get(self, request, *args, **kwargs):
+        if "user_id" in self.kwargs:
+            self.user = User.objects.get(id=self.kwargs["user_id"])
+            if hasattr(self.user.openhumansmember, "account"):
+                if not self.user.openhumansmember.account.public_data:
+                    raise PermissionDenied
+        elif self.request.user.is_anonymous:
+            return redirect("/")
+
+        default_response = super().get(request, *args, **kwargs)
+        if self.as_json:
+            return HttpResponse(self.get_as_json(), content_type="application/json")
+        return default_response
 
 
 """

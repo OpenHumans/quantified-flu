@@ -1,4 +1,5 @@
 import datetime
+import json
 import secrets
 
 from django.core.exceptions import ValidationError
@@ -137,6 +138,18 @@ class SymptomReport(models.Model):
         if self.fever_guess == "moderate":
             return 3
         return 4
+
+    def as_json(self):
+        data = {
+            "created": self.created.isoformat(),
+            "symptoms": [s.label for s in self.symptoms.all()],
+            "other_symptoms": self.other_symptoms,
+            "fever_guess": self.fever_guess,
+            "fever": self.fever,
+            "suspected_virus": self.suspected_virus,
+            "notes": self.notes,
+        }
+        return json.dumps(data)
 
 
 """
