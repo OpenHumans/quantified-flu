@@ -1,10 +1,21 @@
+import json
+import pytz
+
 from django.contrib import messages
-from django.contrib.auth import login, logout
+from django.contrib.auth import get_user_model, login, logout
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.views.generic import CreateView, TemplateView
+from django.urls import reverse_lazy
+from django.utils.timezone import now
+from django.views.generic import CreateView, ListView, RedirectView
+
+from checkin.models import CheckinSchedule
 
 from .forms import SymptomReportForm
 from .models import SymptomReport, ReportToken  # TODO: add DiagnosisReport
+
+User = get_user_model()
 
 
 class CheckTokenMixin:
@@ -14,14 +25,15 @@ class CheckTokenMixin:
 
         This also allows access if user is already logged in & no login_token is given.
         """
-        self.token = request.GET.get("login_token", None)
-        if self.token:
+        self.token = None
+        token_string = request.GET.get("login_token", None)
+        if token_string:
             # Logout to avoid potential confusion if token is attempt to switch user.
             logout(request)
             try:
-                token_obj = ReportToken.objects.get(token=self.token)
-                if token_obj.is_valid():
-                    login(request, token_obj.member.user)
+                self.token = ReportToken.objects.get(token=token_string)
+                if self.token.is_valid():
+                    login(request, self.token.member.user)
             except ReportToken.DoesNotExist:
                 pass
 
@@ -40,24 +52,79 @@ class CheckTokenMixin:
 class ReportSymptomsView(CheckTokenMixin, CreateView):
     form_class = SymptomReportForm
     template_name = "reports/symptoms.html"
-    success_url = "/"
+    success_url = reverse_lazy("reports:list")
 
     def form_valid(self, form):
         form.instance.member = self.request.user.openhumansmember
-        form.save()
+        report = form.save()
+        if self.token:
+            report.token = self.token
+            report.save()
         messages.add_message(self.request, messages.SUCCESS, "Symptom report recorded")
         return super().form_valid(form)
 
 
-class ReportNoSymptomsView(CheckTokenMixin, TemplateView):
-    template_name = "reports/no-symptoms.html"
+class ReportNoSymptomsView(CheckTokenMixin, RedirectView):
+    pattern_name = "reports:list"
 
     def get(self, request, *args, **kwargs):
         """Loading with valid token immediately creates a no-symptom report."""
-        report = SymptomReport(report_none=True, member=request.user.openhumansmember)
+        report = SymptomReport(
+            report_none=True, token=self.token, member=request.user.openhumansmember
+        )
         report.save()
         messages.add_message(request, messages.SUCCESS, "No symptom report saved!")
         return super().get(request, *args, **kwargs)
+
+
+class ReportListView(ListView):
+    template_name = "reports/list.html"
+    as_json = False
+    user = None
+
+    def get_queryset(self):
+        if self.user:
+            member = self.user.openhumansmember
+        else:
+            member = self.request.user.openhumansmember
+        return SymptomReport.objects.filter(member=member).order_by("-created")
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+
+        try:
+            timezone = self.request.user.openhumansmember.checkinschedule.timezone
+        except CheckinSchedule.DoesNotExist:
+            timezone = pytz.timezone("UTC")
+
+        user_id = self.user.id if self.user else self.user
+
+        context.update({"timezone": timezone, "user_id": user_id})
+
+        return context
+
+    def get_as_json(self):
+        context_data = self.get_context_data()
+        data = {
+            "reports": [json.loads(r.as_json()) for r in context_data["object_list"]],
+            "user_id": context_data["user_id"],
+            "timezone": context_data["timezone"].tzname(dt=None),
+        }
+        return json.dumps(data)
+
+    def get(self, request, *args, **kwargs):
+        if "user_id" in self.kwargs:
+            self.user = User.objects.get(id=self.kwargs["user_id"])
+            if hasattr(self.user.openhumansmember, "account"):
+                if not self.user.openhumansmember.account.public_data:
+                    raise PermissionDenied
+        elif self.request.user.is_anonymous:
+            return redirect("/")
+
+        default_response = super().get(request, *args, **kwargs)
+        if self.as_json:
+            return HttpResponse(self.get_as_json(), content_type="application/json")
+        return default_response
 
 
 """

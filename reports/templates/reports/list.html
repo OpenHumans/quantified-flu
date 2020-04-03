@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% load tz %}
+
+{% block main %}
+
+<h2>
+  {% if user_id %}
+  Symptom reports for user {{ user_id }}
+  {% else %}
+  Your symptom reports
+  {% endif %}
+</h2>
+
+{# Display reports in the timezone specified by checkin schedule, if available. #}
+<p>
+  <b>Timezone: </b> {{ timezone }}
+</p>
+
+{% timezone timezone %}
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Report date</th>
+      <th scope="col">Symptoms</th>
+      <th scope="col">Fever</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for report in object_list %}
+    <tr style="{% if report.severity == 0 %}background-color:#ffffff{% elif report.severity == 1 %}background-color:#ffffaa{% elif report.severity == 2 %}
+      background-color:#ffcc88
+    {% elif report.severity == 3 %}
+      background-color:#ffaa66
+    {% else %}
+      background-color:#ff8844
+    {% endif %}">
+      <th scope="row">{{ report.created }} {{ report.severity }}</th>
+      <td>
+        {% if report.report_none %}
+          None
+        {% else %}
+          {% for symptom in report.symptoms.all %}
+          {{ symptom.get_label_display }}{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+        {% endif %}
+      </td>
+      <td>
+        {% if report.fever_guess %}
+          {{ report.get_fever_guess_display }}
+        {% else %}
+          No fever
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endtimezone %}
+
+{% endblock main %}

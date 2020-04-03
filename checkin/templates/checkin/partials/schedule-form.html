@@ -1,30 +1,21 @@
-<h2>Schedule check-ins</h2>
-<p>
-  To see if we can predict getting sick, we need good data on when you get sick!
-</p>
-<p>
-  We'll send an email with a quick link to report you're fine – or a link to
-  report symptoms, if you've come down with something.
-</p>
 {% if request.user.openhumansmember.checkinschedule and request.user.openhumansmember.checkinschedule.active %}
-  <table class="table">
-    <tr><th>Check-in time:</th><td>{{ checkin_form.instance.time }}</td></tr>
-    <tr><th>Timezone:</th><td>{{ checkin_form.instance.timezone }}</td></tr>
-  </table>
-  <p>
-    Use the form below to update your schedule, or to turn off check-ins.
-  </p>
-  {% else %}
-  <p>
-    <b>Check-ins: off.</b>
-  </p>
-  <p>
-    Use the form below to schedule check-ins.
-  </p>
+<p>
+  <b>Check-ins scheduled:</b> {{ form.instance.time }} {{ form.instance.timezone }}
+</p>
+<p>
+  Use the form below to manage scheduled check-ins.
+</p>
+{% else %}
+<p>
+  <b>Check-ins: off.</b>
+</p>
+<p>
+  Use the form below to schedule check-ins.
+</p>
 {% endif %}
 <form method="POST" action="{% url 'checkin:schedule' %}">
   {% csrf_token %}
-  {{ checkin_form }}
+  {{ form }}
   <br>
   <input type="submit"
     value="{% if request.user.openhumansmember.checkinschedule and request.user.openhumansmember.checkinschedule.active %}Update schedule{% else %}Schedule check-ins{% endif %}"
@@ -42,8 +33,7 @@
 function setSelectedIndex(s, valsearch)
 {
 // True if timezone not previously set (i.e. new user)
-if (1 == {% if not form.timezone %}1{% else %}0{% endif %})
-{
+
 // Loop through all the items in drop down list
 for (i = 0; i< s.options.length; i++)
 {
@@ -52,7 +42,6 @@ if (s.options[i].value == valsearch)
 // Item is found. Set its property and exit
 s.options[i].selected = true;
 break;
-}
 }
 }
 return;

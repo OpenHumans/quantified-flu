@@ -1,4 +1,5 @@
 import datetime
+import json
 import secrets
 
 from django.core.exceptions import ValidationError
@@ -51,6 +52,24 @@ def create_token():
 TOKEN_EXPIRATION_MINUTES = 1440  # default expiration is one day
 
 
+class ReportToken(models.Model):
+    member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+    token = models.TextField(default=create_token)
+    minutes_valid = models.IntegerField(default=TOKEN_EXPIRATION_MINUTES)
+
+    def is_valid(self):
+        expires = self.created + datetime.timedelta(minutes=self.minutes_valid)
+        if expires > now():
+            return True
+        return False
+
+    def valid_member(self):
+        if self.is_valid():
+            return self.member
+        return None
+
+
 class Symptom(models.Model):
     label = models.CharField(max_length=20, choices=SYMPTOM_CHOICES, unique=True)
     available = models.BooleanField(default=False)
@@ -82,7 +101,9 @@ class SymptomReport(models.Model):
     member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     symptoms = models.ManyToManyField(Symptom)
-    fever_guess = models.CharField(max_length=20, choices=FEVER_CHOICES, null=True)
+    fever_guess = models.CharField(
+        max_length=20, choices=FEVER_CHOICES, null=True, blank=True
+    )
     fever = models.DecimalField(max_digits=4, decimal_places=1, null=True, blank=True)
     other_symptoms = models.TextField(blank=True, default="")
     suspected_virus = models.TextField(
@@ -94,12 +115,41 @@ class SymptomReport(models.Model):
 
     # Represents reports which were simple "report nothing" clicks.
     report_none = models.BooleanField(default=False)
+    token = models.ForeignKey(ReportToken, null=True, on_delete=models.SET_NULL)
 
     def clean(self):
         """Ensure that nothing is "reported" when report_none is True."""
         if self.report_none:
             if self.fever_guess or self.fever or self.other_symptoms or self.notes:
                 raise ValidationError
+
+    @property
+    def severity(self):
+        """Rough attempt to assess "severity" for a report, for display purposes"""
+        num_symptoms = self.symptoms.all().count()
+        if self.report_none or (
+            num_symptoms == 0 and (not self.fever_guess) or self.fever_guess == "none"
+        ):
+            return 0
+        if num_symptoms <= 2 and (not self.fever_guess or self.fever_guess == "none"):
+            return 1
+        if not self.fever_guess or self.fever_guess in ["none", "low"]:
+            return 2
+        if self.fever_guess == "moderate":
+            return 3
+        return 4
+
+    def as_json(self):
+        data = {
+            "created": self.created.isoformat(),
+            "symptoms": [s.label for s in self.symptoms.all()],
+            "other_symptoms": self.other_symptoms,
+            "fever_guess": self.fever_guess,
+            "fever": self.fever,
+            "suspected_virus": self.suspected_virus,
+            "notes": self.notes,
+        }
+        return json.dumps(data)
 
 
 """
@@ -111,21 +161,3 @@ class DiagnosisReport(models.Model):
     diagnosis = ManyToManyField(Diagnosis)
     notes = models.TextField(blank=True, default="")
 """
-
-
-class ReportToken(models.Model):
-    member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
-    token = models.TextField(default=create_token)
-    minutes_valid = models.IntegerField(default=TOKEN_EXPIRATION_MINUTES)
-
-    def is_valid(self):
-        expires = self.created + datetime.timedelta(minutes=self.minutes_valid)
-        if expires > now():
-            return True
-        return False
-
-    def valid_member(self):
-        if self.is_valid():
-            return self.member
-        return None
