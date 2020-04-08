@@ -21,6 +21,7 @@ class RetrospectiveEvent(models.Model):
         blank=True,
         help_text="Notes about this illness, e.g. do you know or believe it was a cold, flu, or coronavirus infection?",
     )
+    published = models.BooleanField(default=False)
 
     def as_json(self):
         graph_data = {
