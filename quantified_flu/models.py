@@ -10,3 +10,4 @@ class Account(models.Model):
 
     member = models.OneToOneField(OpenHumansMember, on_delete=models.CASCADE)
     public_data = models.BooleanField(default=True)
+    publish_symptom_reports = models.BooleanField(default=False)

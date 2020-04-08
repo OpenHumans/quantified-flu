@@ -5,12 +5,59 @@
 {% block main %}
 
 <h2>
-  {% if user_id %}
-  Symptom reports for user {{ user_id }}
+  {% if member_id %}
+  Symptom reports for {{ member_id }}
   {% else %}
   Your symptom reports
   {% endif %}
 </h2>
+
+{{ request.user.openhumansmember.account.publish_symptom_reports }}
+{# offer publish if unpublished and analyses exist #}
+{% if is_owner and object_list %}
+  {% if not request.user.openhumansmember.account.public_data %}
+    <div class="alert alert-secondary">
+      <p>
+        {% if request.user.openhumansmember.account.publish_symptom_reports %}<b>Symptom logs hidden.</b>
+        Although you previously shared these, you've disabled "public data".
+        {% else %}
+        <b>Symptom logs cannot be shared.</b> You've disabled public data sharing.
+        {% endif %}
+      </p>
+      <p>
+        Please see <a href="{% url 'manage-account' %}">your account page</a> to modify this setting.
+      </p>
+    </div>
+  {% elif not request.user.openhumansmember.account.publish_symptom_reports %}
+    <div class="alert alert-primary">
+      <p>
+        <b>Share ongoing data?</b> Symptom reports and related data can be published via your random ID – and
+        you'll have a link you can share with others.
+      </p>
+      <p>
+        Shared data helps us do more! We'll also share data used in our retrospective analyses, if available (e.g. heartrate,
+        soon we'll have similar visualizations here. 🤞
+        temperature up to six weeks before) – this data enables others to develop visualizations and analyses, hopefully
+      </p>
+      <form action="" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="Share data" class="btn btn-primary">
+      </form>
+    </div>
+  {% else %}
+  <div class="alert alert-primary">
+    <p>
+      <b>Sharing data!</b> Please visit <a href="{% url 'manage-account' %}">your account page</a> to modify this setting.
+      Thank you for sharing! 💖
+    </p>
+    <p>
+      Use this URL to share with others:
+      <a href="{% url 'reports:list_member' request.user.openhumansmember.oh_id %}">https://quantifiedflu.org{% url 'reports:list_member' request.user.openhumansmember.oh_id %}</a>
+    </p>
+  </div>
+  {% endif %}
+{% endif %}
+
 
 {# Display reports in the timezone specified by checkin schedule, if available. #}
 <p>
