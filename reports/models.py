@@ -26,6 +26,15 @@ SYMPTOM_CHOICES = [
     ("anosmia", "Reduced sense of smell (anosmia)"),
 ]
 
+
+SYMPTOM_INTENSITY_CHOICES = [
+    (0, "None"),
+    (1, "A little"),
+    (2, "Somewhat"),
+    (3, "Quite a bit"),
+    (4, "Very much"),
+]
+
 FEVER_CHOICES = [
     ("none", "No fever"),
     ("low", "Maybe feverish"),
@@ -100,7 +109,6 @@ class DiagnosticTest(models.Model):
 class SymptomReport(models.Model):
     member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
-    symptoms = models.ManyToManyField(Symptom)
     fever_guess = models.CharField(
         max_length=20, choices=FEVER_CHOICES, null=True, blank=True
     )
@@ -124,14 +132,26 @@ class SymptomReport(models.Model):
                 raise ValidationError
 
     @property
+    def reported_symptoms(self):
+        return self.symptomreportsymptomitem_set.all().exclude(intensity=0)
+
+    def get_symptom_values(self):
+        return {
+            s.symptom.label: s.intensity
+            for s in self.symptomreportsymptomitem_set.all()
+        }
+
+    @property
     def severity(self):
         """Rough attempt to assess "severity" for a report, for display purposes"""
-        num_symptoms = self.symptoms.all().count()
+        symptom_amount = sum(
+            [x.intensity for x in self.symptomreportsymptomitem_set.all()]
+        )
         if self.report_none or (
-            num_symptoms == 0 and (not self.fever_guess) or self.fever_guess == "none"
+            symptom_amount == 0 and (not self.fever_guess or self.fever_guess == "none")
         ):
             return 0
-        if num_symptoms <= 2 and (not self.fever_guess or self.fever_guess == "none"):
+        if symptom_amount <= 4 and (not self.fever_guess or self.fever_guess == "none"):
             return 1
         if not self.fever_guess or self.fever_guess in ["none", "low"]:
             return 2
@@ -142,7 +162,7 @@ class SymptomReport(models.Model):
     def as_json(self):
         data = {
             "created": self.created.isoformat(),
-            "symptoms": [s.label for s in self.symptoms.all()],
+            "symptoms": self.get_symptom_values(),
             "other_symptoms": self.other_symptoms,
             "fever_guess": self.fever_guess,
             "fever": self.fever,
@@ -150,6 +170,12 @@ class SymptomReport(models.Model):
             "notes": self.notes,
         }
         return json.dumps(data)
+
+
+class SymptomReportSymptomItem(models.Model):
+    symptom = models.ForeignKey(Symptom, on_delete=models.CASCADE)
+    report = models.ForeignKey(SymptomReport, on_delete=models.CASCADE)
+    intensity = models.IntegerField(choices=SYMPTOM_INTENSITY_CHOICES, default=0)
 
 
 """

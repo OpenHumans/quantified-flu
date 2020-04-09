@@ -75,8 +75,8 @@
         {% if report.report_none %}
           None
         {% else %}
-          {% for symptom in report.symptoms.all %}
-          {{ symptom.get_label_display }}{% if not forloop.last %}, {% endif %}
+          {% for symptomitem in report.reported_symptoms %}
+          {{ symptomitem.symptom.get_label_display }} ({{ symptomitem.get_intensity_display }}){% if not forloop.last %}, {% endif %}
           {% endfor %}
         {% endif %}
       </td>
