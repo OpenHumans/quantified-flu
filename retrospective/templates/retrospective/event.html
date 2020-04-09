@@ -6,25 +6,9 @@
 
 <h2>Sickness event: {{ object.date }}</h2>
 
-{# offer publish if unpublished and analyses exist #}
-{% if is_owner and object.retrospectiveeventanalysis_set.all %}
-  {% if not request.user.openhumansmember.account.public_data %}
-    <div class="alert alert-secondary">
-      <p>
-        {% if object.published %}<b>Event hidden.</b> Although you previously published this
-        event, it is now considered unpublished and may be removed.
-        {% else %}
-        <b>Event cannot be published.</b> Unpublished events may be removed after 48 hours,
-        and cannot be shared with others.
-        {% endif %}
-      </p>
-      <p>
-        You've disabled "public data". Please see
-        <a href="{% url 'manage-account' %}">your account page</a>
-        to modify this setting.
-      </p>
-    </div>
-  {% elif not object.published %}
+{% if is_owner %}
+  {# offer publish if unpublished and analyses exist #}
+  {% if not object.published and object.retrospectiveeventanalysis_set.all %}
     <div class="alert alert-primary">
       <p>
         <b>Publish event analyses?</b> Unpublished events may be removed after 48 hours.
@@ -41,20 +25,18 @@
         <input type="submit" value="Publish event" class="btn btn-primary">
       </form>
     </div>
-  {% endif %}
-{% endif %}
-
-{% if is_owner and object.published and request.user.openhumansmember.account.public_data %}
+  {% elif object.published %}
   <div class="alert alert-success">
     <p>
       <b>Published event.</b> You can still
-      <a href="{% url 'retrospective:edit_event' object.id %}">edit notes or delete this event</a>. Thank you for sharing! ✨
+      <a href="{% url 'retrospective:edit_event' object.id %}">edit notes or delete this event</a>. Thank you for sharing! 💖
     </p>
     <p>
       Use this URL to share with others:
       <a href="{% url 'retrospective:view_event' object.id %}">https://quantifiedflu.org{% url 'retrospective:view_event' object.id %}</a>
     </p>
   </div>
+  {% endif %}
 {% endif %}
 
 <p>

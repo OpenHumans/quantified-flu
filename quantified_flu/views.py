@@ -89,7 +89,7 @@ def about(request):
 class ManageAccountView(LoginRequiredMixin, UpdateView):
     login_url = "/"
     model = Account
-    fields = ["public_data", "publish_symptom_reports"]
+    fields = ["publish_symptom_reports"]
     template_name = "quantified_flu/manage_account.html"
     success_url = reverse_lazy("manage-account")
 

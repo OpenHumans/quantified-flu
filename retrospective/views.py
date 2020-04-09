@@ -68,11 +68,7 @@ class IsOwnerMixin:
 
 class IsOwnerOrPublicMixin(IsOwnerMixin):
     def is_public_or_owner(self):
-        # Create account model if it doesn't exist.
-        if not hasattr(self.object.member, "account"):
-            account = Account(member=self.object.member)
-            account.save()
-        if self.object.member.account.public_data and self.object.published:
+        if self.object.published:
             return True
         elif self.is_owner():
             return True
@@ -154,9 +150,7 @@ class PublicRetrospectiveEventsView(ListView):
     as_json = False
 
     def get_queryset(self):
-        return RetrospectiveEvent.objects.exclude(
-            member__account__public_data=False
-        ).exclude(published=False)
+        return RetrospectiveEvent.objects.exclude(published=False)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)

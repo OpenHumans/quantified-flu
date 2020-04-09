@@ -129,7 +129,7 @@ class ReportListView(ListView):
         if "member_id" in self.kwargs:
             self.member = OpenHumansMember.objects.get(oh_id=self.kwargs["member_id"])
             account, _ = Account.objects.get_or_create(member=self.member)
-            if not account.publish_symptom_reports and account.public_data:
+            if not account.publish_symptom_reports:
                 raise PermissionDenied
         elif self.request.user.is_anonymous:
             return redirect("/")
