@@ -62,9 +62,6 @@ class ReportSymptomsView(CheckTokenMixin, CreateView):
     template_name = "reports/symptoms.html"
     success_url = reverse_lazy("reports:list")
 
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context.update(

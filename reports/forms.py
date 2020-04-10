@@ -32,10 +32,10 @@ class SymptomReportForm(forms.ModelForm):
         for symptom in SYMPTOM_CHOICES:
             if symptom[0] not in self.initial:
                 self.initial[symptom[0]] = 0
-            new_fields[symptom[0]] = forms.ChoiceField(
+            new_fields[symptom[0]] = forms.IntegerField(
                 required=False,
-                choices=SYMPTOM_INTENSITY_CHOICES,
-                widget=forms.RadioSelect,
+                min_value=min([x[0] for x in SYMPTOM_INTENSITY_CHOICES]),
+                max_value=max([x[0] for x in SYMPTOM_INTENSITY_CHOICES]),
             )
         new_fields.update(self.fields)
         self.fields = new_fields
