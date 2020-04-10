@@ -1,5 +1,11 @@
+from datetime import datetime, timedelta
+import json
+import tempfile
+
 import arrow
-from datetime import timedelta
+
+from checkin.models import CheckinSchedule
+from reports.models import SymptomReport
 
 
 def identify_missing_sources(oh_member):
@@ -32,3 +38,44 @@ def check_update(fitbit_member):
     if fitbit_member.last_submitted < (arrow.now() - timedelta(hours=1)):
         return True
     return False
+
+
+def update_openhumans_reportslist(oh_member):
+    """
+    Update symptom reports data stored in Open Humans member account.
+    """
+    reports = SymptomReport.objects.filter(member=oh_member).order_by("-created")
+    try:
+        timezone = oh_member.checkinschedule.timezone
+    except CheckinSchedule.DoesNotExist:
+        timezone = pytz.timezone("UTC")
+
+    old_fid = None
+    for dfile in oh_member.list_files():
+        if "QF-SymptomReports" in dfile["metadata"]["tags"]:
+            old_fid = dfile["id"]
+            break
+
+    metadata = {
+        "description": "Symptom reports data from QF.",
+        "tags": ["QF-SymptomReports", "quantified flu"],
+        "updated_at": str(datetime.utcnow()),
+    }
+
+    data = {
+        "reports": [json.loads(r.as_json()) for r in reports],
+        "timezone": timezone.tzname(dt=None),
+    }
+
+    with tempfile.TemporaryFile() as f:
+        js = json.dumps(data)
+        js = str.encode(js)
+        f.write(js)
+        f.flush()
+        f.seek(0)
+        oh_member.upload(
+            stream=f, filename="QF-symptomreport-data.json", metadata=metadata
+        )
+
+    if old_fid:
+        oh_member.delete_single_file(file_id=old_fid)

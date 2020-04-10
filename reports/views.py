@@ -13,6 +13,7 @@ from django.views.generic import CreateView, ListView, RedirectView
 from openhumans.models import OpenHumansMember
 
 from checkin.models import CheckinSchedule
+from quantified_flu.helpers import update_openhumans_reportslist
 from quantified_flu.models import Account
 
 from .forms import SymptomReportForm
@@ -79,6 +80,7 @@ class ReportSymptomsView(CheckTokenMixin, CreateView):
             report.token = self.token
             report.save()
         messages.add_message(self.request, messages.SUCCESS, "Symptom report recorded")
+        update_openhumans_reportslist(self.request.user.openhumansmember)
         return super().form_valid(form)
 
 
