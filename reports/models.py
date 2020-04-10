@@ -33,7 +33,7 @@ CATEGORIZED_SYMPTOM_CHOICES = OrderedDict(
             "Systemic",
             [
                 ("chills", "Chills and sweats"),
-                ("fatigue", "Fatigue"),
+                ("fatigue", "Fatigue and malaise"),
                 ("headache", "Headache"),
                 ("body_ache", "Muscle pains and body aches"),
             ],
