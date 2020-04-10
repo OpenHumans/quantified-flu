@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 import datetime
 import json
 import secrets
@@ -9,22 +11,39 @@ from django.utils.timezone import now
 
 from openhumans.models import OpenHumansMember
 
-# List from the Vicks Smart Temp app.
-SYMPTOM_CHOICES = [
-    ("cough", "Cough"),
-    ("sore_throat", "Sore throat"),
-    ("chills", "Chills"),
-    ("body_ache", "Body ache"),
-    ("ear_ache", "Ear ache"),
-    ("nausea", "Nausea"),
-    ("stomach_ache", "Stomach ache"),
-    ("fatigue", "Fatigue"),
-    ("short_breath", "Short breath"),
-    ("headache", "Headache"),
-    ("diarrhea", "Diarrhea"),
-    ("runny_nose", "Runny nose"),
-    ("anosmia", "Reduced sense of smell (anosmia)"),
-]
+# List adapted from common surveys.
+CATEGORIZED_SYMPTOM_CHOICES = OrderedDict(
+    [
+        (
+            "Respiratory",
+            [
+                ("cough", "Cough"),
+                ("wet_cough", "Cough with mucus (phlegm)"),
+                ("anosmia", "Reduced sense of smell (anosmia)"),
+                ("runny_nose", "Runny or stuffy nose"),
+                ("sore_throat", "Sore throat"),
+                ("short_breath", "Shortness of breath"),
+            ],
+        ),
+        (
+            "Gastrointestinal",
+            [("diarrhea", "Diarrhea"), ("nausea", "Nausea or vomiting")],
+        ),
+        (
+            "Systemic",
+            [
+                ("chills", "Chills and sweats"),
+                ("fatigue", "Fatigue"),
+                ("headache", "Headache"),
+                ("body_ache", "Muscle pains and body aches"),
+            ],
+        ),
+    ]
+)
+
+SYMPTOM_CHOICES = []
+for category in CATEGORIZED_SYMPTOM_CHOICES:
+    SYMPTOM_CHOICES = SYMPTOM_CHOICES + CATEGORIZED_SYMPTOM_CHOICES[category]
 
 
 SYMPTOM_INTENSITY_CHOICES = [

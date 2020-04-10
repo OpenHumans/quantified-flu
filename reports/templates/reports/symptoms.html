@@ -1,5 +1,15 @@
 {% extends 'base.html' %}
 
+{% load qf_extras %}
+
+{% block extra_css %}
+<style>
+input[type=radio]{
+  transform:scale(1.2);
+}
+</style>
+{% endblock extra_css %}
+
 {% block main %}
 
 <h2> Report Symptoms</h2>
@@ -12,7 +22,73 @@
 
 <form method="POST" action="">
   {% csrf_token %}
-  {{ form.as_p }}
+  <table class="table table-hover table-sm">
+    <td></td>
+    {% for i in form_symptom_intensity_choices %}
+    <th scope="col">
+      {{ i.1 }}
+    </th>
+    {% endfor %}
+    {% for category, symptom_list in form_categorized_symptom_choices.items %}
+    <tr>
+      <td class="p-0 pt-2" colspan="{{ form_symptom_intensity_choices|length|add:1 }}"><span class="text-muted">{{ category }}</span></td>
+    </tr>
+    {% for symptom in symptom_list %}
+      <tr>
+        <th class="pl-3" scope="row">
+          <label for="id_{{ symptom.0 }}_{{ intensity.0 }}">{{ symptom.1 }}</label></th>
+        {% for intensity in form_symptom_intensity_choices %}
+        <td width="12%">
+          {% get_formfield_value symptom %}
+          <input type="radio" name="{{ symptom.0 }}" value="{{ intensity.0 }}" id="id_{{ symptom.0 }}_{{ intensity.0 }}"
+            {% if field_value == intensity.0 or field_value == intensity.0|stringformat:"i" %}checked{% endif %}>
+        </td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+    {% endfor %}
+  </table>
+  <table class="table">
+    <tr {% if form.other_symptoms.errors %}style="color:#880000"{% endif %}>
+      <th scope="row">{{ form.other_symptoms.label_tag }}</th>
+      <td>
+        {{ form.other_symptoms.errors }}
+        {{ form.other_symptoms }}
+      </td>
+    </tr>
+    <tr {% if form.fever_guess.errors %}style="color:#880000"{% endif %}>
+      <th scope="row">{{ form.fever_guess.label_tag }}</th>
+      <td>
+        {{ form.fever_guess.errors }}
+        {{ form.fever_guess }}
+      </td>
+    </tr>
+    <tr {% if form.fever.errors %}style="color:#880000"{% endif %}>
+      <th scope="row">Temperature:
+        <br><span class="text-muted" style="font-weight:200">If you measured your temperature, what is it?</span>
+      </th>
+      <td>
+        {{ form.fever.errors }}
+        {{ form.fever }}
+      </td>
+    </tr>
+    <tr {% if form.suspected_virus.errors %}style="color:#880000"{% endif %}>
+      <th scope="row">{{ form.suspected_virus.label_tag }}
+        <br><span class="text-muted" style="font-weight:200">Do you suspect this is the flu? A cold?</span>
+      </th>
+      <td>
+        {{ form.suspected_virus.errors }}
+        {{ form.suspected_virus }}
+      </td>
+    </tr>
+    <tr {% if form.notes.errors %}style="color:#880000"{% endif %}>
+      <th scope="row">{{ form.notes.label_tag }}</th>
+      <td>
+        {{ form.notes.errors }}
+        {{ form.notes }}
+      </td>
+    </tr>
+  </table>
   <input type="submit" value="Report Symptoms" class="btn btn-primary">
 </form>
 

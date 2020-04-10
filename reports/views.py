@@ -16,7 +16,12 @@ from checkin.models import CheckinSchedule
 from quantified_flu.models import Account
 
 from .forms import SymptomReportForm
-from .models import SymptomReport, ReportToken  # TODO: add DiagnosisReport
+from .models import (
+    CATEGORIZED_SYMPTOM_CHOICES,
+    SYMPTOM_INTENSITY_CHOICES,
+    SymptomReport,
+    ReportToken,
+)  # TODO: add DiagnosisReport
 
 User = get_user_model()
 
@@ -56,6 +61,19 @@ class ReportSymptomsView(CheckTokenMixin, CreateView):
     form_class = SymptomReportForm
     template_name = "reports/symptoms.html"
     success_url = reverse_lazy("reports:list")
+
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context.update(
+            {
+                "form_categorized_symptom_choices": CATEGORIZED_SYMPTOM_CHOICES,
+                "form_symptom_intensity_choices": SYMPTOM_INTENSITY_CHOICES,
+            }
+        )
+        return context
 
     def form_valid(self, form):
         form.instance.member = self.request.user.openhumansmember
