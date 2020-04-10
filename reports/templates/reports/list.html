@@ -39,7 +39,7 @@
     </p>
     <p>
       Use this URL to share with others:
-      <a href="{% url 'reports:list_member' request.user.openhumansmember.oh_id %}">https://quantifiedflu.org{% url 'reports:list_member' request.user.openhumansmember.oh_id %}</a>
+      <a href="{% url 'reports:list_member' request.user.openhumansmember.oh_id %}">{{ request.get_host }}{% url 'reports:list_member' request.user.openhumansmember.oh_id %}</a>
     </p>
   </div>
   {% endif %}

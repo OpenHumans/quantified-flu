@@ -158,9 +158,9 @@ class ReportListView(ListView):
         return default_response
 
     def post(self, request, *args, **kwargs):
-        account = OpenHumansMember.objects.get(
-            oh_id=self.request.user.openhumansmember.oh_id
-        ).account
+        account, _ = Account.objects.get_or_create(
+            member=self.request.user.openhumansmember
+        )
         account.publish_symptom_reports = True
         account.save()
         return self.get(request, *args, **kwargs)

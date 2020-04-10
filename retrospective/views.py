@@ -10,8 +10,6 @@ from django.contrib import messages
 
 from openhumans.models import OpenHumansMember
 
-from quantified_flu.models import Account
-
 from .tasks import analyze_event
 from .models import RetrospectiveEventAnalysis, RetrospectiveEvent
 

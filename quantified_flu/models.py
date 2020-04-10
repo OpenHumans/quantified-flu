@@ -4,7 +4,7 @@ from openhumans.models import OpenHumansMember
 
 class Account(models.Model):
     """
-    Store OAuth2 data for a Fitbit Member.
+    Store additional data for an Open humans member.
     This is a one to one relationship with a OpenHumansMember object.
     """
 
