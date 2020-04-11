@@ -4,6 +4,7 @@ from .views import (
     ReportListView,
     ReportNoSymptomsView,
     ReportSymptomsView,
+    PublicReportsLinkView,
 )  # TODO: add ReportDiagnosisView
 
 
@@ -22,4 +23,8 @@ urlpatterns = [
     path("list/member/<member_id>", ReportListView.as_view(), name="list_member"),
     path("list.json", ReportListView.as_view(as_json=True), name="list_json"),
     path("list", ReportListView.as_view(), name="list"),
+    path("public", PublicReportsLinkView.as_view(), name="public"),
+    path(
+        "public.json", PublicReportsLinkView.as_view(as_json=True), name="public_json"
+    ),
 ]

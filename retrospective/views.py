@@ -178,6 +178,7 @@ class PublicRetrospectiveEventsView(ListView):
                     "json_path": reverse(
                         "retrospective:view_event_json", kwargs={"event_id": x.id}
                     ),
+                    "member_id": x.member.oh_id,
                 }
                 for x in self.get_queryset()
             ]

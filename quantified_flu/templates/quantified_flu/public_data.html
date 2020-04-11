@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block main %}
+{% load static %}
+<h1>Public data</h1>
+
+<p>
+  A big thank-you to the members that generously contribute public data to Quantified Flu! 💖
+</p>
+
+<p>
+  <b>Please give back!</b> Public data helps others develop analyses and data visualizations.
+  Please consider sharing those in turn; we would love to share what you learned (and potential
+  improvements to visualizations!) with members of Quantified Flu.
+</p>
+
+<p>
+  <b>Respect privacy & follow our guidelines.</b> This data is shared with random identifiers,
+  and we expect you to follow <a href="https://www.openhumans.org/community-guidelines/#public-data">
+  Open Humans guidelines for public data use</a>.
+</p>
+
+<h2>
+  Retrospective analyses
+</h2>
+
+<p>
+  Retrospective analyses are analyse of wearable data (e.g. heartrate, temperature) relative
+  to a past sickness event reported by an individual.
+</p>
+
+<p>
+  <a href="{% url 'retrospective:public' %}" class="btn btn-lg btn-primary">See public retrospective analyses</a>
+</p>
+
+<h2>
+  Symptom tracking logs
+</h2>
+
+<p>
+  Symptom racking logs record ongoing self-tracking via survey of the symptoms an individual
+  experiences, including "no symptom" reports as well as symptoms of illness.
+</p>
+
+<p>
+  <a href="{% url 'reports:public' %}" class="btn btn-lg btn-primary">See public symptom tracking logs</a>
+</p>
+
+{% endblock main %}

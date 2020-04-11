@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<h2>Public symptom tracking reports</h2>
+
+<p>
+  <b>Interested in analyzing this data yourself?</b> Each symptom tracking report has data available via
+  JSON endpoints. You can use this page's own JSON endpoint to automate data retrieval
+  from these: <a href="{% url 'reports:public_json' %}">{% url 'reports:public_json' %}</a>
+</p>
+<p>
+  <b>Please share your visualizations and discoveries with us!</b> People are excited to hear what you've
+  done – we'd love to share what others have done. (One place to connect is the
+  <a href="https://app.slack.com/client/T48QEEVTJ/CV5USP9BP">#quantifiedflu channel</a> in the Open Humans
+  community Slack. You can use this site to create an account in the Slack: <a href="https://slackin.openhumans.org">slackin.openhumans.org</a>)
+</p>
+
+{% if request.user.openhumansmember.account.publish_symptom_reports %}
+  <div class="alert alert-success">
+    <b>Thank you for sharing your data!</b> Your data is part of this data set. This data sharing is
+    optional; you can manage this in your <a href="{% url 'manage-account' %}">account settings</a>.
+  </div>
+{% elif request.user.openhumansmember.symptomreport_set.count > 0 %}
+  <div class="alert alert-secondary">
+    <b>Your data is not in this data set.</b> Sharing is optional, you can choose to publish
+    <a href="{% url 'reports:list' %}">your symptom tracking</a> to share it with others.
+  </div>
+{% else %}
+<p>
+  A big thank-you to contributors that have shared their data
+  with the project. 💖 Sharing data is optional; if you're a contributor,
+  log in to manage this in your account settings.
+</p>
+{% endif %}
+
+<hr>
+
+<p>Click the links below to explore symptom reports.</p>
+
+<ul>
+  {% for member in object_list %}
+  <li>
+    <a href="{% url 'reports:list_member' member.oh_id %}">Symptom tracking for {{ member.oh_id }}</a>
+  </li>
+  {% endfor %}
+</ul>
+
+{% endblock main %}

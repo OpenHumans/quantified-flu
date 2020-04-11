@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.views.generic import CreateView, ListView, RedirectView
@@ -163,6 +163,31 @@ class ReportListView(ListView):
         account.publish_symptom_reports = True
         account.save()
         return self.get(request, *args, **kwargs)
+
+
+class PublicReportsLinkView(ListView):
+    template_name = "reports/public.html"
+    as_json = False
+
+    def get_queryset(self):
+        public_symptom_members = OpenHumansMember.objects.filter(
+            account__publish_symptom_reports=True
+        )
+        return public_symptom_members
+
+    def get(self, request, *args, **kwargs):
+        if self.as_json:
+            data = [
+                {
+                    "json_path": reverse(
+                        "reports:list_member_json", kwargs={"member_id": m.oh_id}
+                    ),
+                    "member_id": m.oh_id,
+                }
+                for m in self.get_queryset()
+            ]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        return super().get(request, *args, **kwargs)
 
 
 """
