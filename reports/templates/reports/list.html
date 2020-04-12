@@ -12,7 +12,6 @@
   {% endif %}
 </h2>
 
-{{ request.user.openhumansmember.account.publish_symptom_reports }}
 {# offer publish if unpublished and analyses exist #}
 {% if is_owner and object_list %}
   {% if not request.user.openhumansmember.account.publish_symptom_reports %}
