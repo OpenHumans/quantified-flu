@@ -4,9 +4,9 @@ from openhumans.models import OpenHumansMember
 
 class Account(models.Model):
     """
-    Store OAuth2 data for a Fitbit Member.
+    Store additional data for an Open humans member.
     This is a one to one relationship with a OpenHumansMember object.
     """
 
     member = models.OneToOneField(OpenHumansMember, on_delete=models.CASCADE)
-    public_data = models.BooleanField(default=True)
+    publish_symptom_reports = models.BooleanField(default=False)

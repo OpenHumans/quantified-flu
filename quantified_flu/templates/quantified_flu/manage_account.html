@@ -11,13 +11,10 @@
     <form method="POST" action="{% url 'manage-account' %}">
       <p>
       {% csrf_token %}
-      {{ form }}
+      {{ form.as_p }}
         <small class='form-text text-muted'>
-          <i>Public Data</i> means that you allow us to share your aggregated and de-identified
-          data with researchers and potentially make them in a larger aggregate publicly available.
-          <br/><br/>
-          Data that are shared like this are: wearable sensor data for 3 weeks before/after sick event,
-          timing of sick events, symptom logs.
+          <b>Publish symptom reports</b> means that you're sharing your individual symptom tracking,
+          along with associated wearable data if available (heartrate, temperature), via random ID.
         </small>
       </p>
       <input type="submit"

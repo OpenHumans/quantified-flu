@@ -16,23 +16,21 @@
   community Slack. You can use this site to create an account in the Slack: <a href="https://slackin.openhumans.org">slackin.openhumans.org</a>)
 </p>
 
-{% if request.user.is_authenticated %}
-  {% if request.user.openhumansmember.account and not request.user.openhumansmember.account.public_data %}
-  <div class="alert alert-dark">
-    <b>Your data is not in this data set.</b> Public data sharing is optional. You can manage this
-    in your <a href="{% url 'manage-account' %}">account settings</a>.
-  </div>
-  {% else %}
+{% if published_member_reports %}
   <div class="alert alert-success">
-    <b>Thank you for sharing your data!</b> Your data is part of this data set. Public data sharing is
-    optional; you can manage this in your <a href="{% url 'manage-account' %}">account settings</a>.
+    <b>Thank you for sharing your data!</b> Your data is part of this data set. Data sharing is optional;
+    if you'd like to remove a published report, you can delete it.
   </div>
-  {% endif %}
+{% elif any_member_reports %}
+  <div class="alert alert-secondary">
+    <b>Your data is not in this data set.</b> Sharing is optional, you can choose to publish your
+    data to share it with others.
+  </div>
 {% else %}
 <p>
   A big thank-you to contributors that have shared their data
-  with the project. 💖 Public data is optional; if you're a contributor,
-  log in to manage this in your account settings.
+  with the project. 💖 Sharing data is optional; if you're a contributor,
+  log in to manage your published reports.
 </p>
 {% endif %}
 
@@ -43,6 +41,7 @@
 <table class="table table-sm">
   <thead>
     <th>Date</th>
+    <th>Member</th>
     <th>Certainty</th>
     <th>Data sources</th>
   </thead>
@@ -50,6 +49,9 @@
   <tr>
     <td>
       <a href="{% url 'retrospective:view_event' event.id %}">{{ event.date }}</a>
+    </td>
+    <td>
+      {{ event.member.oh_id }}
     </td>
     <td>
       {{ event.get_certainty_display }}

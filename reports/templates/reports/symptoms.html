@@ -1,5 +1,15 @@
 {% extends 'base.html' %}
 
+{% load qf_extras %}
+
+{% block extra_css %}
+<style>
+input[type=radio]{
+  transform:scale(1.2);
+}
+</style>
+{% endblock extra_css %}
+
 {% block main %}
 
 <h2> Report Symptoms</h2>
@@ -12,7 +22,93 @@
 
 <form method="POST" action="">
   {% csrf_token %}
-  {{ form.as_p }}
+
+  <p>
+    To what extent do you experience the following symptoms?
+  </p>
+  {# labels for symptom intensities #}
+  <div class="d-flex flex-row justify-content-end">
+    <div class="d-flex" style="width:25%"></div>
+    {% for i in form_symptom_intensity_choices %}
+    <div class="d-flex
+      {% if i.0 <= 1 %}
+      justify-content-start
+      {% elif i.0 >= 3 %}
+      justify-content-end
+      {% else %}
+      justify-content-center
+      {% endif %}
+      px-2" style="width:15%;line-height:1.0">
+      <div class="position-absolute">
+        <div class="d-flex-inline position-relative
+          {% if forloop.counter|divisibleby:2 %}d-none d-md-block{% endif %}">{{ i.1 }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {# symptom categories #}
+  {% for category, symptom_list in form_categorized_symptom_choices.items %}
+    <div class="d-flex flex-row justify-content-start mt-2" style="color: #999999;; border-bottom:1px solid #ddd">
+      {{ category }}
+    </div>
+    {% for symptom in symptom_list %}
+      <div class="d-flex flex-row align-items-center">
+        {# stores the current symptom field value as "field_value" for later use in the template #}
+        {% get_formfield_value symptom %}
+        <div class="d-flex-inline py-2 pl-2" style="width:25%; line-height:1.0; font-size:95%;>
+          <label for="id_{{ symptom.0 }}">{{ symptom.1 }}</label>
+        </div>
+        <div class="d-flex-inline px-4 pt-2" style="width:75%;">
+          <div class="d-flex-inline">
+            <input type="range" class="custom-range" name="{{ symptom.0 }}" value="{{ field_value }}" min="0" max="4" id="id_{{ symptom.0 }}">
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% endfor %}
+
+  <table class="table">
+    <tr {% if form.other_symptoms.errors %}style="color:#880000"{% endif %}>
+      <th scope="row">{{ form.other_symptoms.label_tag }}</th>
+      <td>
+        {{ form.other_symptoms.errors }}
+        {{ form.other_symptoms }}
+      </td>
+    </tr>
+    <tr {% if form.fever_guess.errors %}style="color:#880000"{% endif %}>
+      <th scope="row">{{ form.fever_guess.label_tag }}</th>
+      <td>
+        {{ form.fever_guess.errors }}
+        {{ form.fever_guess }}
+      </td>
+    </tr>
+    <tr {% if form.fever.errors %}style="color:#880000"{% endif %}>
+      <th scope="row">Temperature:
+        <br><span class="text-muted" style="font-weight:200">If you measured your temperature, what is it?</span>
+      </th>
+      <td>
+        {{ form.fever.errors }}
+        {{ form.fever }}
+      </td>
+    </tr>
+    <tr {% if form.suspected_virus.errors %}style="color:#880000"{% endif %}>
+      <th scope="row">{{ form.suspected_virus.label_tag }}
+        <br><span class="text-muted" style="font-weight:200">Do you suspect this is the flu? A cold?</span>
+      </th>
+      <td>
+        {{ form.suspected_virus.errors }}
+        {{ form.suspected_virus }}
+      </td>
+    </tr>
+    <tr {% if form.notes.errors %}style="color:#880000"{% endif %}>
+      <th scope="row">{{ form.notes.label_tag }}</th>
+      <td>
+        {{ form.notes.errors }}
+        {{ form.notes }}
+      </td>
+    </tr>
+  </table>
   <input type="submit" value="Report Symptoms" class="btn btn-primary">
 </form>
 

@@ -5,15 +5,24 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.views.generic import CreateView, ListView, RedirectView
 
+from openhumans.models import OpenHumansMember
+
 from checkin.models import CheckinSchedule
+from quantified_flu.helpers import update_openhumans_reportslist
+from quantified_flu.models import Account
 
 from .forms import SymptomReportForm
-from .models import SymptomReport, ReportToken  # TODO: add DiagnosisReport
+from .models import (
+    CATEGORIZED_SYMPTOM_CHOICES,
+    SYMPTOM_INTENSITY_CHOICES,
+    SymptomReport,
+    ReportToken,
+)  # TODO: add DiagnosisReport
 
 User = get_user_model()
 
@@ -54,6 +63,16 @@ class ReportSymptomsView(CheckTokenMixin, CreateView):
     template_name = "reports/symptoms.html"
     success_url = reverse_lazy("reports:list")
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context.update(
+            {
+                "form_categorized_symptom_choices": CATEGORIZED_SYMPTOM_CHOICES,
+                "form_symptom_intensity_choices": SYMPTOM_INTENSITY_CHOICES,
+            }
+        )
+        return context
+
     def form_valid(self, form):
         form.instance.member = self.request.user.openhumansmember
         report = form.save()
@@ -61,6 +80,7 @@ class ReportSymptomsView(CheckTokenMixin, CreateView):
             report.token = self.token
             report.save()
         messages.add_message(self.request, messages.SUCCESS, "Symptom report recorded")
+        update_openhumans_reportslist(self.request.user.openhumansmember)
         return super().form_valid(form)
 
 
@@ -80,26 +100,36 @@ class ReportNoSymptomsView(CheckTokenMixin, RedirectView):
 class ReportListView(ListView):
     template_name = "reports/list.html"
     as_json = False
-    user = None
+    member = None
+    is_owner = False
 
     def get_queryset(self):
-        if self.user:
-            member = self.user.openhumansmember
+        if self.member:
+            list_member = self.member
         else:
-            member = self.request.user.openhumansmember
-        return SymptomReport.objects.filter(member=member).order_by("-created")
+            list_member = self.request.user.openhumansmember
+        if (
+            not self.request.user.is_anonymous
+            and list_member == self.request.user.openhumansmember
+        ):
+            self.is_owner = True
+        return SymptomReport.objects.filter(member=list_member).order_by("-created")
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
 
-        try:
-            timezone = self.request.user.openhumansmember.checkinschedule.timezone
-        except CheckinSchedule.DoesNotExist:
-            timezone = pytz.timezone("UTC")
+        timezone = pytz.timezone("UTC")
+        if not self.request.user.is_anonymous:
+            try:
+                timezone = self.request.user.openhumansmember.checkinschedule.timezone
+            except CheckinSchedule.DoesNotExist:
+                pass
 
-        user_id = self.user.id if self.user else self.user
+        member_id = self.member.oh_id if self.member else self.member
 
-        context.update({"timezone": timezone, "user_id": user_id})
+        context.update(
+            {"timezone": timezone, "member_id": member_id, "is_owner": self.is_owner}
+        )
 
         return context
 
@@ -107,17 +137,17 @@ class ReportListView(ListView):
         context_data = self.get_context_data()
         data = {
             "reports": [json.loads(r.as_json()) for r in context_data["object_list"]],
-            "user_id": context_data["user_id"],
+            "member_id": context_data["member_id"],
             "timezone": context_data["timezone"].tzname(dt=None),
         }
         return json.dumps(data)
 
     def get(self, request, *args, **kwargs):
-        if "user_id" in self.kwargs:
-            self.user = User.objects.get(id=self.kwargs["user_id"])
-            if hasattr(self.user.openhumansmember, "account"):
-                if not self.user.openhumansmember.account.public_data:
-                    raise PermissionDenied
+        if "member_id" in self.kwargs:
+            self.member = OpenHumansMember.objects.get(oh_id=self.kwargs["member_id"])
+            account, _ = Account.objects.get_or_create(member=self.member)
+            if not account.publish_symptom_reports:
+                raise PermissionDenied
         elif self.request.user.is_anonymous:
             return redirect("/")
 
@@ -125,6 +155,39 @@ class ReportListView(ListView):
         if self.as_json:
             return HttpResponse(self.get_as_json(), content_type="application/json")
         return default_response
+
+    def post(self, request, *args, **kwargs):
+        account, _ = Account.objects.get_or_create(
+            member=self.request.user.openhumansmember
+        )
+        account.publish_symptom_reports = True
+        account.save()
+        return self.get(request, *args, **kwargs)
+
+
+class PublicReportsLinkView(ListView):
+    template_name = "reports/public.html"
+    as_json = False
+
+    def get_queryset(self):
+        public_symptom_members = OpenHumansMember.objects.filter(
+            account__publish_symptom_reports=True
+        )
+        return public_symptom_members
+
+    def get(self, request, *args, **kwargs):
+        if self.as_json:
+            data = [
+                {
+                    "json_path": reverse(
+                        "reports:list_member_json", kwargs={"member_id": m.oh_id}
+                    ),
+                    "member_id": m.oh_id,
+                }
+                for m in self.get_queryset()
+            ]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        return super().get(request, *args, **kwargs)
 
 
 """

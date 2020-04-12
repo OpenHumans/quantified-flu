@@ -1,10 +1,43 @@
 {% extends 'base.html' %}
 
-{% load ohmember_extras %}
+{% load qf_extras %}
 
 {% block main %}
 
 <h2>Sickness event: {{ object.date }}</h2>
+
+{% if is_owner %}
+  {# offer publish if unpublished and analyses exist #}
+  {% if not object.published and object.retrospectiveeventanalysis_set.all %}
+    <div class="alert alert-primary">
+      <p>
+        <b>Publish event analyses?</b> Unpublished events may be removed after 48 hours.
+        Published events will be publicly visible, linked to your random member ID – and
+        you'll have a link you can share with others!
+      </p>
+      <p>
+        Data used to generate these graphs is also made publicly available (up to six
+        weeks before &amp; after the event). This enables others to develop and contribute
+        improved analyses and visualizations. ✨
+      </p>
+      <form action="" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="Publish event" class="btn btn-primary">
+      </form>
+    </div>
+  {% elif object.published %}
+  <div class="alert alert-success">
+    <p>
+      <b>Published event.</b> You can still
+      <a href="{% url 'retrospective:edit_event' object.id %}">edit notes or delete this event</a>. Thank you for sharing! 💖
+    </p>
+    <p>
+      Use this URL to share with others:
+      <a href="{% url 'retrospective:view_event' object.id %}">https://quantifiedflu.org{% url 'retrospective:view_event' object.id %}</a>
+    </p>
+  </div>
+  {% endif %}
+{% endif %}
 
 <p>
   <b>Certainty:</b> {{ object.get_certainty_display }} ({{ object.certainty }}/5)
@@ -14,33 +47,39 @@
 <b>Notes:</b> {{ object.notes }}
 </p>
 
-{% if request.user.openhumansmember == object.member %}
-<p>
-<a href="{% url 'retrospective:edit_event' object.id %}" class="btn btn-sm btn-info">Edit event</a>
-</p>
+{% if is_owner %}
+
+  {% if not object.published %}
+  <p>
+  <a href="{% url 'retrospective:edit_event' object.id %}" class="btn btn-sm btn-info">Edit event</a>
+  </p>
+  {% endif %}
+
+  {# Explanations if analyses aren't available. #}
+  {% if not object.retrospectiveeventanalysis_set.all %}
+    {% if request.user.openhumansmember|missing_sources|length == 2 %}
+    <div class="alert alert-danger" role="alert">
+      <p>
+        <b>No connected data?</b> This event appears to have no associated analyses.
+        Have you connected a data source?<br>
+        (Return to the <a href="{% url 'home' %}">home page</a> to do this.)
+      </p>
+      <p>
+        If you're having trouble connecting a data source, please let us know at
+        <a href="mailto:support@openhumans.org">support@openhumans.org</a>!
+      </p>
+    </div>
+    {% else %}
+    <div class="alert alert-warning" role="alert">
+      <b>Analyses not yet available.</b> If you just added a data source, it may take a minute
+      for analyses to be complete. Try reloading.
+    </div>
+    {% endif %}
+  {% endif %}
+
 {% endif %}
 
 <hr>
-{% if not object.retrospectiveeventanalysis_set.all and request.user.openhumansmember == object.member %}
-  {% if request.user.openhumansmember|missing_sources|length == 2 %}
-  <div class="alert alert-danger" role="alert">
-    <p>
-      <b>No connected data?</b> This event appears to have no associated analyses.
-      Have you connected a data source?<br>
-      (Return to the <a href="{% url 'home' %}">home page</a> to do this.)
-    </p>
-    <p>
-      If you're having trouble connecting a data source, please let us know at
-      <a href="mailto:support@openhumans.org">support@openhumans.org</a>!
-    </p>
-  </div>
-  {% else %}
-  <div class="alert alert-warning" role="alert">
-    <b>Analyses not yet available.</b> If you just added a data source, it may take a minute
-    for analyses to be complete. Try reloading.
-  </div>
-  {% endif %}
-{% endif %}
 
 {% for analysis in object.retrospectiveeventanalysis_set.all %}
 

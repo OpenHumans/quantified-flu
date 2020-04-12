@@ -8,6 +8,8 @@ from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django.http import HttpResponse
 from django.contrib import messages
 
+from openhumans.models import OpenHumansMember
+
 from .tasks import analyze_event
 from .models import RetrospectiveEventAnalysis, RetrospectiveEvent
 
@@ -64,14 +66,11 @@ class IsOwnerMixin:
 
 class IsOwnerOrPublicMixin(IsOwnerMixin):
     def is_public_or_owner(self):
-        # Default is true; only exists if someone saves the account form.
-        if not hasattr(self.object.member, "account"):
-            return True
-        elif self.object.member.account.public_data:
+        if self.object.published:
             return True
         elif self.is_owner():
             return True
-        return_false
+        return False
 
     def is_authorized(self):
         return self.is_public_or_owner()
@@ -87,9 +86,10 @@ class IsAuthorizedMixin:
 
 
 # TODO: Make visible if public data is allowed.
-class RetrospectiveEventDetailView(IsAuthorizedMixin, IsOwnerOrPublicMixin, DetailView):
+class RetrospectiveEventDetailView(IsAuthorizedMixin, IsOwnerOrPublicMixin, UpdateView):
     model = RetrospectiveEvent
     pk_url_kwarg = "event_id"
+    fields = []
     template_name = "retrospective/event.html"
     as_json = False
 
@@ -98,20 +98,34 @@ class RetrospectiveEventDetailView(IsAuthorizedMixin, IsOwnerOrPublicMixin, Deta
             return HttpResponse(self.object.as_json(), content_type="application/json")
         return super().get(request, *args, **kwargs)
 
+    def post(self, request, *args, **kwargs):
+        self.object.published = True
+        self.object.save()
+        return self.get(request, *args, **kwargs)
 
-class AnalysisDetailView(IsAuthorizedMixin, IsOwnerOrPublicMixin, DetailView):
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context.update({"is_owner": self.is_owner()})
+        return context
+
+    def get_success_url(self):
+        return reverse("retrospective:view_event", kwargs={"event_id": self.object.id})
+
+
+class AnalysisDetailView(IsOwnerOrPublicMixin, DetailView):
     model = RetrospectiveEventAnalysis
     pk_url_kwarg = "analysis_id"
     template_name = "retrospective/graph_view.html"
     graph_data = False
 
     def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
         if self.graph_data:
             return HttpResponse(self.object.graph_data, content_type="application/json")
         return super().get(request, *args, **kwargs)
 
 
-class EditRetrospectiveEventView(IsAuthorizedMixin, IsOwnerMixin, UpdateView):
+class EditRetrospectiveEventView(IsOwnerMixin, UpdateView):
     model = RetrospectiveEvent
     fields = ["notes"]
     pk_url_kwarg = "event_id"
@@ -134,7 +148,27 @@ class PublicRetrospectiveEventsView(ListView):
     as_json = False
 
     def get_queryset(self):
-        return RetrospectiveEvent.objects.exclude(member__account__public_data=False)
+        return RetrospectiveEvent.objects.exclude(published=False)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        published_member_reports = 0
+        any_member_reports = 0
+        if not self.request.user.is_anonymous:
+            published_member_reports = self.object_list.filter(
+                member=self.request.user.openhumansmember
+            ).count()
+            any_member_reports = RetrospectiveEvent.objects.filter(
+                member=self.request.user.openhumansmember
+            ).count()
+        context.update(
+            {
+                "published_member_reports": published_member_reports,
+                "any_member_reports": any_member_reports,
+                "openhumans_login_url": OpenHumansMember.get_auth_url(),
+            }
+        )
+        return context
 
     def get(self, request, *args, **kwargs):
         if self.as_json:
@@ -144,6 +178,7 @@ class PublicRetrospectiveEventsView(ListView):
                     "json_path": reverse(
                         "retrospective:view_event_json", kwargs={"event_id": x.id}
                     ),
+                    "member_id": x.member.oh_id,
                 }
                 for x in self.get_queryset()
             ]

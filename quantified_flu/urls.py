@@ -17,6 +17,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import TemplateView
 
 from .views import logout_user, HomeView, about, delete_account, ManageAccountView
 
@@ -31,6 +32,11 @@ urlpatterns = [
     path("checkin/", include("checkin.urls")),
     path("report/", include("reports.urls")),
     path("delete-account/", delete_account, name="delete-account"),
+    path(
+        "public-data/",
+        TemplateView.as_view(template_name="quantified_flu/public_data.html"),
+        name="public-data",
+    ),
 ]
 
 # Needed for static and media files in local development.
