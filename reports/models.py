@@ -179,12 +179,17 @@ class SymptomReport(models.Model):
         return 4
 
     def as_json(self):
+        if isinstance(self.fever, type(None)):
+            fever = ""
+        else:
+            fever = float(self.fever)
+        print(fever)
         data = {
             "created": self.created.isoformat(),
             "symptoms": self.get_symptom_values(),
             "other_symptoms": self.other_symptoms,
             "fever_guess": self.fever_guess,
-            "fever": self.fever,
+            "fever": fever,
             "suspected_virus": self.suspected_virus,
             "notes": self.notes,
         }
