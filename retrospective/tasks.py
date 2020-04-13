@@ -44,24 +44,28 @@ def analyze_event(event_id):
             fitbit_data.append(i)
         if i["source"] == "direct-sharing-191":
             has_fitbit_intraday = True
+    if not event.retrospectiveeventanalysis_set.filter(graph_type__exact="Oura"):
+        for i in oura_data:
+            oura_df = oura_parser(i, event.date)
+            new_analysis = RetrospectiveEventAnalysis(
+                event=event,
+                graph_data=oura_df.to_json(orient="records"),
+                graph_type="Oura",
+            )
+            new_analysis.save()
+    if not event.retrospectiveeventanalysis_set.filter(graph_type__exact="Fitbit"):
+        for i in fitbit_data:
+            fitbit_df = fitbit_parser(i, event.date)
+            new_analysis = RetrospectiveEventAnalysis(
+                event=event,
+                graph_data=fitbit_df.to_json(orient="records"),
+                graph_type="Fitbit",
+            )
+            new_analysis.save()
 
-    for i in oura_data:
-        oura_df = oura_parser(i, event.date)
-        new_analysis = RetrospectiveEventAnalysis(
-            event=event, graph_data=oura_df.to_json(orient="records"), graph_type="Oura"
-        )
-        new_analysis.save()
-
-    for i in fitbit_data:
-        fitbit_df = fitbit_parser(i, event.date)
-        new_analysis = RetrospectiveEventAnalysis(
-            event=event,
-            graph_data=fitbit_df.to_json(orient="records"),
-            graph_type="Fitbit",
-        )
-        new_analysis.save()
-
-    if has_fitbit_intraday:
+    if has_fitbit_intraday and not event.retrospectiveeventanalysis_set.filter(
+        graph_type__exact="Fitbit Intraday"
+    ):
         fb_intraday_df = fitbit_intraday_parser(
             fitbit_data[0], oh_member_files, event.date
         )
