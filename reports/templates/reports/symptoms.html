@@ -113,3 +113,41 @@ input[type=radio]{
 </form>
 
 {% endblock main %}
+
+{% block extra_js_body %}
+<script>
+  // Written to enable touchscreen devices to interact with the slider via tap.
+  // Adapted from: https://stackoverflow.com/questions/33343854/
+
+  var rangeInputs = document.querySelectorAll(".custom-range");
+
+  function iosTapValue(e) {
+    // get relative X position and infer potential segments from max.
+    var val = (e.pageX - this.getBoundingClientRect().left) /
+      (this.getBoundingClientRect().right - this.getBoundingClientRect().left);
+    var max = this.getAttribute("max") || 100;
+    var min = this.getAttribute("min") || 0;
+    numChoices = max - min + 1;            // "fenceposts"
+    var segment = 1 / (numChoices - 1);    // fence segment length
+    var segmentArr = [];
+
+    // define segment endpoints as array.
+    for (var i = 0; i < numChoices; i++) {
+      segmentArr.push(segment * i);
+    }
+
+    // sort copy of this list by distance event X, get the closest one.
+    var segCopy = [...segmentArr];
+    var ind = segmentArr.sort((a, b) => Math.abs(val - a) - Math.abs(val - b) )[0];
+
+    // reassign range value to index of the value that was closest.
+    this.value = segCopy.indexOf(ind);
+  }
+
+  if (!!navigator.platform.match(/iPhone|iPod|iPad/)) {
+    for (index = 0; index < rangeInputs.length; index++) {
+      rangeInputs[index].addEventListener("touchend", iosTapValue, {passive: true});
+    }
+  }
+</script>
+{% endblock extra_js_body %}
