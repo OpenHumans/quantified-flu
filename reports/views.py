@@ -119,7 +119,12 @@ class ReportListView(ListView):
         context = super().get_context_data(*args, **kwargs)
 
         timezone = pytz.timezone("UTC")
-        if not self.request.user.is_anonymous:
+        if self.member:
+            try:
+                timezone = self.member.checkinschedule.timezone
+            except CheckinSchedule.DoesNotExist:
+                pass
+        elif not self.request.user.is_anonymous:
             try:
                 timezone = self.request.user.openhumansmember.checkinschedule.timezone
             except CheckinSchedule.DoesNotExist:
