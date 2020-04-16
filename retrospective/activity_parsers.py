@@ -7,17 +7,25 @@ WEEKS_BEFORE_SICK = 3
 WEEKS_AFTER_SICK = 2
 
 
-def oura_parser(oura_object, event_date):
+def oura_parser(oura_object, event_date, single_day=False):
     sick_dates = [event_date]
     oura = json.loads(requests.get(oura_object["download_url"]).content)
 
-    sd_dict = {}
+    if single_day:
+        sd_dict = {
+            event_date: {
+                "period_start": arrow.get(event_date),
+                "period_end": arrow.get(event_date),
+            }
+        }
+    else:
+        sd_dict = {}
 
-    for sd in sick_dates:
-        sdd = arrow.get(sd)
-        period_start = sdd.shift(weeks=WEEKS_BEFORE_SICK * -1).format("YYYY-MM-DD")
-        period_end = sdd.shift(weeks=WEEKS_AFTER_SICK).format("YYYY-MM-DD")
-        sd_dict[sd] = {"period_start": period_start, "period_end": period_end}
+        for sd in sick_dates:
+            sdd = arrow.get(sd)
+            period_start = sdd.shift(weeks=WEEKS_BEFORE_SICK * -1).format("YYYY-MM-DD")
+            period_end = sdd.shift(weeks=WEEKS_AFTER_SICK).format("YYYY-MM-DD")
+            sd_dict[sd] = {"period_start": period_start, "period_end": period_end}
 
     period = []
     timestamp = []
@@ -57,16 +65,26 @@ def oura_parser(oura_object, event_date):
     return dataframe
 
 
-def fitbit_parser(fitbit_object, event_date):
+def fitbit_parser(fitbit_object, event_date, single_day=False):
     sick_dates = [event_date]
     fitbit_data = json.loads(requests.get(fitbit_object["download_url"]).content)
-    sd_dict = {}
 
-    for sd in sick_dates:
-        sdd = arrow.get(sd)
-        period_start = sdd.shift(weeks=WEEKS_BEFORE_SICK * -1).format("YYYY-MM-DD")
-        period_end = sdd.shift(weeks=WEEKS_AFTER_SICK).format("YYYY-MM-DD")
-        sd_dict[sd] = {"period_start": period_start, "period_end": period_end}
+    if single_day:
+        sd_dict = {
+            event_date: {
+                "period_start": arrow.get(event_date),
+                "period_end": arrow.get(event_date),
+            }
+        }
+    else:
+
+        sd_dict = {}
+
+        for sd in sick_dates:
+            sdd = arrow.get(sd)
+            period_start = sdd.shift(weeks=WEEKS_BEFORE_SICK * -1).format("YYYY-MM-DD")
+            period_end = sdd.shift(weeks=WEEKS_AFTER_SICK).format("YYYY-MM-DD")
+            sd_dict[sd] = {"period_start": period_start, "period_end": period_end}
 
     period = []
     timestamp = []
@@ -81,7 +99,10 @@ def fitbit_parser(fitbit_object, event_date):
                 ):
                     period.append(p)
                     timestamp.append(entry["dateTime"])
-                    heart_rate.append(entry["value"]["restingHeartRate"])
+                    if "restingHeartRate" in entry["value"].keys():
+                        heart_rate.append(entry["value"]["restingHeartRate"])
+                    else:
+                        heart_rate.append("-")
 
     timestamp = [i.format("YYYY-MM-DD HH:mm:ss") for i in timestamp]
     dataframe = pd.DataFrame(
@@ -90,21 +111,32 @@ def fitbit_parser(fitbit_object, event_date):
     return dataframe
 
 
-def fitbit_intraday_parser(fitbit_data, user_files, event_date):
+def fitbit_intraday_parser(fitbit_data, user_files, event_date, single_day=False):
     fitbit_data = requests.get(fitbit_data["download_url"]).json()
     sick_dates = [event_date]
+    print(event_date)
     sd_dict = {}
 
-    for sd in sick_dates:
-        sdd = arrow.get(sd)
-        period_start = sdd.shift(weeks=WEEKS_BEFORE_SICK * -1).format("YYYY-MM-DD")
-        period_end = sdd.shift(weeks=WEEKS_AFTER_SICK).format("YYYY-MM-DD")
-        sd_dict[sd] = {
-            "period_start": period_start,
-            "period_end": period_end,
+    if single_day:
+        sd_dict[event_date] = {
+            "period_start": event_date,
+            "period_end": event_date,
             "sleep_start_dates": [],
             "sleep_amount_minutes": [],
         }
+
+    else:
+
+        for sd in sick_dates:
+            sdd = arrow.get(sd)
+            period_start = sdd.shift(weeks=WEEKS_BEFORE_SICK * -1).format("YYYY-MM-DD")
+            period_end = sdd.shift(weeks=WEEKS_AFTER_SICK).format("YYYY-MM-DD")
+            sd_dict[sd] = {
+                "period_start": period_start,
+                "period_end": period_end,
+                "sleep_start_dates": [],
+                "sleep_amount_minutes": [],
+            }
 
     for p in sd_dict.keys():
         for year in fitbit_data["sleep-start-time"]:

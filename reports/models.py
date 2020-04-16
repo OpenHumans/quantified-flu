@@ -183,7 +183,10 @@ class SymptomReport(models.Model):
             fever = ""
         else:
             fever = float(self.fever)
-        print(fever)
+        physio_data = {
+            i.data_source: json.loads(i.values)
+            for i in self.symptomreportphysiology_set.all()
+        }
         data = {
             "created": self.created.isoformat(),
             "symptoms": self.get_symptom_values(),
@@ -192,6 +195,7 @@ class SymptomReport(models.Model):
             "fever": fever,
             "suspected_virus": self.suspected_virus,
             "notes": self.notes,
+            "physio_data": physio_data,
         }
         return json.dumps(data)
 
@@ -200,6 +204,12 @@ class SymptomReportSymptomItem(models.Model):
     symptom = models.ForeignKey(Symptom, on_delete=models.CASCADE)
     report = models.ForeignKey(SymptomReport, on_delete=models.CASCADE)
     intensity = models.IntegerField(choices=SYMPTOM_INTENSITY_CHOICES, default=0)
+
+
+class SymptomReportPhysiology(models.Model):
+    report = models.ForeignKey(SymptomReport, on_delete=models.CASCADE)
+    data_source = models.TextField()
+    values = models.TextField()
 
 
 """

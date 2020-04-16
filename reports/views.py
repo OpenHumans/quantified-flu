@@ -24,6 +24,8 @@ from .models import (
     ReportToken,
 )  # TODO: add DiagnosisReport
 
+from retrospective.tasks import add_wearable_to_symptom
+
 User = get_user_model()
 
 
@@ -79,6 +81,7 @@ class ReportSymptomsView(CheckTokenMixin, CreateView):
         if self.token:
             report.token = self.token
             report.save()
+        add_wearable_to_symptom.delay(report.id)
         messages.add_message(self.request, messages.SUCCESS, "Symptom report recorded")
         update_openhumans_reportslist(self.request.user.openhumansmember)
         return super().form_valid(form)
@@ -93,6 +96,7 @@ class ReportNoSymptomsView(CheckTokenMixin, RedirectView):
             report_none=True, token=self.token, member=request.user.openhumansmember
         )
         report.save()
+        add_wearable_to_symptom.delay(report.id)
         messages.add_message(request, messages.SUCCESS, "No symptom report saved!")
         return super().get(request, *args, **kwargs)
 
