@@ -132,34 +132,43 @@ def add_wearable_to_symptom(symptom_report_id):
 
     if oura_data:
         for i in oura_data:
-            oura_df = oura_parser(i, report.created.date().isoformat(), True)
-            oura_df = oura_df.drop(columns=["period"])
-            if oura_df.to_json(orient="records"):
-                wearable_report, _ = SymptomReportPhysiology.objects.get_or_create(
-                    report=report, data_source="oura"
-                )
-                wearable_report.values = oura_df.to_json(orient="records")
-                wearable_report.save()
+            try:
+                oura_df = oura_parser(i, report.created.date().isoformat(), True)
+                oura_df = oura_df.drop(columns=["period"])
+                if oura_df.to_json(orient="records"):
+                    wearable_report, _ = SymptomReportPhysiology.objects.get_or_create(
+                        report=report, data_source="oura"
+                    )
+                    wearable_report.values = oura_df.to_json(orient="records")
+                    wearable_report.save()
+            except:
+                pass
 
     if fitbit_data:
         for i in fitbit_data:
-            fitbit_df = fitbit_parser(i, report.created.date().isoformat(), True)
-            fitbit_df = fitbit_df.drop(columns=["period"])
-            if fitbit_df.to_json(orient="records"):
-                wearable_report, _ = SymptomReportPhysiology.objects.get_or_create(
-                    report=report, data_source="fitbit"
-                )
-                wearable_report.values = fitbit_df.to_json(orient="records")
-                wearable_report.save()
+            try:
+                fitbit_df = fitbit_parser(i, report.created.date().isoformat(), True)
+                fitbit_df = fitbit_df.drop(columns=["period"])
+                if fitbit_df.to_json(orient="records"):
+                    wearable_report, _ = SymptomReportPhysiology.objects.get_or_create(
+                        report=report, data_source="fitbit"
+                    )
+                    wearable_report.values = fitbit_df.to_json(orient="records")
+                    wearable_report.save()
+            except:
+                pass
 
     if has_fitbit_intraday:
-        fb_intraday_df = fitbit_intraday_parser(
-            fitbit_data[0], oh_member_files, report.created.date().isoformat(), True
-        )
-        fb_intraday_df = fb_intraday_df.drop(columns=["period"])
-        if fb_intraday_df.to_json(orient="records"):
-            wearable_report, _ = SymptomReportPhysiology.objects.get_or_create(
-                report=report, data_source="fitbit-intraday"
+        try:
+            fb_intraday_df = fitbit_intraday_parser(
+                fitbit_data[0], oh_member_files, report.created.date().isoformat(), True
             )
-            wearable_report.values = fb_intraday_df.to_json(orient="records")
-            wearable_report.save()
+            fb_intraday_df = fb_intraday_df.drop(columns=["period"])
+            if fb_intraday_df.to_json(orient="records"):
+                wearable_report, _ = SymptomReportPhysiology.objects.get_or_create(
+                    report=report, data_source="fitbit-intraday"
+                )
+                wearable_report.values = fb_intraday_df.to_json(orient="records")
+                wearable_report.save()
+        except:
+            pass
