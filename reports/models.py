@@ -183,10 +183,6 @@ class SymptomReport(models.Model):
             fever = ""
         else:
             fever = float(self.fever)
-        physio_data = {
-            i.data_source: json.loads(i.values)
-            for i in self.symptomreportphysiology_set.all()
-        }
         data = {
             "created": self.created.isoformat(),
             "symptoms": self.get_symptom_values(),
@@ -195,7 +191,6 @@ class SymptomReport(models.Model):
             "fever": fever,
             "suspected_virus": self.suspected_virus,
             "notes": self.notes,
-            "physio_data": physio_data,
         }
         return json.dumps(data)
 
@@ -207,7 +202,9 @@ class SymptomReportSymptomItem(models.Model):
 
 
 class SymptomReportPhysiology(models.Model):
-    report = models.ForeignKey(SymptomReport, on_delete=models.CASCADE)
+    member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField(null=True)  # up to present if undefined
     data_source = models.TextField()
     values = models.TextField()
 

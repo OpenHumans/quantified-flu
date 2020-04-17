@@ -1,6 +1,8 @@
 from django.core.management.base import BaseCommand
+
+from openhumans.models import OpenHumansMember
+
 from retrospective.tasks import add_wearable_to_symptom
-from reports.models import SymptomReport
 
 
 class Command(BaseCommand):
@@ -8,6 +10,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        reports = SymptomReport.objects.all()
-        for r in reports:
-            add_wearable_to_symptom.delay(symptom_report_id=r.id)
+        members = OpenHumansMember.objects.all()
+        for member in members:
+            add_wearable_to_symptom.delay(member.oh_id)

@@ -15,6 +15,7 @@ from openhumans.models import OpenHumansMember
 from checkin.models import CheckinSchedule
 from quantified_flu.helpers import update_openhumans_reportslist
 from quantified_flu.models import Account
+from retrospective.tasks import add_wearable_to_symptom
 
 from .forms import SymptomReportForm
 from .models import (
@@ -24,7 +25,6 @@ from .models import (
     ReportToken,
 )  # TODO: add DiagnosisReport
 
-from retrospective.tasks import add_wearable_to_symptom
 
 User = get_user_model()
 
@@ -81,7 +81,7 @@ class ReportSymptomsView(CheckTokenMixin, CreateView):
         if self.token:
             report.token = self.token
             report.save()
-        add_wearable_to_symptom.delay(report.id)
+        add_wearable_to_symptom.delay(report.member.oh_id)
         messages.add_message(self.request, messages.SUCCESS, "Symptom report recorded")
         update_openhumans_reportslist(self.request.user.openhumansmember)
         return super().form_valid(form)
@@ -96,7 +96,7 @@ class ReportNoSymptomsView(CheckTokenMixin, RedirectView):
             report_none=True, token=self.token, member=request.user.openhumansmember
         )
         report.save()
-        add_wearable_to_symptom.delay(report.id)
+        add_wearable_to_symptom.delay(report.member.oh_id)
         messages.add_message(request, messages.SUCCESS, "No symptom report saved!")
         return super().get(request, *args, **kwargs)
 
@@ -107,11 +107,15 @@ class ReportListView(ListView):
     member = None
     is_owner = False
 
-    def get_queryset(self):
+    def get_list_member(self):
         if self.member:
             list_member = self.member
         else:
             list_member = self.request.user.openhumansmember
+        return list_member
+
+    def get_queryset(self):
+        list_member = self.get_list_member()
         if (
             not self.request.user.is_anonymous
             and list_member == self.request.user.openhumansmember
@@ -144,10 +148,16 @@ class ReportListView(ListView):
 
     def get_as_json(self):
         context_data = self.get_context_data()
+        list_member = self.get_list_member()
+        physiology_data = {
+            i.data_source: json.loads(i.values)
+            for i in list_member.symptomreportphysiology_set.all()
+        }
         data = {
             "reports": [json.loads(r.as_json()) for r in context_data["object_list"]],
             "member_id": context_data["member_id"],
             "timezone": context_data["timezone"].tzname(dt=None),
+            "physiology_data": physiology_data,
         }
         return json.dumps(data)
 

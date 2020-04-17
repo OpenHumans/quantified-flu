@@ -3,13 +3,14 @@ from celery.decorators import task
 
 from django.contrib.auth import get_user_model
 
+from openhumans.models import OpenHumansMember
+
 from .models import RetrospectiveEvent, RetrospectiveEventAnalysis
 from import_data.models import FitbitMember, OuraMember
 from reports.models import SymptomReport, SymptomReportPhysiology
 from import_data.celery_fitbit import fetch_fitbit_data
 from import_data.celery_oura import fetch_oura_data
-from .activity_parsers import oura_parser, fitbit_parser
-from .activity_parsers import fitbit_intraday_parser
+from .activity_parsers import oura_parser, fitbit_parser, fitbit_intraday_parser
 
 User = get_user_model()
 
@@ -24,8 +25,7 @@ def analyze_existing_events(user_id):
 def analyze_existing_reports(user_id):
     user = User.objects.get(id=user_id)
     reports = SymptomReport.objects.filter(member=user.openhumansmember)
-    for report in reports:
-        add_wearable_to_symptom.delay(symptom_report_id=report.id)
+    add_wearable_to_symptom.delay(user.openhumansmember.oh_id)
 
 
 @task
@@ -107,10 +107,16 @@ def update_oura_data(oura_member_id):
 
 
 @task
-def add_wearable_to_symptom(symptom_report_id):
-    report = SymptomReport.objects.get(id=symptom_report_id)
-    oh_member = report.member
+def add_wearable_to_symptom(oh_member_id):
+    oh_member = OpenHumansMember.objects.get(oh_id=oh_member_id)
     oh_member_files = oh_member.list_files()
+
+    symptom_reports_start = (
+        SymptomReport.objects.filter(member=oh_member).earliest("created").created
+    )
+    symptom_reports_end = (
+        SymptomReport.objects.filter(member=oh_member).latest("created").created
+    )
 
     oura_data = []
     fitbit_data = []
@@ -133,12 +139,25 @@ def add_wearable_to_symptom(symptom_report_id):
     if oura_data:
         for i in oura_data:
             try:
-                oura_df = oura_parser(i, report.created.date().isoformat(), True)
+                oura_df = oura_parser(
+                    i,
+                    symptom_reports_start.date().isoformat(),
+                    symptom_reports_end.date().isoformat(),
+                )
                 oura_df = oura_df.drop(columns=["period"])
                 if oura_df.to_json(orient="records"):
-                    wearable_report, _ = SymptomReportPhysiology.objects.get_or_create(
-                        report=report, data_source="oura"
+                    wearable_report, created = SymptomReportPhysiology.objects.get_or_create(
+                        member=oh_member,
+                        data_source="oura",
+                        defaults={
+                            "start_date": symptom_reports_start,
+                            "end_date": symptom_reports_end,
+                        },
                     )
+                    if not created:
+                        wearable_report.start_date = symptom_reports_start
+                        wearable_report.end_date = symptom_reports_end
+                        wearable_report.save()
                     wearable_report.values = oura_df.to_json(orient="records")
                     wearable_report.save()
             except:
@@ -147,12 +166,25 @@ def add_wearable_to_symptom(symptom_report_id):
     if fitbit_data:
         for i in fitbit_data:
             try:
-                fitbit_df = fitbit_parser(i, report.created.date().isoformat(), True)
+                fitbit_df = fitbit_parser(
+                    i,
+                    symptom_reports_start.date().isoformat(),
+                    symptom_reports_end.date().isoformat(),
+                )
                 fitbit_df = fitbit_df.drop(columns=["period"])
                 if fitbit_df.to_json(orient="records"):
-                    wearable_report, _ = SymptomReportPhysiology.objects.get_or_create(
-                        report=report, data_source="fitbit"
+                    wearable_report, created = SymptomReportPhysiology.objects.get_or_create(
+                        member=oh_member,
+                        data_source="fitbit",
+                        defaults={
+                            "start_date": symptom_reports_start,
+                            "end_date": symptom_reports_end,
+                        },
                     )
+                    if not created:
+                        wearable_report.start_date = symptom_reports_start
+                        wearable_report.end_date = symptom_reports_end
+                        wearable_report.save()
                     wearable_report.values = fitbit_df.to_json(orient="records")
                     wearable_report.save()
             except:
@@ -161,13 +193,25 @@ def add_wearable_to_symptom(symptom_report_id):
     if has_fitbit_intraday:
         try:
             fb_intraday_df = fitbit_intraday_parser(
-                fitbit_data[0], oh_member_files, report.created.date().isoformat(), True
+                fitbit_data[0],
+                oh_member_files,
+                symptom_reports_start.date().isoformat(),
+                symptom_reports_end.date().isoformat(),
             )
             fb_intraday_df = fb_intraday_df.drop(columns=["period"])
             if fb_intraday_df.to_json(orient="records"):
-                wearable_report, _ = SymptomReportPhysiology.objects.get_or_create(
-                    report=report, data_source="fitbit-intraday"
+                wearable_report, created = SymptomReportPhysiology.objects.get_or_create(
+                    member=oh_member,
+                    data_source="fitbit-intraday",
+                    defaults={
+                        "start_date": symptom_reports_start,
+                        "end_date": symptom_reports_end,
+                    },
                 )
+                if not created:
+                    wearable_report.start_date = symptom_reports_start
+                    wearable_report.end_date = symptom_reports_end
+                    wearable_report.save()
                 wearable_report.values = fb_intraday_df.to_json(orient="records")
                 wearable_report.save()
         except:
