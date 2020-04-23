@@ -21,8 +21,14 @@ from django.views.generic import TemplateView
 
 from .views import logout_user, HomeView, about, delete_account, ManageAccountView
 
+
+def trigger_error(request):
+    division_by_zero = 1 / 0
+
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("sentry-debug/", trigger_error),
     path("logout/", logout_user, name="logout"),
     path("manage_account/", ManageAccountView.as_view(), name="manage-account"),
     path("", HomeView.as_view(), name="home"),
