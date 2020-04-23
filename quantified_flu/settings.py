@@ -165,6 +165,11 @@ if REMOTE:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+
+    sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), integrations=[DjangoIntegration()])
+
 
 # Requests Respectful (rate limiting, waiting)
 rr = RespectfulRequester()

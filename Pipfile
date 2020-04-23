@@ -18,6 +18,7 @@ redis = "*"
 pandas = "*"
 arrow = "*"
 django-timezone-field = "*"
+sentry-sdk = "*"
 
 [requires]
 python_version = "3.6"
