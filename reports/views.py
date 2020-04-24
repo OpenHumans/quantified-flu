@@ -149,17 +149,23 @@ class ReportListView(ListView):
     def get_as_json(self):
         context_data = self.get_context_data()
         list_member = self.get_list_member()
-        physiology_data = {
+        data = {
             i.data_source: json.loads(i.values)
             for i in list_member.symptomreportphysiology_set.all()
         }
-        data = {
-            "reports": [json.loads(r.as_json()) for r in context_data["object_list"]],
-            "member_id": context_data["member_id"],
-            "timezone": context_data["timezone"].tzname(dt=None),
-            "physiology_data": physiology_data,
-        }
-        return json.dumps(data)
+        report_data = [
+            json.loads(r.as_json()) for r in context_data["object_list"].reverse()
+        ]
+        data["symptom_report"] = []
+        for report in report_data:
+            timestamp = report.pop("created")
+            symptoms = report.pop("symptoms")
+            formatted = {"timestamp": timestamp, "data": report}
+            formatted["data"].update(
+                {"symptom_{}".format(x): symptoms[x] for x in symptoms}
+            )
+            data["symptom_report"].append(formatted)
+        return json.dumps(data, sort_keys=True)
 
     def get(self, request, *args, **kwargs):
         if "member_id" in self.kwargs:
