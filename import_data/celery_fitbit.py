@@ -153,7 +153,8 @@ def fetch_fitbit_data(fitbit_member):
     rr.update_realm(user_realm, max_requests=150, timespan=3600)
 
     # Get initial information about user from Fitbit
-    print("Creating header and going to get user profile")
+    print("Creating header and going to get user profile for:")
+    print(fitbit_member.id)
     headers = {"Authorization": "Bearer %s" % fitbit_access_token}
     query_result = requests.get(
         "https://api.fitbit.com/1/user/-/profile.json", headers=headers
