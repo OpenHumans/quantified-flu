@@ -92,18 +92,19 @@ def analyze_event(event_id):
         )
         if not oura_analyses:
             oura_hr_data, oura_temp_data = oura_parser(oura_data, event.date)
-            oura_hr_analysis = RetrospectiveEventAnalysis(
-                event=event,
-                graph_data=json.dumps(oura_hr_data),
-                graph_type="oura_sleep_5min",
-            )
-            oura_hr_analysis.save()
-            oura_temp_analysis = RetrospectiveEventAnalysis(
-                event=event,
-                graph_data=json.dumps(oura_temp_data),
-                graph_type="oura_sleep_summary",
-            )
-            oura_temp_analysis.save()
+            if oura_hr_data:
+                oura_hr_analysis = RetrospectiveEventAnalysis(
+                    event=event,
+                    graph_data=json.dumps(oura_hr_data),
+                    graph_type="oura_sleep_5min",
+                )
+                oura_hr_analysis.save()
+                oura_temp_analysis = RetrospectiveEventAnalysis(
+                    event=event,
+                    graph_data=json.dumps(oura_temp_data),
+                    graph_type="oura_sleep_summary",
+                )
+                oura_temp_analysis.save()
 
     if fitbit_data:
         fitbit_analyses = event.retrospectiveeventanalysis_set.filter(
