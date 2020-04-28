@@ -81,32 +81,92 @@
 
 <hr>
 
+<script>
+  /* QF data is a JSON in the following format:
+
+  {
+    'type_key':
+    {
+      'timestamp': string (ISO 8601 format),
+      'data': {
+        'value_key1': value1,
+        'value_key2': value2,
+        ...
+      }
+    }
+  }
+
+  Taking a type_key (e.g. 'oura_sleep_summary'), this is mapped to the following
+  for plots using MetricsGraphics.js:
+
+  {
+    'timestamp': JavaScript Date object,
+    'value_key1': value1,
+    'value_key2': value2,
+    ...
+  }
+  */
+  function mapQFDataForMG(data_in, graph_type) {
+    data_in = data_in[graph_type];
+    var new_data = [];
+    for (index = 0; index < data_in.length; index++) {
+      var entry = {}
+      entry.timestamp = new Date (data_in[index].timestamp);
+      for (const [key, value] of Object.entries(data_in[index].data)) {
+        entry[key] = parseFloat(value);
+      }
+      new_data.push(entry);
+    }
+    return new_data;
+  }
+</script>
+
 {% for analysis in object.retrospectiveeventanalysis_set.all %}
 
 <h3>
-{% if analysis.graph_type == 'Oura' %}Oura
-{% elif analysis.graph_type == 'Fitbit' %}Fitbit
-{% elif analysis.graph_type == 'Fitbit Intraday' %}Fitbit Intraday
+{% if analysis.graph_type == 'oura_sleep_5min' %}Oura Heart Rate
+{% elif analysis.graph_type == 'oura_sleep_summary' %}Oura Temperature
+{% elif analysis.graph_type == 'fitbit_summary' %}Fitbit
+{% elif analysis.graph_type == 'fitbit_intraday' %}Fitbit Intraday
 {% endif %}</h3>
 
 <div class="retrospective_graph_{{ analysis.id }}"></div>
-<div class='retrospective_graph_temp_{{ analysis.id }}'></div>
+
+{% endfor %}
 
 <script>
-  d3.json('{% url 'retrospective:json_graph' analysis_id=analysis.id %}', function(data) {
-    {% if analysis.graph_type == 'Oura' %}
-    data = MG.convert.date(data, 'timestamp', "%Y-%m-%d %H:%M:%S");
-    {% elif analysis.graph_type == 'Fitbit' %}
-    data = MG.convert.date(data, 'timestamp', "%Y-%m-%d");
-    {% elif analysis.graph_type == 'Fitbit Intraday' %}
-    data = MG.convert.date(data, 'timestamp', "%Y-%m-%d %H:%M:%S+00:00");
-    {%endif%}
+  $.getJSON('{% url 'retrospective:view_event_json' object.id %}', function(event_data) {
 
-    var marker_date = data[0]['period'];
+    {% for analysis in object.retrospectiveeventanalysis_set.all %}
+    var data = mapQFDataForMG(event_data, '{{ analysis.graph_type }}');
+
+    var marker_date = Date.parse('{{ analysis.event.date|date:"c" }}')
     var markers = [{
-        'timestamp': new Date(marker_date),
+        'timestamp': marker_date,
         'label': 'Reported sick incident'
     }];
+
+    {% if analysis.graph_type == 'oura_sleep_summary' %}
+    MG.data_graphic({
+      title: "Temperature evolution",
+      description: "The body temperature difference as measured by Oura",
+      data: data,
+      chart_type: 'point',
+      width: 600,
+      height: 450,
+      top: 50,
+      left: 50,
+      right: 60,
+      full_width: true,
+      target: ".retrospective_graph_{{ analysis.id }}",
+      x_accessor: "timestamp",
+      y_accessor: "temperature_delta",
+      aggregate_rollover: true,
+      x_label : 'date',
+      y_label : 'body temperature',
+      markers: markers,
+      });
+    {% else %}
     MG.data_graphic({
       title: "Heart rate evolution",
       description: "Nightly heart rate evolution over time",
@@ -119,35 +179,17 @@
       full_width: true,
       target: ".retrospective_graph_{{ analysis.id }}",
       x_accessor: "timestamp",
-      y_accessor: 'heart_rate',
+      y_accessor: "heart_rate",
       aggregate_rollover: true,
       x_label : 'date',
       y_label : 'heart rate',
       markers: markers,
       });
-    {% if analysis.graph_type == 'Oura' %}
-      MG.data_graphic({
-        title: "Temperature evolution",
-        description: "The body temperature difference as measured by Oura",
-        data: data,
-        chart_type: 'point',
-        width: 600,
-        height: 450,
-        top: 50,
-        left: 50,
-        right: 60,
-        full_width: true,
-        target: ".retrospective_graph_temp_{{ analysis.id }}",
-        x_accessor: "timestamp",
-        y_accessor: 'temperature_delta',
-        aggregate_rollover: true,
-        x_label : 'date',
-        y_label : 'body temperature',
-        markers: markers,
-        });
-    {%endif%}
-  });
+    {% endif %}
 
+    {% endfor %}
+
+  })
   </script>
-{% endfor %}
+
 {% endblock main %}

@@ -24,16 +24,17 @@ class RetrospectiveEvent(models.Model):
     published = models.BooleanField(default=False)
 
     def as_json(self):
-        graph_data = {
+        data = {
             analysis.graph_type: json.loads(analysis.graph_data)
             for analysis in self.retrospectiveeventanalysis_set.all()
         }
-        all_data = {
-            "certainty": self.certainty,
-            "notes": self.notes,
-            "graph_data": graph_data,
-        }
-        return json.dumps(all_data)
+        data["sickness_event"] = [
+            {
+                "timestamp": self.date.isoformat(),
+                "data": {"certainty": self.certainty, "notes": self.notes},
+            }
+        ]
+        return json.dumps(data, sort_keys=True)
 
 
 class RetrospectiveEventAnalysis(models.Model):

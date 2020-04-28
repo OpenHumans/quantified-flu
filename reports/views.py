@@ -1,3 +1,5 @@
+import csv
+import io
 import json
 import pytz
 
@@ -15,6 +17,7 @@ from openhumans.models import OpenHumansMember
 from checkin.models import CheckinSchedule
 from quantified_flu.helpers import update_openhumans_reportslist
 from quantified_flu.models import Account
+from retrospective.tasks import add_wearable_to_symptom
 
 from .forms import SymptomReportForm
 from .models import (
@@ -23,6 +26,7 @@ from .models import (
     SymptomReport,
     ReportToken,
 )  # TODO: add DiagnosisReport
+
 
 User = get_user_model()
 
@@ -79,6 +83,7 @@ class ReportSymptomsView(CheckTokenMixin, CreateView):
         if self.token:
             report.token = self.token
             report.save()
+        add_wearable_to_symptom.delay(report.member.oh_id)
         messages.add_message(self.request, messages.SUCCESS, "Symptom report recorded")
         update_openhumans_reportslist(self.request.user.openhumansmember)
         return super().form_valid(form)
@@ -93,21 +98,27 @@ class ReportNoSymptomsView(CheckTokenMixin, RedirectView):
             report_none=True, token=self.token, member=request.user.openhumansmember
         )
         report.save()
+        add_wearable_to_symptom.delay(report.member.oh_id)
         messages.add_message(request, messages.SUCCESS, "No symptom report saved!")
         return super().get(request, *args, **kwargs)
 
 
 class ReportListView(ListView):
     template_name = "reports/list.html"
+    as_csv = False
     as_json = False
     member = None
     is_owner = False
 
-    def get_queryset(self):
+    def get_list_member(self):
         if self.member:
             list_member = self.member
         else:
             list_member = self.request.user.openhumansmember
+        return list_member
+
+    def get_queryset(self):
+        list_member = self.get_list_member()
         if (
             not self.request.user.is_anonymous
             and list_member == self.request.user.openhumansmember
@@ -140,12 +151,39 @@ class ReportListView(ListView):
 
     def get_as_json(self):
         context_data = self.get_context_data()
+        list_member = self.get_list_member()
         data = {
-            "reports": [json.loads(r.as_json()) for r in context_data["object_list"]],
-            "member_id": context_data["member_id"],
-            "timezone": context_data["timezone"].tzname(dt=None),
+            i.data_source: json.loads(i.values)
+            for i in list_member.symptomreportphysiology_set.all()
         }
-        return json.dumps(data)
+        report_data = [
+            json.loads(r.as_json()) for r in context_data["object_list"].reverse()
+        ]
+        data["symptom_report"] = []
+        for report in report_data:
+            timestamp = report.pop("created")
+            symptoms = report.pop("symptoms")
+            formatted = {"timestamp": timestamp, "data": report}
+            formatted["data"].update(
+                {"symptom_{}".format(x): symptoms[x] for x in symptoms}
+            )
+            data["symptom_report"].append(formatted)
+        return json.dumps(data, sort_keys=True)
+
+    def get_as_csv(self):
+        json_data = json.loads(self.get_as_json())
+        header = ["timestamp", "data_type", "key", "value"]
+        with io.StringIO(newline="") as f:
+            csv_out = csv.writer(f)
+            csv_out.writerow(header)
+            for data_type in json_data.keys():
+                for entry in json_data[data_type]:
+                    for key in entry["data"]:
+                        csv_out.writerow(
+                            [entry["timestamp"], data_type, key, entry["data"][key]]
+                        )
+            f.seek(0)
+            return f.read()
 
     def get(self, request, *args, **kwargs):
         if "member_id" in self.kwargs:
@@ -159,6 +197,8 @@ class ReportListView(ListView):
         default_response = super().get(request, *args, **kwargs)
         if self.as_json:
             return HttpResponse(self.get_as_json(), content_type="application/json")
+        if self.as_csv:
+            return HttpResponse(self.get_as_csv(), content_type="text/csv")
         return default_response
 
     def post(self, request, *args, **kwargs):
@@ -186,6 +226,9 @@ class PublicReportsLinkView(ListView):
                 {
                     "json_path": reverse(
                         "reports:list_member_json", kwargs={"member_id": m.oh_id}
+                    ),
+                    "csv_path": reverse(
+                        "reports:list_member_csv", kwargs={"member_id": m.oh_id}
                     ),
                     "member_id": m.oh_id,
                 }

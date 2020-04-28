@@ -183,7 +183,6 @@ class SymptomReport(models.Model):
             fever = ""
         else:
             fever = float(self.fever)
-        print(fever)
         data = {
             "created": self.created.isoformat(),
             "symptoms": self.get_symptom_values(),
@@ -200,6 +199,14 @@ class SymptomReportSymptomItem(models.Model):
     symptom = models.ForeignKey(Symptom, on_delete=models.CASCADE)
     report = models.ForeignKey(SymptomReport, on_delete=models.CASCADE)
     intensity = models.IntegerField(choices=SYMPTOM_INTENSITY_CHOICES, default=0)
+
+
+class SymptomReportPhysiology(models.Model):
+    member = models.ForeignKey(OpenHumansMember, on_delete=models.CASCADE)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField(null=True)  # up to present if undefined
+    data_source = models.TextField()
+    values = models.TextField()
 
 
 """

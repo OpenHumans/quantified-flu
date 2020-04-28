@@ -26,6 +26,11 @@ urlpatterns = [
         "edit-event/<event_id>", EditRetrospectiveEventView.as_view(), name="edit_event"
     ),
     path(
+        "event/<event_id>.csv",
+        RetrospectiveEventDetailView.as_view(as_csv=True),
+        name="view_event_csv",
+    ),
+    path(
         "event/<event_id>.json",
         RetrospectiveEventDetailView.as_view(as_json=True),
         name="view_event_json",

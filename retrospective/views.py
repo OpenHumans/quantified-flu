@@ -1,3 +1,5 @@
+import csv
+import io
 import json
 
 from django.contrib.auth.decorators import login_required
@@ -91,11 +93,32 @@ class RetrospectiveEventDetailView(IsAuthorizedMixin, IsOwnerOrPublicMixin, Upda
     pk_url_kwarg = "event_id"
     fields = []
     template_name = "retrospective/event.html"
+    as_csv = False
     as_json = False
+
+    def get_as_csv(self):
+        json_data = json.loads(self.get_as_json())
+        header = ["timestamp", "data_type", "key", "value"]
+        with io.StringIO(newline="") as f:
+            csv_out = csv.writer(f)
+            csv_out.writerow(header)
+            for data_type in json_data.keys():
+                for entry in json_data[data_type]:
+                    for key in entry["data"]:
+                        csv_out.writerow(
+                            [entry["timestamp"], data_type, key, entry["data"][key]]
+                        )
+            f.seek(0)
+            return f.read()
+
+    def get_as_json(self):
+        return self.object.as_json()
 
     def get(self, request, *args, **kwargs):
         if self.as_json:
-            return HttpResponse(self.object.as_json(), content_type="application/json")
+            return HttpResponse(self.get_as_json(), content_type="application/json")
+        if self.as_csv:
+            return HttpResponse(self.get_as_csv(), content_type="text/csv")
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -177,6 +200,9 @@ class PublicRetrospectiveEventsView(ListView):
                     "event_id": x.id,
                     "json_path": reverse(
                         "retrospective:view_event_json", kwargs={"event_id": x.id}
+                    ),
+                    "csv_path": reverse(
+                        "retrospective:view_event_csv", kwargs={"event_id": x.id}
                     ),
                     "member_id": x.member.oh_id,
                 }

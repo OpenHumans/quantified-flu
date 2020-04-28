@@ -16,11 +16,17 @@ urlpatterns = [
     path("no-symptoms", ReportNoSymptomsView.as_view(), name="no-symptoms"),
     path("symptoms", ReportSymptomsView.as_view(), name="symptoms"),
     path(
+        "list/member/<member_id>.csv",
+        ReportListView.as_view(as_csv=True),
+        name="list_member_csv",
+    ),
+    path(
         "list/member/<member_id>.json",
         ReportListView.as_view(as_json=True),
         name="list_member_json",
     ),
     path("list/member/<member_id>", ReportListView.as_view(), name="list_member"),
+    path("list.csv", ReportListView.as_view(as_csv=True), name="list_csv"),
     path("list.json", ReportListView.as_view(as_json=True), name="list_json"),
     path("list", ReportListView.as_view(), name="list"),
     path("public", PublicReportsLinkView.as_view(), name="public"),
