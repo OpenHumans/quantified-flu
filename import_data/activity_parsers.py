@@ -23,30 +23,33 @@ def oura_parser(oura_object, event_start, event_end=False):
     returned_temp_data = []
 
     # p is start_date!
-    for entry in oura["sleep"]:
-        sdate = arrow.get(entry["summary_date"])
+    if "sleep" in oura.keys():
+        for entry in oura["sleep"]:
+            sdate = arrow.get(entry["summary_date"])
 
-        # Use this data if it falls within our target window.
-        if sdate >= period_start and sdate <= period_end:
-            record_time = arrow.get(entry["bedtime_start"])
-            temperature_delta = entry.get("temperature_delta", 0)
-            returned_temp_data.append(
-                {
-                    "timestamp": record_time.format("YYYY-MM-DD"),
-                    "data": {"temperature_delta": temperature_delta},
-                }
-            )
-            for hr in entry["hr_5min"]:
-                if int(hr) != 0:
-                    returned_hr_data.append(
-                        {
-                            "timestamp": record_time.isoformat(),
-                            "data": {"heart_rate": hr},
-                        }
-                    )
-                record_time = record_time.shift(minutes=+5)
+            # Use this data if it falls within our target window.
+            if sdate >= period_start and sdate <= period_end:
+                record_time = arrow.get(entry["bedtime_start"])
+                temperature_delta = entry.get("temperature_delta", 0)
+                returned_temp_data.append(
+                    {
+                        "timestamp": sdate.format("YYYY-MM-DD"),
+                        "data": {"temperature_delta": temperature_delta},
+                    }
+                )
+                for hr in entry["hr_5min"]:
+                    if int(hr) != 0:
+                        returned_hr_data.append(
+                            {
+                                "timestamp": record_time.isoformat(),
+                                "data": {"heart_rate": hr},
+                            }
+                        )
+                    record_time = record_time.shift(minutes=+5)
 
-    return returned_hr_data, returned_temp_data
+        return returned_hr_data, returned_temp_data
+    else:
+        return None, None
 
 
 def fitbit_parser(fitbit_info, event_start, event_end=None):
@@ -124,15 +127,14 @@ def fitbit_intraday_parser(
                 "fitbit-intraday-(.*?)\.json", file_info["basename"]
             ).groups()[0]
             yearmonth = arrow.get(yearmonth)
+
+            if yearmonth.floor(
+                "month"
+            ) <= period_end and period_start <= yearmonth.ceil("month"):
+                data = json.loads(requests.get(file_info["download_url"]).content)
+                hr_data = hr_data + data["activities-heart-intraday"]
         except AttributeError:
             continue
-
-        if yearmonth.floor("month") <= period_end or period_start <= yearmonth.ceil(
-            "month"
-        ):
-            data = json.loads(requests.get(file_info["download_url"]).content)
-            hr_data = hr_data + data["activities-heart-intraday"]
-
     # load into dataframe
     rows = []
     for hr_point in hr_data:
