@@ -124,15 +124,14 @@ def fitbit_intraday_parser(
                 "fitbit-intraday-(.*?)\.json", file_info["basename"]
             ).groups()[0]
             yearmonth = arrow.get(yearmonth)
+
+            if yearmonth.floor(
+                "month"
+            ) <= period_end and period_start <= yearmonth.ceil("month"):
+                data = json.loads(requests.get(file_info["download_url"]).content)
+                hr_data = hr_data + data["activities-heart-intraday"]
         except AttributeError:
             continue
-
-        if yearmonth.floor("month") <= period_end or period_start <= yearmonth.ceil(
-            "month"
-        ):
-            data = json.loads(requests.get(file_info["download_url"]).content)
-            hr_data = hr_data + data["activities-heart-intraday"]
-
     # load into dataframe
     rows = []
     for hr_point in hr_data:
