@@ -1,3 +1,5 @@
+import csv
+import io
 import json
 import pytz
 
@@ -103,6 +105,7 @@ class ReportNoSymptomsView(CheckTokenMixin, RedirectView):
 
 class ReportListView(ListView):
     template_name = "reports/list.html"
+    as_csv = False
     as_json = False
     member = None
     is_owner = False
@@ -167,6 +170,21 @@ class ReportListView(ListView):
             data["symptom_report"].append(formatted)
         return json.dumps(data, sort_keys=True)
 
+    def get_as_csv(self):
+        json_data = json.loads(self.get_as_json())
+        header = ["timestamp", "data_type", "key", "value"]
+        with io.StringIO(newline="") as f:
+            csv_out = csv.writer(f)
+            csv_out.writerow(header)
+            for data_type in json_data.keys():
+                for entry in json_data[data_type]:
+                    for key in entry["data"]:
+                        csv_out.writerow(
+                            [entry["timestamp"], data_type, key, entry["data"][key]]
+                        )
+            f.seek(0)
+            return f.read()
+
     def get(self, request, *args, **kwargs):
         if "member_id" in self.kwargs:
             self.member = OpenHumansMember.objects.get(oh_id=self.kwargs["member_id"])
@@ -179,6 +197,8 @@ class ReportListView(ListView):
         default_response = super().get(request, *args, **kwargs)
         if self.as_json:
             return HttpResponse(self.get_as_json(), content_type="application/json")
+        if self.as_csv:
+            return HttpResponse(self.get_as_csv(), content_type="text/csv")
         return default_response
 
     def post(self, request, *args, **kwargs):
@@ -206,6 +226,9 @@ class PublicReportsLinkView(ListView):
                 {
                     "json_path": reverse(
                         "reports:list_member_json", kwargs={"member_id": m.oh_id}
+                    ),
+                    "csv_path": reverse(
+                        "reports:list_member_csv", kwargs={"member_id": m.oh_id}
                     ),
                     "member_id": m.oh_id,
                 }
