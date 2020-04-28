@@ -110,12 +110,17 @@ def analyze_event(event_id):
             graph_type__exact="fitbit_summary"
         )
         if not fitbit_analyses:
-            fitbit_hr_analysis = RetrospectiveEventAnalysis(
-                event=event,
-                graph_data=json.dumps(fitbit_parser(fitbit_data, event.date)),
-                graph_type="fitbit_summary",
-            )
-            fitbit_hr_analysis.save()
+            fitbit_hr_data = fitbit_parser(fitbit_data, event.date)
+            percent_missing = sum(
+                [1 for i in fitbit_hr_data if i["data"]["heart_rate"] == "-"]
+            ) / len(fitbit_hr_data)
+            if percent_missing <= 0.4:
+                fitbit_hr_analysis = RetrospectiveEventAnalysis(
+                    event=event,
+                    graph_data=json.dumps(fitbit_hr_data),
+                    graph_type="fitbit_summary",
+                )
+                fitbit_hr_analysis.save()
 
     if fitbit_data and fitbit_intraday_data:
         fitbit_intraday_analyses = event.retrospectiveeventanalysis_set.filter(
