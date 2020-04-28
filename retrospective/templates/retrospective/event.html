@@ -106,7 +106,8 @@
     ...
   }
   */
-  function mapQFDataForMG(data_in) {
+  function mapQFDataForMG(data_in, graph_type) {
+    data_in = data_in[graph_type];
     var new_data = [];
     for (index = 0; index < data_in.length; index++) {
       var entry = {}
@@ -131,9 +132,13 @@
 
 <div class="retrospective_graph_{{ analysis.id }}"></div>
 
+{% endfor %}
+
 <script>
-  d3.json('{% url 'retrospective:json_graph' analysis_id=analysis.id %}', function(data) {
-    data = mapQFDataForMG(data);
+  $.getJSON('{% url 'retrospective:view_event_json' object.id %}', function(event_data) {
+
+    {% for analysis in object.retrospectiveeventanalysis_set.all %}
+    var data = mapQFDataForMG(event_data, '{{ analysis.graph_type }}');
 
     var marker_date = Date.parse('{{ analysis.event.date|date:"c" }}')
     var markers = [{
@@ -182,8 +187,9 @@
       });
     {% endif %}
 
-  });  // d3.json
+    {% endfor %}
 
+  })
   </script>
-{% endfor %}
+
 {% endblock main %}
