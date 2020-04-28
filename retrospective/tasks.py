@@ -215,13 +215,18 @@ def add_wearable_to_symptom(oh_member_id):
         )
 
     if fitbit_data and fitbit_intraday_data:
-        fb_intraday_data = fitbit_intraday_parser(
-            fitbit_data, fitbit_intraday_data, symptoms_start, symptoms_end
-        )
-        set_symptomwearablereport(
-            oh_member=oh_member,
-            data_source="fitbit_intraday",
-            start=symptoms_start,
-            end=symptoms_end,
-            data=fb_intraday_data,
-        )
+        try:
+            # this is very fickle, if regular sleep data is missing this will
+            # crash
+            fb_intraday_data = fitbit_intraday_parser(
+                fitbit_data, fitbit_intraday_data, symptoms_start, symptoms_end
+            )
+            set_symptomwearablereport(
+                oh_member=oh_member,
+                data_source="fitbit_intraday",
+                start=symptoms_start,
+                end=symptoms_end,
+                data=fb_intraday_data,
+            )
+        except:
+            pass
