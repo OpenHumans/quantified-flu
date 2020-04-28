@@ -177,61 +177,63 @@ def set_symptomwearablereport(oh_member, data_source, start, end, data):
 @task
 def add_wearable_to_symptom(oh_member_id):
     oh_member = OpenHumansMember.objects.get(oh_id=oh_member_id)
+    if SymptomReport.objects.filter(member=oh_member).count():
+        wearable_data = get_wearable_data(oh_member.list_files())
+        oura_data = wearable_data["oura_data"]
+        fitbit_data = wearable_data["fitbit_data"]
+        fitbit_intraday_data = wearable_data["fitbit_intraday_data"]
 
-    wearable_data = get_wearable_data(oh_member.list_files())
-    oura_data = wearable_data["oura_data"]
-    fitbit_data = wearable_data["fitbit_data"]
-    fitbit_intraday_data = wearable_data["fitbit_intraday_data"]
-
-    symptoms_start = (
-        SymptomReport.objects.filter(member=oh_member).earliest("created").created
-    )
-    symptoms_end = (
-        SymptomReport.objects.filter(member=oh_member).latest("created").created
-    )
-
-    if oura_data:
-        oura_hr_data, oura_temp_data = oura_parser(
-            oura_data, symptoms_start, symptoms_end
+        symptoms_start = (
+            SymptomReport.objects.filter(member=oh_member).earliest("created").created
         )
-        set_symptomwearablereport(
-            oh_member=oh_member,
-            data_source="oura_sleep_5min",
-            start=symptoms_start,
-            end=symptoms_end,
-            data=oura_hr_data,
-        )
-        set_symptomwearablereport(
-            oh_member=oh_member,
-            data_source="oura_sleep_summary",
-            start=symptoms_start,
-            end=symptoms_end,
-            data=oura_temp_data,
+        symptoms_end = (
+            SymptomReport.objects.filter(member=oh_member).latest("created").created
         )
 
-    if fitbit_data:
-        fitbit_summary_data = fitbit_parser(fitbit_data, symptoms_start, symptoms_end)
-        set_symptomwearablereport(
-            oh_member=oh_member,
-            data_source="fitbit_summary",
-            start=symptoms_start,
-            end=symptoms_end,
-            data=fitbit_summary_data,
-        )
-
-    if fitbit_data and fitbit_intraday_data:
-        try:
-            # this is very fickle, if regular sleep data is missing this will
-            # crash
-            fb_intraday_data = fitbit_intraday_parser(
-                fitbit_data, fitbit_intraday_data, symptoms_start, symptoms_end
+        if oura_data:
+            oura_hr_data, oura_temp_data = oura_parser(
+                oura_data, symptoms_start, symptoms_end
             )
             set_symptomwearablereport(
                 oh_member=oh_member,
-                data_source="fitbit_intraday",
+                data_source="oura_sleep_5min",
                 start=symptoms_start,
                 end=symptoms_end,
-                data=fb_intraday_data,
+                data=oura_hr_data,
             )
-        except:
-            pass
+            set_symptomwearablereport(
+                oh_member=oh_member,
+                data_source="oura_sleep_summary",
+                start=symptoms_start,
+                end=symptoms_end,
+                data=oura_temp_data,
+            )
+
+        if fitbit_data:
+            fitbit_summary_data = fitbit_parser(
+                fitbit_data, symptoms_start, symptoms_end
+            )
+            set_symptomwearablereport(
+                oh_member=oh_member,
+                data_source="fitbit_summary",
+                start=symptoms_start,
+                end=symptoms_end,
+                data=fitbit_summary_data,
+            )
+
+        if fitbit_data and fitbit_intraday_data:
+            try:
+                # this is very fickle, if regular sleep data is missing this will
+                # crash
+                fb_intraday_data = fitbit_intraday_parser(
+                    fitbit_data, fitbit_intraday_data, symptoms_start, symptoms_end
+                )
+                set_symptomwearablereport(
+                    oh_member=oh_member,
+                    data_source="fitbit_intraday",
+                    start=symptoms_start,
+                    end=symptoms_end,
+                    data=fb_intraday_data,
+                )
+            except:
+                pass
