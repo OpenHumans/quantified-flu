@@ -23,6 +23,7 @@ def oura_parser(oura_object, event_start, event_end=False):
     returned_temp_data = []
 
     # p is start_date!
+
     if "sleep" in oura.keys():
         for entry in oura["sleep"]:
             sdate = arrow.get(entry["summary_date"])
