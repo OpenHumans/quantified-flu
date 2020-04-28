@@ -32,7 +32,7 @@ def oura_parser(oura_object, event_start, event_end=False):
             temperature_delta = entry.get("temperature_delta", 0)
             returned_temp_data.append(
                 {
-                    "timestamp": record_time.format("YYYY-MM-DD"),
+                    "timestamp": sdate.format("YYYY-MM-DD"),
                     "data": {"temperature_delta": temperature_delta},
                 }
             )
