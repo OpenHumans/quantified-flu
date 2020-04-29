@@ -4,6 +4,8 @@
 {% load static %}
 <h1>Public data</h1>
 
+<div class="row">
+  <div class="col-md-6">
 <p>
   A big thank-you to the members that generously contribute public data to Quantified Flu! 💖
 </p>
@@ -45,5 +47,58 @@
 <p>
   <a href="{% url 'reports:public' %}" class="btn btn-lg btn-primary">See public symptom tracking logs</a>
 </p>
+</div>
+<div class="col-md-6">
+<h2>
+  How-to access & download the data
+</h2>
 
+<p>
+  We have data available for anyone that might want to try creating and sharing visualizations!
+  If you create visualization code, we'd love to share with others – we have a system for sharing notebooks for Python & R. And JS visualizations could be added to the site itself!
+</p>
+<p>
+  There are two basic types of data:
+  <ol>
+    <li>data around retrospective events</li>
+    <li>data around ongoing symptom reports</li>
+  </ol>
+  <p>
+    Both of these are available in JSON and CSV formats.
+  </p>
+  <h3>List of all available data</h3>
+  <p>JSON is available for that provides the paths for all public data:
+    <ol>
+      <li>retrospective events: <code><a href='https://quantifiedflu.org/retrospective/public.json'>https://quantifiedflu.org/retrospective/public.json</a></code></li>
+      <li>symptom reports: <a href='https://quantifiedflu.org/report/public.json'><code>https://quantifiedflu.org/report/public.json</code></a></li>
+    </ol>
+  </p>
+<p>
+  The same public data is visible (& human readable) through the buttons on top of this page.
+  Once you click through to any of the retrospective or symptom reports you can add <code>.json</code> or <code>.csv</code> to the URL to get associated data.
+</p>
+
+<h3>Examples</h3>
+<h4>Retrospective events</h4>
+<p>These are provided according to event ID, e.g. for event <code>1</code>:
+  <ul>
+    <li><code><a href='https://quantifiedflu.org/retrospective/event/1.json'>https://quantifiedflu.org/retrospective/event/1.json</a></code></li>
+    <li><code><a href='https://quantifiedflu.org/retrospective/event/1.csv'>https://quantifiedflu.org/retrospective/event/1.csv</a></code></li>
+  </ul>
+</p>
+<h4>Example of data from ongoing symptom report</h4>
+<p>These are provided according to an individuals random identifier, e.g. for participant <code>20383123</code>:
+  <ul>
+    <li><code><a href='https://quantifiedflu.org/report/list/member/20383123.json'>https://quantifiedflu.org/report/list/member/20383123.json</a></code></li>
+    <li><code><a href='https://quantifiedflu.org/report/list/member/20383123.csv'>https://quantifiedflu.org/report/list/member/20383123.csv</a></code></li>
+  </ul>
+
+<h4>Downloading data files to your local directory</h4>
+<p>Hopefully the above information is enough to see how to get files manually, but we appreciate you might want something easier for a bulk download. If you have a unix-like command line, you might try the following:</p>
+<p><b>Retrospective data:</b></p>
+<p><code>wget -O - http://quantifiedflu.org/retrospective/public.json | sed 's/,/,\n/g' | egrep -o "/retrospective/event/[0-9]+.csv" | while read i; do wget https://quantifiedflu.org$i; done;</code></p>
+<p><b>Ongoing symptom tracking data</b>:
+<p><code>wget -O - http://quantifiedflu.org/report/public.json | sed 's/,/,\n/g' | egrep -o "/report/list/member/[0-9]+.csv" | while read i; do wget https://quantifiedflu.org$i; done;</code></p>
+</div>
+</div>
 {% endblock main %}
