@@ -116,9 +116,15 @@ class RetrospectiveEventDetailView(IsAuthorizedMixin, IsOwnerOrPublicMixin, Upda
 
     def get(self, request, *args, **kwargs):
         if self.as_json:
-            return HttpResponse(self.get_as_json(), content_type="application/json")
+            response = HttpResponse(self.get_as_json(), content_type="application/json")
         if self.as_csv:
-            return HttpResponse(self.get_as_csv(), content_type="text/csv")
+            response = HttpResponse(self.get_as_csv(), content_type="text/csv")
+        if self.as_csv or self.as_json:
+            response["Access-Control-Allow-Origin"] = "*"
+            response["Access-Control-Allow-Methods"] = "GET"
+            response["Access-Control-Max-Age"] = "1000"
+            response["Access-Control-Allow-Headers"] = "X-Requested-With, Content-Type"
+            return response
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
