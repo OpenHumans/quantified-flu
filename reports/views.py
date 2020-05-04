@@ -196,7 +196,9 @@ class ReportListView(ListView):
 
         default_response = super().get(request, *args, **kwargs)
         if self.as_json:
-            return HttpResponse(self.get_as_json(), content_type="application/json")
+            response = HttpResponse(self.get_as_json(), content_type="application/json")
+            response["Access-Control-Allow-Origin"] = "*"
+            return response
         if self.as_csv:
             return HttpResponse(self.get_as_csv(), content_type="text/csv")
         return default_response
