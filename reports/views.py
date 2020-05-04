@@ -197,13 +197,14 @@ class ReportListView(ListView):
         default_response = super().get(request, *args, **kwargs)
         if self.as_json:
             response = HttpResponse(self.get_as_json(), content_type="application/json")
+        if self.as_csv:
+            response = HttpResponse(self.get_as_csv(), content_type="text/csv")
+        if self.as_json or self.as_csv:
             response["Access-Control-Allow-Origin"] = "*"
             response["Access-Control-Allow-Methods"] = "GET"
             response["Access-Control-Max-Age"] = "1000"
             response["Access-Control-Allow-Headers"] = "X-Requested-With, Content-Type"
             return response
-        if self.as_csv:
-            return HttpResponse(self.get_as_csv(), content_type="text/csv")
         return default_response
 
     def post(self, request, *args, **kwargs):
