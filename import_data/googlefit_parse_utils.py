@@ -1,4 +1,5 @@
 from datetime import datetime
+from functools import reduce
 
 import pandas as pd
 import pytz
@@ -82,6 +83,9 @@ def get_dataframe_with_data_types_and_sources(dts_pairs, col_names, data):
         if df is not None:
             dfs.append(df)
 
-    return reduce(lambda acc, df: acc.join(df, how='outer'), dfs)
+    if dfs:
+        return reduce(lambda acc, df: acc.join(df, how='outer'), dfs)
+    else:
+        return []
 
 

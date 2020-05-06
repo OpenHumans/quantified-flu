@@ -88,6 +88,8 @@ def googlefit_to_qf(json_data, min_date, max_date):
     res = []
     data = json_data
     df, _ = googlefit_parse_utils.get_dataframe_with_all(data)
+    if not df:
+        return res
     # we can have multiple sources of heart rate data. will get the one with the most data per day
     ds_with_most_data = None
     max_data_points = 0
@@ -116,8 +118,11 @@ def googlefit_to_qf(json_data, min_date, max_date):
 
 
 def googlefit_parser(googlefit_files_info, event_start, event_end=None):
+    print(event_start)
     if event_end is None:
-        event_start = event_end
+        event_end = event_start
+    event_start = datetime(event_start.year, event_start.month, event_start.day, 0, 0, 0)
+    event_end = datetime(event_end.year, event_end.month, event_end.day, 23, 59, 59)
     min_date = event_start - timedelta(days=21)
     max_date = event_end + timedelta(days=14)
     returned_googlefit_data = []
@@ -133,9 +138,10 @@ def googlefit_parser(googlefit_files_info, event_start, event_end=None):
         if max_date < start_month:
             continue
 
+        print("looking at {}".format(basename))
         googlefit_json = json.loads(requests.get(info["download_url"]).content)
 
-        data_in_qf_format = googlefit_to_qf(googlefit_json)
+        data_in_qf_format = googlefit_to_qf(googlefit_json, min_date, max_date)
         if data_in_qf_format:
             returned_googlefit_data+=data_in_qf_format
 
