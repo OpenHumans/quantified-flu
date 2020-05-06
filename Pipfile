@@ -19,6 +19,11 @@ pandas = "*"
 arrow = "*"
 django-timezone-field = "*"
 sentry-sdk = "*"
+open-humans-api = ">=0.2.6"
+google-api-python-client = "*"
+google-auth = "*"
+google-auth-oauthlib = "*"
+google-auth-httplib2 = "*"
 
 [requires]
 python_version = "3.6"

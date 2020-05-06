@@ -17,6 +17,7 @@ from import_data.activity_parsers import (
 )
 from import_data.celery_fitbit import fetch_fitbit_data
 from import_data.celery_oura import fetch_oura_data
+from import_data.celery_googlefit import fetch_googlefit_data
 
 # from .activity_parsers import oura_parser, fitbit_parser, fitbit_intraday_parser
 
@@ -159,6 +160,15 @@ def update_oura_data(oura_member_id):
     fetch_oura_data(oura_user)
     analyze_existing_events(oura_user.member.user.id)
     analyze_existing_reports(oura_user.member.user.id)
+
+
+@shared_task
+def update_googlefit_data(googlefit_member):
+    oh_id = googlefit_member.user.id
+    fetch_googlefit_data(oh_id, send_email=False)
+    analyze_existing_events(googlefit_member.user.user.id)
+    analyze_existing_reports(googlefit_member.user.user.id)
+
 
 
 def set_symptomwearablereport(oh_member, data_source, start, end, data):
