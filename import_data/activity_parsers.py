@@ -108,7 +108,7 @@ def googlefit_to_qf(json_data, min_date, max_date):
 
     for ts, value in zip(series.index, series.values):
         ts = ts.to_pydatetime()
-        if ts.date() < min_date or ts.date() > max_date:
+        if ts < min_date or ts > max_date:
             continue
         rec = {"timestamp": ts.isoformat(), "data":{"heart_rate": value}}
         res.append(rec)
@@ -118,8 +118,8 @@ def googlefit_to_qf(json_data, min_date, max_date):
 def googlefit_parser(googlefit_files_info, event_start, event_end=None):
     if event_end is None:
         event_start = event_end
-    min_date = (event_start - timedelta(days=21)).date()
-    max_date = (event_end + timedelta(days=14)).date()
+    min_date = event_start - timedelta(days=21)
+    max_date = event_end + timedelta(days=14)
     returned_googlefit_data = []
 
     for info in googlefit_files_info:
@@ -128,9 +128,9 @@ def googlefit_parser(googlefit_files_info, event_start, event_end=None):
         start_month = datetime.strptime(basename, "googlefit_%Y-%m.json")
         end_month = end_of_month(start_month)
         # file doesn't contain relevant data for our range, skip
-        if min_date > end_month.date():
+        if min_date > end_month:
             continue
-        if max_date < start_month.date():
+        if max_date < start_month:
             continue
 
         googlefit_json = json.loads(requests.get(info["download_url"]).content)

@@ -41,3 +41,13 @@ migratelocal:
 	@export $(xargs < .env)
 	@python manage.py migrate
 
+.PHONY: dbshell
+dbshell:
+	@export $(xargs < .env)
+	@python manage.py dbshell
+
+.PHONY: shell
+shell:
+	@export $(xargs < .env)
+	@python manage.py shell
+

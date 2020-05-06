@@ -93,6 +93,8 @@ def analyze_googlefit_event(googlefit_data, event):
             graph_type="googlefit_heartrate"
         )
         googlefit_hr_analysis.save()
+    else:
+        print("No GoogleFit data available around event {}".format(event.date))
 
 @task
 def analyze_event(event_id):
