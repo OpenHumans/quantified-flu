@@ -29,3 +29,15 @@ deploy:
 .PHONY: force_deploy
 force_deploy:
 	@git push -f heroku master
+
+
+.PHONY: makemigrationslocal
+makemigrationslocal:
+	@export $(xargs < .env)
+	@python manage.py makemigrations
+
+.PHONY: migratelocal
+migratelocal:
+	@export $(xargs < .env)
+	@python manage.py migrate
+
