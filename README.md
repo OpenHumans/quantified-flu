@@ -35,7 +35,9 @@ We have a Makefile with common commands.
 - Every time you want to run locally, do:
     - `make deps`
 
-    - optionally `make makemigrationslocal` and `make migratelocal` (especially if setting up locally for the first time, or if you've changed the models)
+    - optionally `make makemigrationslocal` (if you've changed the models) and add new migration files to Git.
+
+    - optionally `make migratelocal` (if setting up locally for the first time, or if you've changed the models)
 
     - `make local`. The app will be available at `127.0.0.1:5000`
 
