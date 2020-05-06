@@ -16,10 +16,11 @@ GOOGLEFIT_DEFAULT_START_DATE = datetime(2014, 10, 1, 0, 0, 0)
 GOOGLEFIT_AGGREGATE_URL = "https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate"
 GOOGLEFIT_DATASOURCES_URL = "https://www.googleapis.com/fitness/v1/users/me/dataSources"
 
-GOOGLEFIT_SYNCED_DATATYPES = ('com.google.active_minutes',
-                              'com.google.calories.expended',
-                              'com.google.distance.delta',
-                              'com.google.step_count.delta',
+GOOGLEFIT_SYNCED_DATATYPES = (
+                             #'com.google.active_minutes',
+                             # 'com.google.calories.expended',
+                             # 'com.google.distance.delta',
+                             # 'com.google.step_count.delta',
                               'com.google.heart_rate.bpm',
                               'com.google.heart_minutes')
 

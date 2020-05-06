@@ -189,7 +189,7 @@ def authorize_googlefit(request):
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
         settings.GOOGLEFIT_CLIENT_CONFIG, scopes=settings.GOOGLEFIT_SCOPES)
 
-    flow.redirect_uri = request.build_absolute_uri(reverse('complete_googlefit'))
+    flow.redirect_uri = request.build_absolute_uri(reverse('import_data:complete-googlefit'))
 
     authorization_url, state = flow.authorization_url(
         access_type='offline',
@@ -209,7 +209,7 @@ def complete_googlefit(request):
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
         settings.GOOGLEFIT_CLIENT_CONFIG, scopes=settings.GOOGLEFIT_SCOPES,
         state=state)
-    flow.redirect_uri = request.build_absolute_uri(reverse('complete_googlefit'))
+    flow.redirect_uri = request.build_absolute_uri(reverse('import_data:complete-googlefit'))
 
     authorization_response = settings.OPENHUMANS_APP_BASE_URL + request.get_full_path()
     flow.fetch_token(authorization_response=authorization_response)
@@ -230,12 +230,12 @@ def complete_googlefit(request):
     googlefit_member.user_id = request.user.openhumansmember.oh_id
     googlefit_member.save()
 
-    update_googlefit_data.delay(googlefit_member)
+    update_googlefit_data.delay(request.user.openhumansmember.oh_id)
 
     if googlefit_member and googlefit_member.refresh_token:
         messages.info(request,
-                      "Your GoogleFit account has been connected, and your data has been queued to be fetched from GoogleFit. You will receive an e-mail when the process has completed.")
-        return redirect('dashboard')
+                      "Your GoogleFit account has been connected, and your heart rate data has been queued to be fetched from GoogleFit.")
+        return redirect('/')
 
     #logger.debug('Invalid code exchange. User returned to starting page.')
     messages.warning(request, ("Something went wrong, please try connecting your "
@@ -267,7 +267,7 @@ def update_googlefit(request):
     if request.method == "POST" and request.user.is_authenticated:
         openhumansmember = request.user.openhumansmember
         googlefit_member = openhumansmember.googlefit_member
-        update_googlefit_data.delay(googlefit_member)
+        update_googlefit_data.delay(request.user.openhumansmember.oh_id)
         googlefit_member.last_submitted_for_update = arrow.now().format()
         googlefit_member.save()
         messages.info(request,

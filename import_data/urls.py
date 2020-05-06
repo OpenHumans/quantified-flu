@@ -14,8 +14,8 @@ urlpatterns = [
     path("complete-oura/", complete_oura, name="complete-oura"),
     path("remove-oura/", remove_oura, name="remove-oura"),
     path("update-oura/", update_oura, name="update-oura"),
-    path('complete_googlefit/', complete_googlefit, name='complete_googlefit'),
-    path('authorize_googlefit/', authorize_googlefit, name='authorize_googlefit'),
-    path('update_googlefit/', update_googlefit, name='update_data'),
-    path('remove_googlefit/', remove_googlefit, name='remove_googlefit')
+    path('complete_googlefit/', complete_googlefit, name='complete-googlefit'),
+    path('authorize_googlefit/', authorize_googlefit, name='authorize-googlefit'),
+    path('update_googlefit/', update_googlefit, name='update-googlefit'),
+    path('remove_googlefit/', remove_googlefit, name='remove-googlefit')
 ]
