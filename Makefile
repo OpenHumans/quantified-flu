@@ -1,4 +1,5 @@
 SHELL := /bin/bash
+export PIP_NO_CACHE_DIR = off
 
 .PHONY: local
 local:
@@ -9,7 +10,7 @@ deps: redis pipenv
 
 .PHONY: pip
 pip:
-	@pipenv install --python 3.6 --dev
+	@pipenv install --python 3.6 --dev --verbose
 
 .PHONY: pipenv
 pipenv:

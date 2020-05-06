@@ -6,9 +6,9 @@ import requests
 from dateutil.rrule import rrule, DAILY, MONTHLY
 from ohapi import api
 
-from datauploader.helpers import unix_time_millis, start_of_day, end_of_day, end_of_month, start_of_month, \
+from import_data.helpers import unix_time_millis, start_of_day, end_of_day, end_of_month, start_of_month, \
     write_jsonfile_to_tmp_dir, download_to_json, remove_empty_buckets
-from datauploader.retry import retry
+from import_data.retry import retry
 
 # based on the initial release
 # https://en.wikipedia.org/wiki/Google_Fit
