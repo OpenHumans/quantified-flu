@@ -230,7 +230,7 @@ def complete_googlefit(request):
     googlefit_member.user_id = request.user.openhumansmember.oh_id
     googlefit_member.save()
 
-    update_googlefit_data.delay(request.user.openhumansmember.oh_id)
+    update_googlefit_data.delay(request.user.openhumansmember.oh_id, request.user.id)
 
     if googlefit_member and googlefit_member.refresh_token:
         messages.info(request,
@@ -267,7 +267,7 @@ def update_googlefit(request):
     if request.method == "POST" and request.user.is_authenticated:
         openhumansmember = request.user.openhumansmember
         googlefit_member = openhumansmember.googlefit_member
-        update_googlefit_data.delay(request.user.openhumansmember.oh_id)
+        update_googlefit_data.delay(request.user.openhumansmember.oh_id, request.user.id)
         googlefit_member.last_submitted_for_update = arrow.now().format()
         googlefit_member.save()
         messages.info(request,

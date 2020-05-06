@@ -163,10 +163,10 @@ def update_oura_data(oura_member_id):
 
 
 @shared_task
-def update_googlefit_data(oh_id):
+def update_googlefit_data(oh_id, django_user_id):
     fetch_googlefit_data(oh_id, send_email=False)
-    #analyze_existing_events(googlefit_member.user.user.id) # FIXME which id is this exactly?
-    #analyze_existing_reports(googlefit_member.user.user.id)
+    analyze_existing_events(django_user_id)
+    analyze_existing_reports(django_user_id)
 
 
 
