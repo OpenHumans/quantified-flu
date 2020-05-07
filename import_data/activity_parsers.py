@@ -88,12 +88,12 @@ def googlefit_to_qf(json_data, min_date, max_date):
     res = []
     data = json_data
     df, _ = googlefit_parse_utils.get_dataframe_with_all(data)
-    if not df:
+    if df is None:
         return res
     # we can have multiple sources of heart rate data. will get the one with the most data per day
     ds_with_most_data = None
     max_data_points = 0
-    for col_name in df['columns']:
+    for col_name in df.columns:
         # the col_name should be of the format heart_rate.bpm.INT
         # named this way by the parsing functionality in get_dataframe_with_all
         if 'heart_rate' not in col_name:
@@ -106,7 +106,7 @@ def googlefit_to_qf(json_data, min_date, max_date):
     if ds_with_most_data is None:
         return None
 
-    series = df[ds_with_most_data]
+    series = df[ds_with_most_data].dropna()
 
     for ts, value in zip(series.index, series.values):
         ts = ts.to_pydatetime()

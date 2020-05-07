@@ -53,8 +53,11 @@ def get_dataframe(steps, dt_timezone, col_name):
             start_ms = datum['startTimeMillis']
             start_sec = int(start_ms) / 1000
             dt = datetime.utcfromtimestamp(start_sec)
-            dt = pytz.timezone('UTC').localize(dt)
-            dt_local = dt.astimezone(pytz.timezone(dt_timezone))
+            if dt_timezone:
+                dt = pytz.timezone('UTC').localize(dt)
+                dt_local = dt.astimezone(pytz.timezone(dt_timezone))
+            else:
+                dt_local = dt
             ts.append((dt_local, step_cnt))
 
     if len(ts) == 0:
@@ -74,7 +77,7 @@ def get_dataframe_with_all(data):
 
 def get_dataframe_with_data_types_and_sources(dts_pairs, col_names, data):
     dfs = []
-    dt_timezone = 'UTC'
+    dt_timezone = None
     for (dtype, dsource), col_name in zip(dts_pairs, col_names):
         # print(col_name)
         dts_data = data['datasets'][dtype][dsource]
@@ -86,6 +89,6 @@ def get_dataframe_with_data_types_and_sources(dts_pairs, col_names, data):
     if dfs:
         return reduce(lambda acc, df: acc.join(df, how='outer'), dfs)
     else:
-        return []
+        return None
 
 
