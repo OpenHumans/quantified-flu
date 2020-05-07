@@ -128,6 +128,7 @@
 {% elif analysis.graph_type == 'oura_sleep_summary' %}Oura Temperature
 {% elif analysis.graph_type == 'fitbit_summary' %}Fitbit
 {% elif analysis.graph_type == 'fitbit_intraday' %}Fitbit Intraday
+  {% elif analysis.graph_type == 'googlefit_heartrate' %}GoogleFit Heart Rate
 {% endif %}</h3>
 
 <div class="retrospective_graph_{{ analysis.id }}"></div>
