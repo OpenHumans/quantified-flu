@@ -1,9 +1,13 @@
+from datetime import datetime, timedelta
 import json
 import re
 
 import arrow
 import pandas as pd
 import requests
+
+from import_data.helpers import end_of_month
+from import_data import googlefit_parse_utils
 
 WEEKS_BEFORE_SICK = 3
 WEEKS_AFTER_SICK = 2
@@ -79,6 +83,69 @@ def fitbit_parser(fitbit_info, event_start, event_end=None):
                 )
 
     return returned_fitbit_data
+
+def googlefit_to_qf(json_data, min_date, max_date):
+    res = []
+    data = json_data
+    df, _ = googlefit_parse_utils.get_dataframe_with_all(data)
+    if df is None:
+        return res
+    # we can have multiple sources of heart rate data. will get the one with the most data per day
+    ds_with_most_data = None
+    max_data_points = 0
+    for col_name in df.columns:
+        # the col_name should be of the format heart_rate.bpm.INT
+        # named this way by the parsing functionality in get_dataframe_with_all
+        if 'heart_rate' not in col_name:
+            continue
+        data_points = len(df[col_name].dropna())
+        if data_points > max_data_points:
+            max_data_points = data_points
+            ds_with_most_data = col_name
+
+    if ds_with_most_data is None:
+        return None
+
+    series = df[ds_with_most_data].dropna()
+
+    for ts, value in zip(series.index, series.values):
+        ts = ts.to_pydatetime()
+        if ts < min_date or ts > max_date:
+            continue
+        rec = {"timestamp": ts.isoformat(), "data":{"heart_rate": value}}
+        res.append(rec)
+    return res
+
+
+def googlefit_parser(googlefit_files_info, event_start, event_end=None):
+    print(event_start)
+    if event_end is None:
+        event_end = event_start
+    event_start = datetime(event_start.year, event_start.month, event_start.day, 0, 0, 0)
+    event_end = datetime(event_end.year, event_end.month, event_end.day, 23, 59, 59)
+    min_date = event_start - timedelta(days=21)
+    max_date = event_end + timedelta(days=14)
+    returned_googlefit_data = []
+
+    for info in googlefit_files_info:
+        basename = info["basename"]
+        # googlefit_2018-12.json
+        start_month = datetime.strptime(basename, "googlefit_%Y-%m.json")
+        end_month = end_of_month(start_month)
+        # file doesn't contain relevant data for our range, skip
+        if min_date > end_month:
+            continue
+        if max_date < start_month:
+            continue
+
+        print("looking at {}".format(basename))
+        googlefit_json = json.loads(requests.get(info["download_url"]).content)
+
+        data_in_qf_format = googlefit_to_qf(googlefit_json, min_date, max_date)
+        if data_in_qf_format:
+            returned_googlefit_data+=data_in_qf_format
+
+    return returned_googlefit_data
 
 
 def fitbit_intraday_parser(

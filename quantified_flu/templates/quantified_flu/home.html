@@ -37,7 +37,7 @@
 
 {% if request.user.is_authenticated %}
 
-{% if missing_sources|length == 2 %}
+{% if missing_sources|length == 3 %}
 <h2>Data Sources</h2>
 <p>
   You can connect these data sources to correlate them with reported illness.
@@ -53,6 +53,10 @@
       Connect Oura account
     </a>
   </div>
+  <a
+  href="{%url 'import_data:authorize-googlefit' %}" class="btn btn-primary btn-lg">
+  Connect GoogleFit account
+</a>
 </div>
 <hr>
 {% endif %}
@@ -98,7 +102,7 @@
 If at least one data source has been connected, management of data sources is
 moved to below the "actions" (retrospective analysis & scheduling check-ins).
 {% endcomment %}
-{% if missing_sources|length < 2 %}
+{% if missing_sources|length < 3 %}
 <hr>
 <h2>Data Sources</h2>
   {% comment %}
@@ -107,19 +111,26 @@ moved to below the "actions" (retrospective analysis & scheduling check-ins).
   {% endcomment %}
   {% if missing_sources|length >= 1 %}
   <p>
-    You've connected data! You can also add data another source:
+    You've connected data! You can also add more data sources:
+    <ul>
     {% for source in missing_sources %}
       {% if source == 'fitbit' %}
       <a href="{{fitbit_auth_url}}">
-        Connect Fitbit account
+        <li>Connect Fitbit account</li>
       </a>
       {% endif %}
       {% if source == 'oura' %}
       <a href="{% url 'import_data:authorize-oura' %}">
-        Connect Oura account
+        <li>Connect Oura account</li>
+      </a>
+      {% endif %}
+      {% if source == 'googlefit' %}
+      <a href="{% url 'import_data:authorize-googlefit' %}">
+        <li>Connect GoogleFit account</li>
       </a>
       {% endif %}
     {% endfor %}
+  </ul>
   </p>
   {% endif %}
 
@@ -192,10 +203,43 @@ For each connected data source, display info on how to get files & manage connec
       <a href="https://oura.openhumans.org">oura.openhumans.org</a>
       </p>
       {% endif %}
+      {% endif %}
+
+       {% if 'googlefit' not in missing_sources %}
+    <div class="col-md-6">
+      <h3>Manage GoogleFit</h3>
+      {% if request.user.openhumansmember.googlefit_member %}
+      <p>
+        <b>Your data files:</b> If our data retrieval has worked, your
+        googlefit data files should be
+        available in your Open Humans account here:<br>
+        <a href="https://www.openhumans.org/activity/quantified-flu/#activity-panel-data">
+          www.openhumans.org/activity/quantified-flu/
+        </a>
+      </p>
+
+      <form action="{% url 'import_data:remove-googlefit' %}" method='post'>
+        {%csrf_token%}
+        <button type='submit' class="btn btn-sm btn-danger">Remove GoogleFit</button>
+      </form>
+      {% else %}
+      <p>
+        <b>Your data files:</b> You've shared GoogleFit data via the
+        Open Humans importer app. Your data files
+        should be available in your Open Humans account here:<br>
+        <a href="https://www.openhumans.org/activity/google-fit/#activity-panel-data">
+          www.openhumans.org/activity/google-fit/
+        </a>
+      </p>
+      <p>
+        You can manage this connection at:<br>
+      <a href="https://google-fit.openhumans.org">google-fit.openhumans.org</a>
+      </p>
+      {% endif %}
     </div>
   {% endif %}
 </div> <!-- .row -->
-{% endif %} {# if missing_sources < 2 #}
+{% endif %} {# if missing_sources < 3 #}
 {% endif %} {# if user.is_authenticated #}
 
 {% endblock main %}

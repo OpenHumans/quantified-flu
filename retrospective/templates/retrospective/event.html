@@ -57,7 +57,7 @@
 
   {# Explanations if analyses aren't available. #}
   {% if not object.retrospectiveeventanalysis_set.all %}
-    {% if request.user.openhumansmember|missing_sources|length == 2 %}
+    {% if request.user.openhumansmember|missing_sources|length == 3 %}
     <div class="alert alert-danger" role="alert">
       <p>
         <b>No connected data?</b> This event appears to have no associated analyses.
@@ -128,6 +128,7 @@
 {% elif analysis.graph_type == 'oura_sleep_summary' %}Oura Temperature
 {% elif analysis.graph_type == 'fitbit_summary' %}Fitbit
 {% elif analysis.graph_type == 'fitbit_intraday' %}Fitbit Intraday
+  {% elif analysis.graph_type == 'googlefit_heartrate' %}GoogleFit Heart Rate
 {% endif %}</h3>
 
 <div class="retrospective_graph_{{ analysis.id }}"></div>

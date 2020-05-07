@@ -142,6 +142,25 @@ CELERY_TASK_SERIALIZER = "json"
 FITBIT_CLIENT_ID = os.getenv("FITBIT_CLIENT_ID")
 FITBIT_CLIENT_SECRET = os.getenv("FITBIT_CLIENT_SECRET")
 
+# GoogleFit configuration
+GOOGLEFIT_CLIENT_ID = os.getenv('GOOGLEFIT_CLIENT_ID')
+GOOGLEFIT_CLIENT_SECRET = os.getenv('GOOGLEFIT_CLIENT_SECRET')
+GOOGLEFIT_SCOPES = ['https://www.googleapis.com/auth/fitness.activity.read',
+                    'https://www.googleapis.com/auth/fitness.body.read']
+
+GOOGLEFIT_TOKEN_URI = "https://www.googleapis.com/oauth2/v3/token"
+GOOGLEFIT_PROJECT_ID = os.getenv('GOOGLEFIT_PROJECT_ID')
+
+GOOGLEFIT_CLIENT_CONFIG = {"web":{"client_id": GOOGLEFIT_CLIENT_ID,
+        "project_id": GOOGLEFIT_PROJECT_ID,
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": GOOGLEFIT_TOKEN_URI,
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_secret": GOOGLEFIT_CLIENT_SECRET}
+ }
+
+
+
 # Configure Django App for Heroku.
 if ON_HEROKU:
     django_heroku.settings(locals())

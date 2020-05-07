@@ -2,12 +2,17 @@ from django.shortcuts import render, redirect, reverse
 import requests
 import base64
 from django.conf import settings
-from .models import FitbitMember, OuraMember
-from retrospective.tasks import update_fitbit_data, update_oura_data
+from .models import FitbitMember, OuraMember, GoogleFitMember
+from retrospective.tasks import update_fitbit_data, update_oura_data, update_googlefit_data
 import arrow
 from django.contrib import messages
 import os
 import urllib.parse
+
+from import_data.googlefit_api import get_latest_googlefit_file_updated_dt
+from ohapi import api
+
+import google_auth_oauthlib.flow
 
 
 fitbit_authorize_url = "https://www.fitbit.com/oauth2/authorize"
@@ -177,3 +182,98 @@ def update_oura(request):
     if request.method == "POST":
         update_oura_data.delay(request.user.openhumansmember.oura_user.id)
         return redirect("/")
+
+
+def authorize_googlefit(request):
+    # Create google oauth flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
+    flow = google_auth_oauthlib.flow.Flow.from_client_config(
+        settings.GOOGLEFIT_CLIENT_CONFIG, scopes=settings.GOOGLEFIT_SCOPES)
+
+    flow.redirect_uri = request.build_absolute_uri(reverse('import_data:complete-googlefit'))
+
+    authorization_url, state = flow.authorization_url(
+        access_type='offline',
+        include_granted_scopes='true')
+    request.session['googlefit_oauth2_state'] = state
+
+    return redirect(authorization_url)
+
+
+def complete_googlefit(request):
+
+    if 'googlefit_oauth2_state' not in request.session:
+        messages.warning('Authorization with google did not succeed. Please try again')
+        return redirect('/')
+
+    state = request.session['googlefit_oauth2_state']
+    flow = google_auth_oauthlib.flow.Flow.from_client_config(
+        settings.GOOGLEFIT_CLIENT_CONFIG, scopes=settings.GOOGLEFIT_SCOPES,
+        state=state)
+    flow.redirect_uri = request.build_absolute_uri(reverse('import_data:complete-googlefit'))
+
+    authorization_response = settings.OPENHUMANS_APP_BASE_URL + request.get_full_path()
+    flow.fetch_token(authorization_response=authorization_response)
+
+    credentials = flow.credentials
+
+    if hasattr(request.user.openhumansmember, 'googlefit_member'):
+        googlefit_member = request.user.openhumansmember.googlefit_member
+    else:
+        googlefit_member = GoogleFitMember()
+
+    googlefit_member.access_token = credentials.token
+    if credentials.refresh_token:
+        # Google returns a null refresh token after the 1st time
+        googlefit_member.refresh_token = credentials.refresh_token
+    googlefit_member.expiry_date = credentials.expiry
+    googlefit_member.scope = credentials.scopes
+    googlefit_member.user_id = request.user.openhumansmember.oh_id
+    googlefit_member.save()
+
+    update_googlefit_data.delay(request.user.openhumansmember.oh_id, request.user.id)
+
+    if googlefit_member and googlefit_member.refresh_token:
+        messages.info(request,
+                      "Your GoogleFit account has been connected, and your heart rate data has been queued to be fetched from GoogleFit.")
+        return redirect('/')
+
+    #logger.debug('Invalid code exchange. User returned to starting page.')
+    messages.warning(request, ("Something went wrong, please try connecting your "
+                               "GoogleFit account again. If you have an existing connection, please go to https://myaccount.google.com/permissions to remove it and try again."))
+    return redirect('/')
+
+
+def remove_googlefit(request):
+    if request.method == "POST" and request.user.is_authenticated:
+        try:
+            openhumansmember = request.user.openhumansmember
+            api.delete_file(openhumansmember.access_token,
+                            openhumansmember.oh_id,
+                            file_basename="googlefit-data.json")
+            messages.info(request, "Your GoogleFit account has been removed")
+            googlefit_account = request.user.openhumansmember.googlefit_member
+            googlefit_account.delete()
+        except:
+            googlefit_account = request.user.openhumansmember.googlefit_member
+            googlefit_account.delete()
+            messages.info(request, ("Something went wrong, please"
+                                    "re-authorize us on Open Humans"))
+            #logout(request)
+            return redirect('/')
+    return redirect('/')
+
+
+def update_googlefit(request):
+    if request.method == "POST" and request.user.is_authenticated:
+        openhumansmember = request.user.openhumansmember
+        googlefit_member = openhumansmember.googlefit_member
+        update_googlefit_data.delay(request.user.openhumansmember.oh_id, request.user.id)
+        googlefit_member.last_submitted_for_update = arrow.now().format()
+        googlefit_member.save()
+        messages.info(request,
+                      ("An update of your GoogleFit data has been started! "
+                       "It can take some minutes before the first data is "
+                       "available. Reload this page in a while to find your "
+                       "data."))
+        return redirect('/')
+
