@@ -16,7 +16,7 @@ We use [`pipenv` for the Python package management](https://pipenv.pypa.io/en/la
 
 ### Installing the development version:
 
-1. Download the repo: `git clone git@github.com:madprime/quantified-flu.git`
+1. Download the repo: `git clone git@github.com:OpenHumans/quantified-flu.git`
 2. Enter the project folder: `cd quantified-flu`
 3. Set up packages: `pipenv install --dev` 
 4. Activate the virtual environment: `pipenv shell` 
