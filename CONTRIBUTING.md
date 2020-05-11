@@ -23,7 +23,7 @@ We use [`pipenv` for the Python package management](https://pipenv.pypa.io/en/la
 5. Set up Black pre-commit: `pre-commit install`
 
 The key-value-store for background tasks is set up to be `redis` which you'll need to install separately and then start with `redis-server`
-for actual use.
+for actual use. It can be installed through `Homebrew` as well, using `brew install redis`.
 
 ### Settings for APIs etc. 
 
