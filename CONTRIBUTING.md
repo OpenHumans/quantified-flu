@@ -12,6 +12,8 @@ You can send yourself an [invite to the Slack through this link](http://slackin.
 The production version of this website is deployed to [Heroku](https://www.heroku.com). Anticipating this deployment
 we run the local development version through `heroku local`, which requires you [to have the `heroku` CLI installed](https://github.com/heroku/cli) globally. 
 
+We use [`pipenv` for the Python package management](https://pipenv.pypa.io/en/latest/). On MacOS it can be installed through [`Homebrew`](https://brew.sh/) using `brew install pipenv`. (See the homebrew website for instructions on how to install `brew`).
+
 ### Installing the development version:
 
 1. Download the repo: `git clone git@github.com:madprime/quantified-flu.git`
