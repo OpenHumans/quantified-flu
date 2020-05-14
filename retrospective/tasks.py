@@ -14,7 +14,8 @@ from import_data.activity_parsers import (
     oura_parser,
     fitbit_parser,
     fitbit_intraday_parser,
-    googlefit_parser
+    googlefit_parser,
+    apple_health_parser,
 )
 from import_data.celery_fitbit import fetch_fitbit_data
 from import_data.celery_oura import fetch_oura_data
@@ -45,6 +46,7 @@ def get_wearable_data(member_files):
     fitbit_data = None
     googlefit_data = []
     fitbit_intraday_data = []
+    apple_health_data = None
 
     # Get info for relevant files.
     # Take the first match for Fitbit and Oura, where all data is in a single file.
@@ -76,11 +78,15 @@ def get_wearable_data(member_files):
         if source == "direct-sharing-191":
             fitbit_intraday_data.append(file_info)
 
+        if source == "direct-sharing-453" and basename.startswith("heartrate_samples"):
+            apple_health_data = file_info
+
     return {
         "oura_data": oura_data,
         "googlefit_data": googlefit_data,
         "fitbit_data": fitbit_data,
         "fitbit_intraday_data": fitbit_intraday_data,
+        "apple_health_data": apple_health_data,
     }
 
 
@@ -90,11 +96,12 @@ def analyze_googlefit_event(googlefit_data, event):
         googlefit_hr_analysis = RetrospectiveEventAnalysis(
             event=event,
             graph_data=json.dumps(googlefit_hr_data),
-            graph_type="googlefit_heartrate"
+            graph_type="googlefit_heartrate",
         )
         googlefit_hr_analysis.save()
     else:
         print("No GoogleFit data available around event {}".format(event.date))
+
 
 @task
 def analyze_event(event_id):
@@ -106,6 +113,7 @@ def analyze_event(event_id):
     fitbit_data = wearable_data["fitbit_data"]
     fitbit_intraday_data = wearable_data["fitbit_intraday_data"]
     googlefit_data = wearable_data["googlefit_data"]
+    apple_health_data = wearable_data["apple_health_data"]
 
     if googlefit_data:
         analyze_googlefit_event(googlefit_data, event)
@@ -130,6 +138,20 @@ def analyze_event(event_id):
                 )
                 oura_temp_analysis.save()
 
+    if apple_health_data:
+        apple_analyses = event.retrospectiveeventanalysis_set.filter(
+            graph_type__exact="apple_health_summary"
+        )
+        if not apple_analyses:
+            apple_hr_data = apple_health_parser(apple_health_data, event.date)
+            if apple_hr_data:
+                apple_hr_analysis = RetrospectiveEventAnalysis(
+                    event=event,
+                    graph_data=json.dumps(apple_hr_data),
+                    graph_type="apple_health_summary",
+                )
+                apple_hr_analysis.save()
+
     if fitbit_data:
         fitbit_analyses = event.retrospectiveeventanalysis_set.filter(
             graph_type__exact="fitbit_summary"
@@ -153,15 +175,18 @@ def analyze_event(event_id):
         )
 
         if not fitbit_intraday_analyses:
-            fb_intraday_data = fitbit_intraday_parser(
-                fitbit_data, fitbit_intraday_data, event.date
-            )
-            new_analysis = RetrospectiveEventAnalysis(
-                event=event,
-                graph_data=json.dumps(fb_intraday_data),
-                graph_type="fitbit_intraday",
-            )
-            new_analysis.save()
+            try:
+                fb_intraday_data = fitbit_intraday_parser(
+                    fitbit_data, fitbit_intraday_data, event.date
+                )
+                new_analysis = RetrospectiveEventAnalysis(
+                    event=event,
+                    graph_data=json.dumps(fb_intraday_data),
+                    graph_type="fitbit_intraday",
+                )
+                new_analysis.save()
+            except:
+                pass
 
 
 @task
@@ -192,7 +217,6 @@ def update_googlefit_data(oh_id, django_user_id):
     analyze_existing_reports(django_user_id)
 
 
-
 def set_symptomwearablereport(oh_member, data_source, start, end, data):
     values = json.dumps(data)
     wearable_report, created = SymptomReportPhysiology.objects.get_or_create(
@@ -216,6 +240,7 @@ def add_wearable_to_symptom(oh_member_id):
         fitbit_data = wearable_data["fitbit_data"]
         fitbit_intraday_data = wearable_data["fitbit_intraday_data"]
         googlefit_data = wearable_data["googlefit_data"]
+        apple_health_data = wearable_data["apple_health_data"]
 
         symptoms_start = (
             SymptomReport.objects.filter(member=oh_member).earliest("created").created
@@ -233,7 +258,20 @@ def add_wearable_to_symptom(oh_member_id):
                 data_source="googlefit_heartrate",
                 start=symptoms_start,
                 end=symptoms_end,
-                data=googlefit_hr_data)
+                data=googlefit_hr_data,
+            )
+
+        if apple_health_data:
+            apple_hr_data = apple_health_parser(
+                apple_health_data, symptoms_start, symptoms_end
+            )
+            set_symptomwearablereport(
+                oh_member=oh_member,
+                data_source="apple_health_summary",
+                start=symptoms_start,
+                end=symptoms_end,
+                data=apple_hr_data,
+            )
 
         if oura_data:
             oura_hr_data, oura_temp_data = oura_parser(
