@@ -186,6 +186,8 @@ def analyze_event(event_id):
                 )
                 new_analysis.save()
             except:
+                # The fitbit intraday parsing is very fickle and often breaks
+                # Blanket except here to allow the pipeline to work regardless.
                 pass
 
 
