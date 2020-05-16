@@ -9,7 +9,12 @@ from reports.models import SymptomReport
 
 
 def identify_missing_sources(oh_member):
-    missing_sources = {"oura": True, "fitbit": True, "googlefit": True}
+    missing_sources = {
+        "oura": True,
+        "fitbit": True,
+        "googlefit": True,
+        "apple_health": True,
+    }
 
     # Check data already in Open Humans.
     for i in oh_member.list_files():
@@ -17,8 +22,12 @@ def identify_missing_sources(oh_member):
             missing_sources.pop("oura", None)
         if i["basename"] == "fitbit-data.json" and i["source"] == "direct-sharing-102":
             missing_sources.pop("fitbit", None)
-        if "googlefit" in i["basename"]: # GoogleFit is stored in monthly files
+        if "googlefit" in i["basename"]:  # GoogleFit is stored in monthly files
             missing_sources.pop("googlefit", None)
+        if i["source"] == "direct-sharing-453" and i["basename"].startswith(
+            "heartrate_samples"
+        ):
+            missing_sources.pop("apple_health", None)
 
     # Check data imported by this app.
     if hasattr(oh_member, "fitbit_member"):

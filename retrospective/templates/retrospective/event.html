@@ -57,7 +57,7 @@
 
   {# Explanations if analyses aren't available. #}
   {% if not object.retrospectiveeventanalysis_set.all %}
-    {% if request.user.openhumansmember|missing_sources|length == 3 %}
+    {% if request.user.openhumansmember|missing_sources|length == 4 %}
     <div class="alert alert-danger" role="alert">
       <p>
         <b>No connected data?</b> This event appears to have no associated analyses.
@@ -128,7 +128,8 @@
 {% elif analysis.graph_type == 'oura_sleep_summary' %}Oura Temperature
 {% elif analysis.graph_type == 'fitbit_summary' %}Fitbit
 {% elif analysis.graph_type == 'fitbit_intraday' %}Fitbit Intraday
-  {% elif analysis.graph_type == 'googlefit_heartrate' %}GoogleFit Heart Rate
+{% elif analysis.graph_type == 'googlefit_heartrate' %}GoogleFit Heart Rate
+{% elif analysis.graph_type == 'apple_health_summary' %}Apple Health Resting Heartrate
 {% endif %}</h3>
 
 <div class="retrospective_graph_{{ analysis.id }}"></div>
@@ -170,7 +171,11 @@
     {% else %}
     MG.data_graphic({
       title: "Heart rate evolution",
+      {% if analysis.graph_type == 'apple_health_summary' %}
+      description: "Resting heart rate evolution over time",
+      {% else %}
       description: "Nightly heart rate evolution over time",
+      {% endif %}
       data: data,
       chart_type: 'point',
       width: 600,
