@@ -1,15 +1,18 @@
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import redirect, reverse
+import json
 import requests
 import base64
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from .helpers import post_to_slack
 from .models import FitbitMember, OuraMember, GoogleFitMember
 from retrospective.tasks import update_fitbit_data, update_oura_data, update_googlefit_data
 import arrow
 from django.contrib import messages
+from django.http import HttpResponse
 import os
 import urllib.parse
 
-from import_data.googlefit_api import get_latest_googlefit_file_updated_dt
 from ohapi import api
 
 import google_auth_oauthlib.flow
@@ -276,4 +279,14 @@ def update_googlefit(request):
                        "available. Reload this page in a while to find your "
                        "data."))
         return redirect('/')
+
+
+@csrf_exempt
+def garmin_dailies(request):
+    if request.method == "POST":
+        content = json.loads(request.body)
+        post_to_slack("Received: "+str(content))
+        return HttpResponse(status=200)
+    else:
+        return HttpResponse(status=405)
 
