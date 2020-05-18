@@ -160,7 +160,7 @@ GOOGLEFIT_CLIENT_CONFIG = {"web":{"client_id": GOOGLEFIT_CLIENT_ID,
  }
 
 
-
+SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")
 # Configure Django App for Heroku.
 if ON_HEROKU:
     django_heroku.settings(locals())
