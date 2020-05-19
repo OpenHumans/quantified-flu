@@ -159,3 +159,20 @@ class GoogleFitMember(models.Model):
             self.save()
             return True
         return False
+
+
+class GarminMember(models.Model):
+    """
+    Store OAuth1 data for a Fitbit Member.
+    This is a one to one relationship with a OpenHumansMember object.
+    """
+
+    member = models.OneToOneField(
+        OpenHumansMember, related_name="garmin_member", on_delete=models.CASCADE
+    )
+    userid = models.CharField(max_length=255, unique=True, null=True)
+    access_token = models.CharField(max_length=512)
+    # should update this every time the daiies endpoint is called
+    last_updated = models.DateTimeField(null=True)
+    # for backfill
+    earliest_available_data = models.DateTimeField(null=True)
