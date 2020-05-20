@@ -5,22 +5,29 @@ from ohapi import api
 
 from import_data.helpers import write_jsonfile_to_tmp_dir, download_to_json
 
+from celery.decorators import task
 from collections import defaultdict
 
 
 MAX_FILE_BYTES = 256000000 # 256 MB
 
-
+@task
 def handle_dailies(json):
     user_maps = dailies_to_user_maps(json)
 
     for user_id in user_maps:
-        # get existing files and merge
+        # get existing file and merge
         user_map = user_maps[user_id]
-        existing_user_map = get_existing_data(user_id)
+        existing_user_map, existing_file_id = get_existing_data(user_id)
+        print('existing data')
+        print(len(existing_user_map.get('dailies')))
+        print('new data')
+        print(len(user_map['dailies']))
         if existing_user_map:
             user_map = merge_user_maps(user_map, existing_user_map)
-        upload_user_dailies(user_id, user_map)
+        print('target data')
+        print(len(user_map['dailies']))
+        upload_user_dailies(user_id, user_map, existing_file_id)
 
 
 def get_existing_data(garmin_user_id):
@@ -29,8 +36,8 @@ def get_existing_data(garmin_user_id):
     for dfile in member['data']:
         if 'Garmin' in dfile['metadata']['tags']:
             download_url = dfile['download_url']
-            return download_to_json(download_url)
-    return None
+            return download_to_json(download_url), dfile['id']
+    return {'dailies':[]}, None
 
 
 def create_metadata():
@@ -42,7 +49,7 @@ def create_metadata():
     }
 
 
-def upload_user_dailies(garmin_user_id, user_map):
+def upload_user_dailies(garmin_user_id, user_map, existing_file_id):
 
     min_date = earliest_date(user_map)
     fn = write_jsonfile_to_tmp_dir('garmin-dailies.json', user_map)
@@ -55,6 +62,8 @@ def upload_user_dailies(garmin_user_id, user_map):
     oh_user.garmin_member.last_updated = datetime.now()
     oh_user.garmin_member.earliest_available_data = min_date
     oh_user.garmin_member.save()
+    if existing_file_id:
+        api.delete_file(oh_user.get_access_token(), file_id=existing_file_id)
 
 
 def earliest_date(user_map):
@@ -105,6 +114,7 @@ def merge_user_maps(um1, um2):
 
     for summary in um1['dailies'] + um2['dailies']:
         if summary['summaryId'] in seen_summary_ids:
+            print("already seen {}".format(summary['summaryId']))
             continue
         else:
             seen_summary_ids.add(summary['summaryId'])
@@ -112,6 +122,6 @@ def merge_user_maps(um1, um2):
 
     return new_map
 
-
+@task
 def handle_backfill(garmin_member):
     pass

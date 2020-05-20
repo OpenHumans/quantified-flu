@@ -290,7 +290,7 @@ def update_googlefit(request):
 def garmin_dailies(request):
     if request.method == "POST":
         content = json.loads(request.body)
-        handle_dailies(content)
+        handle_dailies.delay(content)
         return HttpResponse(status=200)
     else:
         return HttpResponse(status=405)
@@ -322,7 +322,7 @@ def complete_garmin(request, resource_owner_secret):
         garmin_member = GarminMember()
 
     garmin_member.access_token = access_token
-    garmin_member.used_id = userid
+    garmin_member.userid = userid
     garmin_member.member = request.user.openhumansmember
     # TODO initiate a backfill of Garmin data :-)
     garmin_member.save()
