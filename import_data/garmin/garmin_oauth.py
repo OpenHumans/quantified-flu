@@ -107,9 +107,6 @@ class GarminHealth(object):
         # initialize core attributes
         self._api_id = None
 
-        # request oauth token
-        #self.__fetch_oauth_token()
-
     def __repr__(self):
         """Object representation."""
         return "<{0}: {1}>".format(self.__class__.__name__, self.api_id)
@@ -153,50 +150,43 @@ class GarminHealth(object):
             raise ValueError(error_msg)
         return data
 
+    @property
+    def resource_owner_secret(self):
+        return self.oauth._client.client.resource_owner_secret
+
     def fetch_oauth_token(self):
-        """Get OAuth1 token based on the mode selected."""
-        # assigns token
-        CONFIG_DATA['client_key'] = self._consumer_key
-        CONFIG_DATA['client_secret'] = self._consumer_secret
-
-        self.__fetch_oauth_interactive_token()
-
-
-    def __fetch_oauth_interactive_token(self):
         """
         Fetch Oauth1 token using interactive mode.
 
         """
 
-        try:
-            self.oauth = OAuth1Session(
-                client_key=self._consumer_key,
-                client_secret=self._consumer_secret)
+        self.oauth = OAuth1Session(
+            client_key=self._consumer_key,
+            client_secret=self._consumer_secret)
 
-            # request token (step 1/3)
-            _LOGGER.debug("Initializing OAuth1 (1/3) authentication to %s",
-                          REQUEST_TOKEN_URL)
-            self.oauth.fetch_request_token(REQUEST_TOKEN_URL)
+        CONFIG_DATA['client_key'] = self._consumer_key
+        CONFIG_DATA['client_secret'] = self._consumer_secret
 
-            # authorization (step 2/3)
-            _LOGGER.debug("Authorizing OAuth1 (2/3) token to %s",
-                          AUTHORIZE_TOKEN_URL)
-            authorization_url = \
-                self.oauth.authorization_url(AUTHORIZE_TOKEN_URL, oauth_callback="http://localhost:5000/import_data/complete-garmin/{}/".format(self.oauth._client.client.resource_owner_secret))
+        # request token (step 1/3)
+        _LOGGER.debug("Initializing OAuth1 (1/3) authentication to %s",
+                      REQUEST_TOKEN_URL)
+        self.oauth.fetch_request_token(REQUEST_TOKEN_URL)
 
-            self.authorization_url = authorization_url
-            print(self.oauth._client.client)
-        except Exception as error_msg:
-            raise Exception(error_msg)
+    def fetch_authorization_url(self, oauth_callback):
 
+        # authorization (step 2/3)
+        _LOGGER.debug("Authorizing OAuth1 (2/3) token to %s",
+                      AUTHORIZE_TOKEN_URL)
+        authorization_url = \
+            self.oauth.authorization_url(AUTHORIZE_TOKEN_URL, oauth_callback=oauth_callback)
+
+        return authorization_url
 
     def complete_garmin(self, redirect_response, resource_owner_secret):
 
         throwaway_oauth = OAuth1Session(
             client_key=self._consumer_key,
             client_secret=self._consumer_secret)
-
-        #print(self.oauth._client.client)
 
         oauth_response = \
             throwaway_oauth.parse_authorization_response(redirect_response)

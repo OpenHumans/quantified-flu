@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, reverse
 import json
+import logging
 import requests
 import base64
 from django.conf import settings
@@ -17,6 +18,8 @@ from ohapi import api
 
 import google_auth_oauthlib.flow
 from import_data.garmin import garmin_oauth
+
+logger = logging.getLogger('import_data.views')
 
 
 fitbit_authorize_url = "https://www.fitbit.com/oauth2/authorize"
@@ -293,15 +296,21 @@ def garmin_dailies(request):
 
 
 def authorize_garmin(request):
+    print(request.user.openhumansmember)
     garmin = garmin_oauth.GarminHealth(settings.GARMIN_KEY, settings.GARMIN_SECRET)
+    # oauth1 leg 1
     garmin.fetch_oauth_token()
+    oauth_callback = request.build_absolute_uri(reverse('import_data:complete-garmin', kwargs={"resource_owner_secret": garmin.resource_owner_secret}))
+    # oauth1 leg 2
+    authorization_url = garmin.fetch_authorization_url(oauth_callback)
 
-    return redirect(garmin.authorization_url)
+    return redirect(authorization_url)
 
 
 def complete_garmin(request, resource_owner_secret):
     authorization_response = settings.OPENHUMANS_APP_BASE_URL + request.get_full_path()
     garmin = garmin_oauth.GarminHealth(settings.GARMIN_KEY, settings.GARMIN_SECRET)
+    # oauth1 leg 3
     garmin.complete_garmin(authorization_response, resource_owner_secret)
     access_token = garmin.uat
     userid = garmin.api_id
@@ -313,6 +322,7 @@ def complete_garmin(request, resource_owner_secret):
 
     garmin_member.access_token = access_token
     garmin_member.used_id = userid
+    garmin_member.member = request.user.openhumansmember
     # TODO initiate a backfill of Garmin data :-)
     garmin_member.save()
     if garmin_member:

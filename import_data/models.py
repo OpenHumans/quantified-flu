@@ -170,8 +170,8 @@ class GarminMember(models.Model):
     member = models.OneToOneField(
         OpenHumansMember, related_name="garmin_member", on_delete=models.CASCADE
     )
-    userid = models.CharField(max_length=255, unique=True, null=True)
-    access_token = models.CharField(max_length=512)
+    userid = models.CharField(max_length=255, unique=True, null=True) # user id that garmin health api uses
+    access_token = models.CharField(max_length=512) # oauth1 access token, valid for all eternity
     # should update this every time the daiies endpoint is called
     last_updated = models.DateTimeField(null=True)
     # for backfill
