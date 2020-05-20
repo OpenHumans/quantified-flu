@@ -159,6 +159,10 @@ GOOGLEFIT_CLIENT_CONFIG = {"web":{"client_id": GOOGLEFIT_CLIENT_ID,
         "client_secret": GOOGLEFIT_CLIENT_SECRET}
  }
 
+# Garmin configuration
+
+GARMIN_KEY = os.getenv('GARMIN_KEY')
+GARMIN_SECRET = os.getenv('GARMIN_SECRET')
 
 SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")
 # Configure Django App for Heroku.

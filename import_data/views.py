@@ -1,11 +1,12 @@
 from django.shortcuts import redirect, reverse
 import json
+import logging
 import requests
 import base64
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from .helpers import post_to_slack
-from .models import FitbitMember, OuraMember, GoogleFitMember
+from .models import FitbitMember, OuraMember, GoogleFitMember, GarminMember
 from retrospective.tasks import update_fitbit_data, update_oura_data, update_googlefit_data
 import arrow
 from django.contrib import messages
@@ -16,6 +17,9 @@ import urllib.parse
 from ohapi import api
 
 import google_auth_oauthlib.flow
+from import_data.garmin import garmin_oauth
+
+logger = logging.getLogger('import_data.views')
 
 
 fitbit_authorize_url = "https://www.fitbit.com/oauth2/authorize"
@@ -289,4 +293,44 @@ def garmin_dailies(request):
         return HttpResponse(status=200)
     else:
         return HttpResponse(status=405)
+
+
+def authorize_garmin(request):
+    print(request.user.openhumansmember)
+    garmin = garmin_oauth.GarminHealth(settings.GARMIN_KEY, settings.GARMIN_SECRET)
+    # oauth1 leg 1
+    garmin.fetch_oauth_token()
+    oauth_callback = request.build_absolute_uri(reverse('import_data:complete-garmin', kwargs={"resource_owner_secret": garmin.resource_owner_secret}))
+    # oauth1 leg 2
+    authorization_url = garmin.fetch_authorization_url(oauth_callback)
+
+    return redirect(authorization_url)
+
+
+def complete_garmin(request, resource_owner_secret):
+    authorization_response = settings.OPENHUMANS_APP_BASE_URL + request.get_full_path()
+    garmin = garmin_oauth.GarminHealth(settings.GARMIN_KEY, settings.GARMIN_SECRET)
+    # oauth1 leg 3
+    garmin.complete_garmin(authorization_response, resource_owner_secret)
+    access_token = garmin.uat
+    userid = garmin.api_id
+
+    if hasattr(request.user.openhumansmember, 'garmin_member'):
+        garmin_member = request.user.openhumansmember.garmin_member
+    else:
+        garmin_member = GarminMember()
+
+    garmin_member.access_token = access_token
+    garmin_member.used_id = userid
+    garmin_member.member = request.user.openhumansmember
+    # TODO initiate a backfill of Garmin data :-)
+    garmin_member.save()
+    if garmin_member:
+        messages.info(request,
+                      "Your Garmin account has been connected, and your heart rate data has been queued to be fetched from it.")
+        return redirect('/')
+
+    messages.warning(request, ("Something went wrong, please try connecting your "
+                               "Garmin account again."))
+    return redirect('/')
 
