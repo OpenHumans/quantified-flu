@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .helpers import post_to_slack
 from .models import FitbitMember, OuraMember, GoogleFitMember, GarminMember
 from retrospective.tasks import update_fitbit_data, update_oura_data, update_googlefit_data
+from import_data.garmin.tasks import handle_dailies
 import arrow
 from django.contrib import messages
 from django.http import HttpResponse
@@ -289,7 +290,7 @@ def update_googlefit(request):
 def garmin_dailies(request):
     if request.method == "POST":
         content = json.loads(request.body)
-        post_to_slack("Received: "+str(content))
+        handle_dailies.delay(content)
         return HttpResponse(status=200)
     else:
         return HttpResponse(status=405)
@@ -321,7 +322,7 @@ def complete_garmin(request, resource_owner_secret):
         garmin_member = GarminMember()
 
     garmin_member.access_token = access_token
-    garmin_member.used_id = userid
+    garmin_member.userid = userid
     garmin_member.member = request.user.openhumansmember
     # TODO initiate a backfill of Garmin data :-)
     garmin_member.save()

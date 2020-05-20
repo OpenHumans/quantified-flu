@@ -304,5 +304,6 @@ class GarminHealth(object):
     def api_id(self):
         if self._api_id is None:
             data = self.query(API_USER_ID)
+            print(data)
             self._api_id = data.get('userId')
         return self._api_id
