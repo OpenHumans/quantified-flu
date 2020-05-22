@@ -95,7 +95,8 @@ def upload_user_dailies(garmin_user_id, user_map, existing_file_id):
                                   max_bytes=MAX_FILE_BYTES)
 
     oh_user.garmin_member.last_updated = datetime.now()
-    if  oh_user.garmin_member.earliest_available_data and min_date < oh_user.garmin_member.earliest_available_data:
+    if not oh_user.garmin_member.earliest_available_data or \
+            (oh_user.garmin_member.earliest_available_data and min_date < oh_user.garmin_member.earliest_available_data.replace(tzinfo=None)):
         oh_user.garmin_member.earliest_available_data = min_date
     oh_user.garmin_member.save()
     if existing_file_id:
