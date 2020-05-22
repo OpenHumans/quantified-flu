@@ -8,6 +8,7 @@ import requests
 
 from import_data.helpers import end_of_month
 from import_data import googlefit_parse_utils
+from import_data.garmin.parse import user_map_to_timeseries
 
 WEEKS_BEFORE_SICK = 3
 WEEKS_AFTER_SICK = 2
@@ -173,6 +174,38 @@ def googlefit_parser(googlefit_files_info, event_start, event_end=None):
             returned_googlefit_data += data_in_qf_format
 
     return returned_googlefit_data
+
+
+def garmin_parser(garmin_file_info, event_start, event_end=None):
+    print(event_start)
+    if event_end is None:
+        event_end = event_start
+    event_start = datetime(
+        event_start.year, event_start.month, event_start.day, 0, 0, 0
+    )
+    event_end = datetime(event_end.year, event_end.month, event_end.day, 23, 59, 59)
+    min_date = event_start - timedelta(days=21)
+    max_date = event_end + timedelta(days=14)
+    garmin_json = json.loads(requests.get(garmin_file_info["download_url"]).content)
+    data_in_qf_format = garmin_to_qf(garmin_json, min_date, max_date)
+    return data_in_qf_format
+
+
+
+
+def garmin_to_qf(json_data, min_date, max_date):
+    res = []
+    data = json_data
+    series = user_map_to_timeseries(data)
+
+    for dt, value in zip(series.index, series.values):
+
+        if dt < min_date or dt > max_date:
+            continue
+        rec = {"timestamp": dt.isoformat(), "data": {"heart_rate": int(value)}}
+        res.append(rec)
+        print(rec)
+    return res
 
 
 def fitbit_intraday_parser(

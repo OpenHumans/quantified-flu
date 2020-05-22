@@ -130,6 +130,7 @@
 {% elif analysis.graph_type == 'fitbit_intraday' %}Fitbit Intraday
 {% elif analysis.graph_type == 'googlefit_heartrate' %}GoogleFit Heart Rate
 {% elif analysis.graph_type == 'apple_health_summary' %}Apple Health Resting Heartrate
+  {% elif analysis.graph_type == 'garmin_heartrate' %}Garmin Heartrate
 {% endif %}</h3>
 
 <div class="retrospective_graph_{{ analysis.id }}"></div>

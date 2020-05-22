@@ -4,6 +4,7 @@ from import_data.models import GarminMember
 from ohapi import api
 
 from import_data.helpers import write_jsonfile_to_tmp_dir, download_to_json
+from retrospective.tasks import analyze_existing_events, analyze_existing_reports
 
 from celery.decorators import task
 from collections import defaultdict
@@ -28,6 +29,16 @@ def handle_dailies(json):
         print('target data')
         print(len(user_map['dailies']))
         upload_user_dailies(user_id, user_map, existing_file_id)
+
+        django_user_id = get_django_user_id_from_garmin_id(user_id)
+
+        analyze_existing_events(django_user_id)
+        analyze_existing_reports(django_user_id)
+
+
+def get_django_user_id_from_garmin_id(garmin_user_id):
+    oh_user = get_oh_user_from_garmin_id(garmin_user_id)
+    return oh_user.user.id
 
 
 def get_existing_data(garmin_user_id):
