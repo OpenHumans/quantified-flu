@@ -290,6 +290,7 @@ def update_googlefit(request):
 def garmin_dailies(request):
     if request.method == "POST":
         content = json.loads(request.body)
+        print(content)
         handle_dailies.delay(content)
         return HttpResponse(status=200)
     else:
