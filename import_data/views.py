@@ -2,6 +2,7 @@ from django.shortcuts import redirect, reverse
 import json
 import logging
 import requests
+from requests_oauthlib import OAuth1Session
 import base64
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
@@ -322,6 +323,7 @@ def complete_garmin(request, resource_owner_secret):
         garmin_member = GarminMember()
 
     garmin_member.access_token = access_token
+    garmin_member.access_token_secret = garmin.oauth.token.get('oauth_token_secret')
     garmin_member.userid = userid
     garmin_member.member = request.user.openhumansmember
     # TODO initiate a backfill of Garmin data :-)
@@ -335,3 +337,20 @@ def complete_garmin(request, resource_owner_secret):
                                "Garmin account again."))
     return redirect('/')
 
+
+def remove_garmin(request):
+    oauth = OAuth1Session(
+        client_key=settings.GARMIN_KEY,
+        client_secret=settings.GARMIN_SECRET,
+        resource_owner_key= request.user.openhumansmember.garmin_member.access_token,
+        resource_owner_secret=request.user.openhumansmember.garmin_member.access_token_secret)
+
+    res = oauth.delete(url="https://healthapi.garmin.com/wellness-api/rest/user/registration")
+    print("deleted {}".format(res))
+    print(res.content)
+
+    request.user.openhumansmember.garmin_member.delete()
+    messages.info(request,
+                  "Your Garmin account has been successfully deleted.")
+
+    return redirect("/")

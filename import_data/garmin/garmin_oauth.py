@@ -4,7 +4,6 @@ Adapted from: https://github.com/tchellomello/garmin_health/tree/master/garmin_h
 """
 
 import logging
-import os
 from requests_oauthlib import OAuth1Session
 from requests.exceptions import ReadTimeout, RequestException
 

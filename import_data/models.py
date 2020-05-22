@@ -163,7 +163,7 @@ class GoogleFitMember(models.Model):
 
 class GarminMember(models.Model):
     """
-    Store OAuth1 data for a Fitbit Member.
+    Store OAuth1 data for a Garmin Member.
     This is a one to one relationship with a OpenHumansMember object.
     """
 
@@ -171,7 +171,8 @@ class GarminMember(models.Model):
         OpenHumansMember, related_name="garmin_member", on_delete=models.CASCADE
     )
     userid = models.CharField(max_length=255, unique=True, null=True) # user id that garmin health api uses
-    access_token = models.CharField(max_length=512) # oauth1 access token, valid for all eternity
+    access_token = models.CharField(max_length=512) # oauth1 access token, valid as long as it's not revoked
+    access_token_secret = models.CharField(max_length=512, null=True)
     # should update this every time the daiies endpoint is called
     last_updated = models.DateTimeField(null=True)
     # for backfill
