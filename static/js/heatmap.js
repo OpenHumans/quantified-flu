@@ -294,7 +294,7 @@ function loadCommentsValues(data) {
  
   const data2 = [];
   var cnt = 0;
-  for (var i = 0; i < days.length; i++) {
+  for (var i = 0; i < dayscontrol.length; i++) {
     data2[i + cnt] = data1[i];
     if (dayscontrol[i] != -1 && dayscontrol[i] != -30) {
       for (var t = 0; t < dayscontrol[i]; t++) {
@@ -307,12 +307,13 @@ function loadCommentsValues(data) {
     }
   }
 
-  for (var i = 0; i < data2.length; i++) {
+  for (var i = 0; i < days.length; i++) {
     if (data2[i] == "")
       values[i] = -2;
     else
       values[i] = 5;
   }
+  console.log(values);
   return values;
 }
 
@@ -321,7 +322,7 @@ function loadComments(data, days) {
   dayscontrol = dayControl(file_days);
   const data2 = [];
   var cnt = 0;
-  for (var i = 0; i < days.length; i++) {
+  for (var i = 0; i < dayscontrol.length; i++) {
     data2[i + cnt] = data1[i];
     if (dayscontrol[i] != -1 && dayscontrol[i] != -30 && dayscontrol[i] != 31) {
       for (var t = 0; t < dayscontrol[i]; t++) {
