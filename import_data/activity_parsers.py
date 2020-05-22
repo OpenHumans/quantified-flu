@@ -186,6 +186,7 @@ def garmin_parser(garmin_file_info, event_start, event_end=None):
     event_end = datetime(event_end.year, event_end.month, event_end.day, 23, 59, 59)
     min_date = event_start - timedelta(days=21)
     max_date = event_end + timedelta(days=14)
+    print(garmin_file_info)
     garmin_json = json.loads(requests.get(garmin_file_info["download_url"]).content)
     data_in_qf_format = garmin_to_qf(garmin_json, min_date, max_date)
     return data_in_qf_format

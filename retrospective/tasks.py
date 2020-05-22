@@ -292,7 +292,7 @@ def add_wearable_to_symptom(oh_member_id):
             )
         if garmin_data:
             garmin_hr_data = garmin_parser(
-                googlefit_data, symptoms_start, symptoms_end
+                garmin_data, symptoms_start, symptoms_end
             )
             set_symptomwearablereport(
                 oh_member=oh_member,
