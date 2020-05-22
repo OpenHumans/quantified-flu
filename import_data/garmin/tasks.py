@@ -33,6 +33,7 @@ def handle_backfill(garmin_user_id):
     res = oauth.get(url=summary_url)
     if res.status_code != 202:
         raise Exception("Invalid backlfill query response: {},{}".format(res.content, res.status_code))
+    return res
 
 
 @task
