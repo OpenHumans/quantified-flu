@@ -8,9 +8,32 @@ from retrospective.tasks import analyze_existing_events, analyze_existing_report
 
 from celery.decorators import task
 from collections import defaultdict
+from requests_oauthlib import OAuth1Session
+from django.conf import settings
 
 
 MAX_FILE_BYTES = 256000000 # 256 MB
+
+
+@task
+def handle_backfill(garmin_user_id):
+    garmin_member = GarminMember.objects.get(userid=garmin_user_id)
+    oauth = OAuth1Session(
+        client_key=settings.GARMIN_KEY,
+        client_secret=settings.GARMIN_SECRET,
+        resource_owner_key=garmin_member.access_token,
+        resource_owner_secret=garmin_member.access_token_secret)
+
+    start_epoch = 0
+    end_epoch = 48 * 36000
+
+    summary_url = "https://healthapi.garmin.com/wellness-api/rest/backfill/dailies?summaryStartTimeInSeconds={}&summaryEndTimeInSeconds={}".format(
+        start_epoch, end_epoch)
+
+    res = oauth.get(url=summary_url)
+    if res.status_code != 202:
+        raise Exception("Invalid backlfill query response: {},{}".format(res.content, res.status_code))
+
 
 @task
 def handle_dailies(json):
@@ -71,7 +94,8 @@ def upload_user_dailies(garmin_user_id, user_map, existing_file_id):
                                   max_bytes=MAX_FILE_BYTES)
 
     oh_user.garmin_member.last_updated = datetime.now()
-    oh_user.garmin_member.earliest_available_data = min_date
+    if  oh_user.garmin_member.earliest_available_data and min_date < oh_user.garmin_member.earliest_available_data:
+        oh_user.garmin_member.earliest_available_data = min_date
     oh_user.garmin_member.save()
     if existing_file_id:
         api.delete_file(oh_user.get_access_token(), file_id=existing_file_id)
@@ -133,6 +157,3 @@ def merge_user_maps(um1, um2):
 
     return new_map
 
-@task
-def handle_backfill(garmin_member):
-    pass
