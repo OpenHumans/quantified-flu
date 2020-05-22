@@ -8,6 +8,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from .models import FitbitMember, OuraMember, GoogleFitMember, GarminMember
 from retrospective.tasks import update_fitbit_data, update_oura_data, update_googlefit_data
+from import_data.helpers import post_to_slack
 from import_data.garmin.tasks import handle_dailies, handle_backfill
 import arrow
 from django.contrib import messages
@@ -290,7 +291,7 @@ def update_googlefit(request):
 def garmin_dailies(request):
     if request.method == "POST":
         content = json.loads(request.body)
-        print(content)
+        post_to_slack(content)
         handle_dailies.delay(content)
         return HttpResponse(status=200)
     else:
