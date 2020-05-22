@@ -291,7 +291,7 @@ def update_googlefit(request):
 def garmin_dailies(request):
     if request.method == "POST":
         content = json.loads(request.body)
-        post_to_slack(content)
+        post_to_slack("message:"+str(content))
         handle_dailies.delay(content)
         return HttpResponse(status=200)
     else:
