@@ -166,7 +166,7 @@ function showTitleandSubtitle(maingroup) {
     .attr("y", -70)
     .style("text-anchor", "middle")
     .attr("font-size", 25)
-    .text("Heatmap of simptoma reporting");
+    .text("Heatmap of Symptom reports");
 
   maingroup.append("text")
     .attr("class", "subtitle")
