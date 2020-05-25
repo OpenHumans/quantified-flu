@@ -13,37 +13,40 @@ gridSize = Math.floor(width / 26);
 
 let brushHeight = 10;
 
-createheatmap (url);
+createheatmap(url);
+
 
 
 
 /* fonctions : */
-function createheatmap (url){
+function createheatmap(url) {
   $.get(url, function (data) {
-  timestamp = data.symptom_report.map(d => d.timestamp);
-  file_days = timestamp.map(d => formatdate(parseTime(d)));
-  days = controlDay(file_days);
-  days_axis = showingDayOnTheMap(days);
-  symptom_data = loadDataSymptom(data);
-  comments = loadComments(data, days);
-  height = determineHeigth();
-  innerwidth = determineInnerwidth();
+    timestamp = data.symptom_report.map(d => d.timestamp);
+    file_days = timestamp.map(d => formatdate(parseTime(d)));
+    days = controlDay(file_days);
+    days_axis = showingDayOnTheMap(days);
+    symptom_data = loadDataSymptom(data);
+    comments = loadComments(data, days);
+    height = determineHeigth();
+    innerwidth = determineInnerwidth();
+    namesmonths = determinenamemonth(days);
 
-  var maingroup = d3.select('#container')
-    .append("svg")
-    .attr("class", "svg")
-    .attr("width", innerwidth + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var maingroup = d3.select('#container')
+      .append("svg")
+      .attr("class", "svg")
+      .attr("width", innerwidth + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  brushGroup(maingroup);
-  showDaysAxis(maingroup);
-  showTitleandSubtitle(maingroup);
-  showHeatmap(maingroup)
-  showSymptomAxis(maingroup);
-  showLegend(maingroup);
-})
+    brushGroup(maingroup);
+    showMonthsAxis(maingroup);
+    showDaysAxis(maingroup);
+    showTitleandSubtitle(maingroup);
+    showHeatmap(maingroup)
+    showSymptomAxis(maingroup);
+    showLegend(maingroup);
+  })
 }
 
 function showHeatmap(maingroup) {
@@ -73,23 +76,25 @@ function showHeatmap(maingroup) {
 
 function brushGroup(maingroup) {
   x2 = scaleXaxis();
-  
+  let speedScrolling = (gridSize * days.length) / (26 * gridSize);
   var brushed = () => {
     const s = d3.event.selection || x2.range();
     d3.selectAll('#heatmape')
-      .attr('transform', `translate(${-s[0]}, 0)`)
+      .attr('transform', `translate(${-s[0] * speedScrolling}, 0)`)
     d3.selectAll('#xAxis')
-      .attr('transform', `translate(${-s[0] + margin.left * 2.2}, -16)`)
+      .attr('transform', `translate(${-s[0] * speedScrolling + margin.left * 2.2}, -16)`)
     d3.selectAll('#tickSize')
-      .attr('transform', `translate(${-s[0] + margin.left * 2.2}, -10)`)
+      .attr('transform', `translate(${-s[0] * speedScrolling + margin.left * 2.2}, -10)`)
+    d3.selectAll('#xmonthAxis')
+      .attr('transform', `translate(${-s[0] * speedScrolling + margin.left * 2.2}, -26)`)
   }
 
   if (days.length < 26) {
     var widthSlide = gridSize * days.length;
     var blockSlide = gridSize * days.length;
   } else {
-    var widthSlide = gridSize;
-    var blockSlide = width + (gridSize * 3);
+    var widthSlide = (26 * gridSize) / (gridSize * days.length) * (26 * gridSize);
+    var blockSlide = width;
   }
 
   //Pour changer la valuer de "blockage, on change la valeur ici"
@@ -135,7 +140,7 @@ function scaleColor() {
 
 function showDaysAxis(maingroup) {
 
-   maingroup.selectAll(".daysLabel")
+  maingroup.selectAll(".daysLabel")
     .data(days_axis)
     .enter().append("text")
     .attr('id', 'xAxis')
@@ -157,6 +162,21 @@ function showDaysAxis(maingroup) {
     .attr("y2", 10)
     .style("stroke", "black")
     .style("stroke-width", "1");
+}
+
+function showMonthsAxis(maingroup) {
+  maingroup.selectAll(".monthsLabel")
+    .data(namesmonths)
+    .enter().append("text")
+    .attr('id', 'xmonthAxis')
+    .text(function (d) { return d; })
+    .attr("x", function (d, i) { return i * gridSize; })
+    .attr("y", 0)
+    .attr("transform", "translate(" + margin.left * 2.2 + ",-26)")
+    .attr("font-weight", 900)
+    .style("text-anchor", "middle")
+    .attr("font-family", "Saira")
+    .attr("font-size", 10);
 }
 
 function showTitleandSubtitle(maingroup) {
@@ -197,11 +217,12 @@ function showSymptomAxis(maingroup) {
     .data($names)
     .enter().append("text")
     .text(function (d) { return d; })
+    .attr("font-weight", 900)
     .attr("x", 30)
     .attr("y", function (d, i) { return i * gridSize; })
     .attr("transform", "translate(" + gridSize / 1.5 + "," + gridSize / 1.5 + ")")
     .style("text-anchor", "end")
-    .attr("font-size", 12);
+    .attr("font-size", 14);
 }
 
 function showLegend(maingroup) {
@@ -291,7 +312,7 @@ function loadCommentsValues(data) {
   data1 = data.symptom_report.map(d => d.data.notes);
 
   dayscontrol = dayControl(file_days);
- 
+
   const data2 = [];
   var cnt = 0;
   for (var i = 0; i < dayscontrol.length; i++) {
@@ -356,9 +377,9 @@ function loadDataSymptom(data) {
   cough = data.symptom_report.map(d => d.data.symptom_cough);
   anosmia = data.symptom_report.map(d => d.data.symptom_anosmia);
   fever = data.symptom_report.map(d => d.data.fever);
-
+  console.log(fever);
   comments = loadCommentsValues(data);
-  
+
   symptom_data = [];
   symptom_data[0] = dataControlSymptom(fever);
   symptom_data[1] = dataControlSymptom(anosmia);
@@ -376,7 +397,6 @@ function loadDataSymptom(data) {
   symptom_data[13] = dataControlSymptom(stomach_ache);
   symptom_data[14] = "";
   symptom_data[15] = comments;
-
   return symptom_data;
 }
 
@@ -387,15 +407,16 @@ function dataControlSymptom(data) {
     if (data[i] === undefined || data[i] === "")
       data[i] = 0;
 
+    if (data[i] >= 95 && data[i] < 99.5)
+      data[i] = 0;
     /* Managing of the entering data symptom of the fever */
-    if (data[i] >= 97 && data[i] < 99)
-
+    if (data[i] >= 99.5 && data[i] < 100.4)
       data[i] = 1;
 
-    if (data[i] >= 99 && data[i] < 100)
+    if (data[i] >= 100.4 && data[i] < 102.2)
       data[i] = 2;
 
-    if (data[i] >= 100 && data[i] < 104)
+    if (data[i] >= 102.2 && data[i] < 104)
       data[i] = 3;
 
     if (data[i] >= 104)
@@ -416,19 +437,29 @@ function dataControlSymptom(data) {
       cnt--;
     }
   }
-/*
-  for (var i = 0; i < days.length; i++) {
-    data[i] = data2[i];
-  }*/
+  /*
+    for (var i = 0; i < days.length; i++) {
+      data[i] = data2[i];
+    }*/
   return data2;
 }
 
 function dayControl(data) {
   var days_fixed = [];
-  for (var i = 0; i < data.length-1; i++) {
-    days_fixed[i] = days2[i + 1] - days2[i] - 1;
+  var days4_fixed = [];
+  for (var i = 0; i < data.length - 1; i++) {
+    days4_fixed[i] = days2[i + 1] - days2[i] - 1;
   }
-  days_fixed.push(0);
+  days4_fixed.push(0);
+  for (let i = 0; i < days4_fixed.length; i++) {
+    if (days4_fixed[i] < -1) {
+      if (month[i] == 1 || month[i] == 3 || month[i] == 5 || month[i] == 7 || month[i] == 8 || month[i] == 10 || month[i] == 12) {
+        days_fixed[i] = days4_fixed[i] + 31;
+      } else
+        days_fixed[i] = days4_fixed[i] + 30;
+    } else
+      days_fixed[i] = days4_fixed[i];
+  }
   return days_fixed;
 }
 
@@ -438,45 +469,80 @@ function controlDay(data) {
   const days_fixed = [];
   const days2_fixed = [];
   const days3_fixed = [];
+  const days4_fixed = [];
   var daybeug = [];
   var count = 0;
+  console.log(days2);
 
-  for (var i = 0; i < data.length-1; i++) {
-    days_fixed[i] = days2[i + 1] - days2[i] - 1;
-    if (days_fixed[i] == 1) {
-      daybeug[count] = i;
-      count++;
-    }
-    if (days_fixed[i] == 2) {
-      daybeug[count] = i;
-      daybeug[count + 1] = i + 1;
-      count = +2;
+  for (var i = 0; i < data.length - 1; i++) {
+    days4_fixed[i] = days2[i + 1] - days2[i] - 1;
+
+    if (days_fixed[i] > 0) {
+      for (let y = 0; y < days_fixed[i]; y++) {
+        daybeug[count] = i;
+        count++;
+      }
     }
   }
-  days_fixed.push(0);
+  /*
+      if (days_fixed[i] == 1) {
+        daybeug[count] = i;
+        count++;
+      }
+      if (days_fixed[i] == 2) {
+        daybeug[count] = i;
+        daybeug[count + 1] = i + 1;
+        count = +2;
+      }
+    }*/
+  days4_fixed.push(0);
+  console.log(daybeug);
+
+  for (let i = 0; i < days4_fixed.length; i++) {
+    if (days4_fixed[i] < -1) {
+      if (month[i] == 1 || month[i] == 3 || month[i] == 5 || month[i] == 7 || month[i] == 8 || month[i] == 10 || month[i] == 12) {
+        days_fixed[i] = days4_fixed[i] + 31;
+      } else
+        days_fixed[i] = days4_fixed[i] + 30;
+    } else
+      days_fixed[i] = days4_fixed[i];
+  }
 
   var counter = 0;
   for (var i = 0; i < (data.length - 1); i++) {
+
     if (days_fixed[i] != -1 && days_fixed[i] != -30 && days_fixed[i] != -31) {
+
       for (var t = 0; t < days_fixed[i] + 1; t++) {
+
         if ((days2[i] - (-t)) < 10) {
           days2_fixed[i + counter] = "0" + (days2[i] - (-t)) + "/" + (month[i]);
           counter++;
+        }
+        else if (month[i] == 1 || month[i] == 3 || month[i] == 5 || month[i] == 7 || month[i] == 8 || month[i] == 10 || month[i] == 12) {
+          if ((days2[i] - (-t)) > 31) {
+            days2_fixed[i + counter] = "0" + ((days2[i] - (-t)) - 31) + "/" + (month[i + days_fixed[i] + 1]);
+            counter++;
+          } else {
+            days2_fixed[i + counter] = (days2[i] - (-t)) + "/" + (month[i]);
+            counter++;
+          }
         } else {
-          days2_fixed[i + counter] = (days2[i] - (-t)) + "/" + (month[i]);
+          if ((days2[i] - (-t)) > 30) {
+            days2_fixed[i + counter] = "0" + ((days2[i] - (-t)) - 30) + "/" + (month[i + days_fixed[i] + 1]);
+          } else
+            days2_fixed[i + counter] = (days2[i] - (-t)) + "/" + (month[i]);
           counter++;
         }
       }
     }
     else if (days_fixed[i] == -1) {
-     counter--;
+      counter--;
     }
-
     else {
       days2_fixed[i + counter] = data[i];
     }
   }
- 
   var ii = 0;
   for (var i = 0; i < days2_fixed.length; i++) {
     if (days2_fixed[i] == null) i++;
@@ -487,11 +553,23 @@ function controlDay(data) {
     ii++;
   }
   days3_fixed.push(data[data.length - 1]);
-  
   return days3_fixed;
-
 }
 
+function determinenamemonth(data) {
+  var idmonths = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+  var namemonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  var test = [];
+  for (let i = 0; i < data.length; i++) {
+    for (let y = 0; y < idmonths.length; y++) {
+      if (data[i] == '01/' + idmonths[y]) {
+        test[i] = namemonths[y];
+        i++;
+      }
+    } test[i] = "";
+  }
+  return test;
+}
 function showingDayOnTheMap(data) {
   var day_break = [];
   var day_break1 = [];

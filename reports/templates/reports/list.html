@@ -58,6 +58,8 @@
 {% if member_id %}
 <script>
    console.log("succed to loading public data");
+  // url = "https://quantifiedflu.org/report/list/member/43462825.json"
+  //url ="https://quantifiedflu.org/report/list/member/02631468.json"
   //url = "https://quantifiedflu.org/report/list/member/25102556.json"
  url =  "{% url 'reports:list_member' member_id %}" + ".json";</script>
 {% else %}
