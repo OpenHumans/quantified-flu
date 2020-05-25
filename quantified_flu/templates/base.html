@@ -40,7 +40,7 @@
 
     <header>
       <!-- Fixed navbar -->
-      <nav class="navbar navbar-light navbar-expand-md fixed-top" style="background-image: linear-gradient(#FFFFFFFF, #ffffffdd, #ffffffbb, #ffffff00)">
+      <nav class="navbar navbar-light navbar-expand-md fixed-top" style="background-image: linear-gradient(#FFFFFFFF, #fffffffd, #ffffffed, #ffffffed)">
         <div class="container d-flex">
           <a class="navbar-brand" href="/">
             <img class="navbar-img" src="{% static 'img/icon-192x192.png' %}" style="max-height:2rem;">
@@ -51,6 +51,11 @@
           </button>
           <div class="collapse navbar-collapse text-right" id="navbarCollapse">
             <ul class="navbar-nav ml-auto">
+              {% if request.user.is_authenticated %}
+              <li class="nav-item mt-2 mt-md-0 mr-md-2">
+              <a class='nav-link' href="{% url 'manage-account' %}">Manage Account</a>
+            </li>
+              {% endif %}
               <li class="nav-item mt-2 mt-md-0 mr-md-2">
                 <a class="nav-link" href="{% url 'public-data' %}">Public data</a>
               </li>
@@ -64,7 +69,6 @@
                 </a>
               </li>
               {% else %}
-                <a class='nav-link' href="{% url 'manage-account' %}">Manage Account</a>
               <form class="mt-md-1 mt-0" action="{% url 'logout' %}" method="post">
                 {% csrf_token %}
                 <button class="btn btn-info btn-sm float-right" type="submit">Log out</button>

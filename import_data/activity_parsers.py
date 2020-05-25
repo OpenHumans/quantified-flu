@@ -8,6 +8,7 @@ import requests
 
 from import_data.helpers import end_of_month
 from import_data import googlefit_parse_utils
+from import_data.garmin.parse import user_map_to_timeseries
 
 WEEKS_BEFORE_SICK = 3
 WEEKS_AFTER_SICK = 2
@@ -84,6 +85,31 @@ def fitbit_parser(fitbit_info, event_start, event_end=None):
 
     return returned_fitbit_data
 
+
+def apple_health_parser(apple_health_info, event_start, event_end=None):
+    if not event_end:
+        event_end = event_start
+    apple_health_data = requests.get(apple_health_info["download_url"]).text
+    apple_health_data = apple_health_data.split("\n")
+    start_date = arrow.get(event_start)
+    end_date = arrow.get(event_end)
+    period_start = start_date.shift(weeks=WEEKS_BEFORE_SICK * -1)
+    period_end = end_date.shift(weeks=WEEKS_AFTER_SICK)
+
+    returned_apple_data = []
+
+    for entry in apple_health_data:
+        if entry.endswith("R"):
+            entry = entry.split(",")
+            sdate = arrow.get(entry[1])
+            if sdate >= period_start and sdate <= period_end:
+                returned_apple_data.append(
+                    {"timestamp": entry[1], "data": {"heart_rate": entry[0]},}
+                )
+
+    return returned_apple_data
+
+
 def googlefit_to_qf(json_data, min_date, max_date):
     res = []
     data = json_data
@@ -96,7 +122,7 @@ def googlefit_to_qf(json_data, min_date, max_date):
     for col_name in df.columns:
         # the col_name should be of the format heart_rate.bpm.INT
         # named this way by the parsing functionality in get_dataframe_with_all
-        if 'heart_rate' not in col_name:
+        if "heart_rate" not in col_name:
             continue
         data_points = len(df[col_name].dropna())
         if data_points > max_data_points:
@@ -112,7 +138,7 @@ def googlefit_to_qf(json_data, min_date, max_date):
         ts = ts.to_pydatetime()
         if ts < min_date or ts > max_date:
             continue
-        rec = {"timestamp": ts.isoformat(), "data":{"heart_rate": value}}
+        rec = {"timestamp": ts.isoformat(), "data": {"heart_rate": value}}
         res.append(rec)
     return res
 
@@ -121,7 +147,9 @@ def googlefit_parser(googlefit_files_info, event_start, event_end=None):
     print(event_start)
     if event_end is None:
         event_end = event_start
-    event_start = datetime(event_start.year, event_start.month, event_start.day, 0, 0, 0)
+    event_start = datetime(
+        event_start.year, event_start.month, event_start.day, 0, 0, 0
+    )
     event_end = datetime(event_end.year, event_end.month, event_end.day, 23, 59, 59)
     min_date = event_start - timedelta(days=21)
     max_date = event_end + timedelta(days=14)
@@ -143,9 +171,42 @@ def googlefit_parser(googlefit_files_info, event_start, event_end=None):
 
         data_in_qf_format = googlefit_to_qf(googlefit_json, min_date, max_date)
         if data_in_qf_format:
-            returned_googlefit_data+=data_in_qf_format
+            returned_googlefit_data += data_in_qf_format
 
     return returned_googlefit_data
+
+
+def garmin_parser(garmin_file_info, event_start, event_end=None):
+    print(event_start)
+    if event_end is None:
+        event_end = event_start
+    event_start = datetime(
+        event_start.year, event_start.month, event_start.day, 0, 0, 0
+    )
+    event_end = datetime(event_end.year, event_end.month, event_end.day, 23, 59, 59)
+    min_date = event_start - timedelta(days=21)
+    max_date = event_end + timedelta(days=14)
+    print(garmin_file_info)
+    garmin_json = json.loads(requests.get(garmin_file_info["download_url"]).content)
+    data_in_qf_format = garmin_to_qf(garmin_json, min_date, max_date)
+    return data_in_qf_format
+
+
+
+
+def garmin_to_qf(json_data, min_date, max_date):
+    res = []
+    data = json_data
+    series = user_map_to_timeseries(data)
+
+    for dt, value in zip(series.index, series.values):
+
+        if dt < min_date or dt > max_date:
+            continue
+        rec = {"timestamp": dt.isoformat(), "data": {"heart_rate": int(value)}}
+        res.append(rec)
+        print(rec)
+    return res
 
 
 def fitbit_intraday_parser(

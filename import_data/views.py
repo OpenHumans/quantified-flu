@@ -1,18 +1,27 @@
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import redirect, reverse
+import json
+import logging
 import requests
+from requests_oauthlib import OAuth1Session
 import base64
 from django.conf import settings
-from .models import FitbitMember, OuraMember, GoogleFitMember
+from django.views.decorators.csrf import csrf_exempt
+from .models import FitbitMember, OuraMember, GoogleFitMember, GarminMember
 from retrospective.tasks import update_fitbit_data, update_oura_data, update_googlefit_data
+from import_data.helpers import post_to_slack
+from import_data.garmin.tasks import handle_dailies, handle_backfill
 import arrow
 from django.contrib import messages
+from django.http import HttpResponse
 import os
 import urllib.parse
 
-from import_data.googlefit_api import get_latest_googlefit_file_updated_dt
 from ohapi import api
 
 import google_auth_oauthlib.flow
+from import_data.garmin import garmin_oauth
+
+logger = logging.getLogger('import_data.views')
 
 
 fitbit_authorize_url = "https://www.fitbit.com/oauth2/authorize"
@@ -277,3 +286,72 @@ def update_googlefit(request):
                        "data."))
         return redirect('/')
 
+
+@csrf_exempt
+def garmin_dailies(request):
+    if request.method == "POST":
+        content = json.loads(request.body)
+        post_to_slack("message:"+str(content))
+        handle_dailies.delay(content)
+        return HttpResponse(status=200)
+    else:
+        return HttpResponse(status=405)
+
+
+def authorize_garmin(request):
+    print(request.user.openhumansmember)
+    garmin = garmin_oauth.GarminHealth(settings.GARMIN_KEY, settings.GARMIN_SECRET)
+    # oauth1 leg 1
+    garmin.fetch_oauth_token()
+    oauth_callback = request.build_absolute_uri(reverse('import_data:complete-garmin', kwargs={"resource_owner_secret": garmin.resource_owner_secret}))
+    # oauth1 leg 2
+    authorization_url = garmin.fetch_authorization_url(oauth_callback)
+
+    return redirect(authorization_url)
+
+
+def complete_garmin(request, resource_owner_secret):
+    authorization_response = settings.OPENHUMANS_APP_BASE_URL + request.get_full_path()
+    garmin = garmin_oauth.GarminHealth(settings.GARMIN_KEY, settings.GARMIN_SECRET)
+    # oauth1 leg 3
+    garmin.complete_garmin(authorization_response, resource_owner_secret)
+    access_token = garmin.uat
+    userid = garmin.api_id
+
+    if hasattr(request.user.openhumansmember, 'garmin_member'):
+        garmin_member = request.user.openhumansmember.garmin_member
+    else:
+        garmin_member = GarminMember()
+
+    garmin_member.access_token = access_token
+    garmin_member.access_token_secret = garmin.oauth.token.get('oauth_token_secret')
+    garmin_member.userid = userid
+    garmin_member.member = request.user.openhumansmember
+    handle_backfill.delay(userid)
+    garmin_member.save()
+    if garmin_member:
+        messages.info(request,
+                      "Your Garmin account has been connected, and your heart rate data has been queued to be fetched from it.")
+        return redirect('/')
+
+    messages.warning(request, ("Something went wrong, please try connecting your "
+                               "Garmin account again."))
+    return redirect('/')
+
+
+def remove_garmin(request):
+    oauth = OAuth1Session(
+        client_key=settings.GARMIN_KEY,
+        client_secret=settings.GARMIN_SECRET,
+        resource_owner_key= request.user.openhumansmember.garmin_member.access_token,
+        resource_owner_secret=request.user.openhumansmember.garmin_member.access_token_secret)
+
+    res = oauth.delete(url="https://healthapi.garmin.com/wellness-api/rest/user/registration")
+    print("deleted {}".format(res))
+    print(res.content)
+
+    request.user.openhumansmember.garmin_member.delete()
+    messages.info(request,
+                  "Your Garmin account has been successfully deleted.")
+
+    return redirect("/")

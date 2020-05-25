@@ -2,10 +2,25 @@ import json
 import os
 import tempfile
 from datetime import datetime, timedelta
-
+from django.conf import settings
 import requests
 
 epoch = datetime.utcfromtimestamp(0)
+
+
+def post_to_slack(message):
+    webhook_url = settings.SLACK_WEBHOOK_URL
+    slack_data = {'text': message}
+
+    response = requests.post(
+        webhook_url, data=json.dumps(slack_data),
+        headers={'Content-Type': 'application/json'}
+    )
+    if response.status_code != 200:
+       print(
+            'Request to slack returned an error %s, the response is:\n%s'
+            % (response.status_code, response.text)
+        )
 
 
 def unix_time_millis(dt):
