@@ -89,7 +89,7 @@ function brushGroup(maingroup) {
     var blockSlide = gridSize * days.length;
   } else {
     var widthSlide = gridSize;
-    var blockSlide = width;
+    var blockSlide = width + (gridSize * 3);
   }
 
   //Pour changer la valuer de "blockage, on change la valeur ici"
@@ -222,7 +222,7 @@ function showLegend(maingroup) {
     .attr("x", (27 * (gridSize) + margin.left) - 4)
     .attr("y", -gridSize)
     .attr("width", 19 * (gridSize))
-    .attr("height", symptom_data.length * (gridSize + 3))
+    .attr("height", symptom_data.length * (gridSize * 1.07))
     .style("fill", "white");
 
   maingroup.append("text")
@@ -248,7 +248,7 @@ function showLegend(maingroup) {
       return color;
     });
 
-  var legend = maingroup.selectAll(".legende")
+  maingroup.selectAll(".legende")
     .data(commentScale)
     .enter().append("text")
     .text(function (d) { return d; })
@@ -313,7 +313,6 @@ function loadCommentsValues(data) {
     else
       values[i] = 5;
   }
-  console.log(values);
   return values;
 }
 
@@ -359,7 +358,7 @@ function loadDataSymptom(data) {
   fever = data.symptom_report.map(d => d.data.fever);
 
   comments = loadCommentsValues(data);
-
+  
   symptom_data = [];
   symptom_data[0] = dataControlSymptom(fever);
   symptom_data[1] = dataControlSymptom(anosmia);
