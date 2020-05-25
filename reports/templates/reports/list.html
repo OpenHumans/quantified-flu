@@ -14,34 +14,35 @@
 
 {# offer publish if unpublished and analyses exist #}
 {% if is_owner and object_list %}
-  {% if not request.user.openhumansmember.account.publish_symptom_reports %}
-    <div class="alert alert-primary">
-      <p>
-        <b>Share ongoing data?</b> Symptom reports and related data can be published via your random ID – and
-        you'll have a link you can share with others.
-      </p>
-      <p>
-        Shared data helps us do more! We'll also share data used for retrospective analyses if available (e.g. heartrate,
-        temperature up to six weeks before). Your data can help others develop visualizations and analyses, and hopefully
-        soon we'll have similar visualizations here. 🤞
-      </p>
-      <form action="" method="POST">
-        {% csrf_token %}
-        <input type="submit" value="Share data" class="btn btn-primary">
-      </form>
-    </div>
-  {% else %}
-  <div class="alert alert-primary">
-    <p>
-      <b>Sharing data!</b> Please visit <a href="{% url 'manage-account' %}">your account page</a> to modify this setting.
-      Thank you for sharing! 💖
-    </p>
-    <p>
-      Use this URL to share with others:
-      <a href="{% url 'reports:list_member' request.user.openhumansmember.oh_id %}">{{ request.get_host }}{% url 'reports:list_member' request.user.openhumansmember.oh_id %}</a>
-    </p>
-  </div>
-  {% endif %}
+{% if not request.user.openhumansmember.account.publish_symptom_reports %}
+<div class="alert alert-primary">
+  <p>
+    <b>Share ongoing data?</b> Symptom reports and related data can be published via your random ID – and
+    you'll have a link you can share with others.
+  </p>
+  <p>
+    Shared data helps us do more! We'll also share data used for retrospective analyses if available (e.g. heartrate,
+    temperature up to six weeks before). Your data can help others develop visualizations and analyses, and hopefully
+    soon we'll have similar visualizations here. 🤞
+  </p>
+  <form action="" method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Share data" class="btn btn-primary">
+  </form>
+</div>
+{% else %}
+<div class="alert alert-primary">
+  <p>
+    <b>Sharing data!</b> Please visit <a href="{% url 'manage-account' %}">your account page</a> to modify this setting.
+    Thank you for sharing! 💖
+  </p>
+  <p>
+    Use this URL to share with others:
+    <a
+      href="{% url 'reports:list_member' request.user.openhumansmember.oh_id %}">{{ request.get_host }}{% url 'reports:list_member' request.user.openhumansmember.oh_id %}</a>
+  </p>
+</div>
+{% endif %}
 {% endif %}
 
 
@@ -51,6 +52,46 @@
 </p>
 
 {% timezone timezone %}
+
+<div id="container"> </div>
+
+{% if member_id %}
+<script>
+   console.log("succed to loading public data");
+  // url = "https://quantifiedflu.org/report/list/member/43462825.json"
+  //url ="https://quantifiedflu.org/report/list/member/02631468.json"
+  //url = "https://quantifiedflu.org/report/list/member/25102556.json"
+ url =  "{% url 'reports:list_member' member_id %}" + ".json";</script>
+{% else %}
+<script> 
+ //url = "https://quantifiedflu.org/report/list/member/25102556.json"
+ console.log("succed to loading private data");
+ url =  "{% url 'reports:list_member' request.user.openhumansmember.oh_id %}" + ".json";
+</script>
+
+{% endif %}
+
+{% load static %}
+<script src="{% static 'js/heatmap.js' %}">
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <table class="table">
   <thead>
@@ -72,18 +113,19 @@
       <th scope="row">{{ report.created }}</th>
       <td>
         {% if report.report_none %}
-          None
+        None
         {% else %}
-          {% for symptomitem in report.reported_symptoms %}
-          {{ symptomitem.symptom.get_label_display }} ({{ symptomitem.get_intensity_display }}){% if not forloop.last %}, {% endif %}
-          {% endfor %}
+        {% for symptomitem in report.reported_symptoms %}
+        {{ symptomitem.symptom.get_label_display }} ({{ symptomitem.get_intensity_display }}){% if not forloop.last %},
+        {% endif %}
+        {% endfor %}
         {% endif %}
       </td>
       <td>
         {% if report.fever_guess %}
-          {{ report.get_fever_guess_display }}
+        {{ report.get_fever_guess_display }}
         {% else %}
-          No fever
+        No fever
         {% endif %}
       </td>
     </tr>
