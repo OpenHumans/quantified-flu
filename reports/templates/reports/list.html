@@ -55,21 +55,14 @@
 
 <div id="container"> </div>
 
-{% if member_id %}
 <script>
+  console.log("Loading data...");
+  url = "{{ request.path }}.json";
    console.log("succed to loading public data");
   // url = "https://quantifiedflu.org/report/list/member/43462825.json"
   //url ="https://quantifiedflu.org/report/list/member/02631468.json"
   //url = "https://quantifiedflu.org/report/list/member/25102556.json"
- url =  "{% url 'reports:list_member' member_id %}" + ".json";</script>
-{% else %}
-<script> 
- //url = "https://quantifiedflu.org/report/list/member/25102556.json"
- console.log("succed to loading private data");
- url =  "{% url 'reports:list_member' request.user.openhumansmember.oh_id %}" + ".json";
 </script>
-
-{% endif %}
 
 {% load static %}
 <script src="{% static 'js/heatmap.js' %}">
