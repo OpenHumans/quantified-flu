@@ -14,7 +14,7 @@
       <div class='panel-body'>
         <p>
           The question we want to answer is: <b>Can the various physiological parameters tracked by our wearables help to predict when we’re getting sick?</b>
-          This question
+          With the COVID-19 pandemic influencing all of our lives right now, this question seems more timely than ever. But it's not only the pandemic, this question
           equally applies to the flu and the common cold!
         </p>
         <p>
@@ -74,7 +74,9 @@
           Right now we support the following wearable devices:
           <ul>
             <li>All wearables by <i>Fitbit</i></li>
+            <li><i>Apple Watch</i> (and all other devices that deposit in <i>Apple Health</i>)</li>
             <li>The <i>Oura</i> Ring</li>
+            <li>All wearables that can export to <i>Google Fit</i>, e.g. Android Smart Watches.</li>
           </ul>
           There are many popular wearables, so if your wearable of choice is missing: Let us know <a href="mailto:support@openhumans.org">via email</a> or by <a href='https://slackin.openhumans.org'>joining our Slack</a>.
           If you're a programmer and would like to add support for your own wearable: Amazing!
@@ -125,10 +127,15 @@
       </div>
       <div class='panel-body'>
         <p>
-          <a href='https://www.openhumans.org/'><img class="w-50 p-3" src="{% static 'img/oh_logo.png' %}"/></a><a href='https://www.cri-paris.org'><img class="w-50 p-3" src="{% static 'img/cri_logo.png' %}"/></a>
+          <div class="">
+          <a href='https://www.openhumans.org/'><img style="width:30%" src="{% static 'img/oh_logo.png' %}"/></a> <a href='https://www.cri-paris.org'><img style="width:30%" src="{% static 'img/cri_logo.png' %}"/></a> <a href='https://jogl.io/'><img style="width:30%" src="{% static 'img/jogl_logo.png' %}"/></a>
+          </div>
+        </p>
+        <p>
           Financial support for this project comes from the <em><a href='https://www.openhumans.org/'>Open Humans Foundation</a></em>
-          (funding for the technical infrastructure and time of Mad Price Ball),
+          (funding the technical infrastructure and time of Mad Price Ball),
           as well as the <em><a href='https://www.cri-paris.org'>CRI Paris</a></em> (time of Bastian Greshake Tzovaras).
+          Additional support is provided by a grant of the <em>Open COVID-19 Initiative</em> from <em><a href='https://jogl.io/'>Just One Giant Lab</a></em>.
         </p>
         <p>
           Furthermore, many people volunteered and contributed to ideating and realizing this project, including <a href='https://forum.quantifiedself.com/t/using-resting-heart-rate-for-early-warning-of-coronavirus-infection/7864'>the <i>Quantified Self</i> forum<a>,
@@ -145,6 +152,8 @@
             <li><a href='https://github.com/beaugunderson/'>Beau Gunderson</a></li>
             <li><a href='https://www.linkedin.com/in/lukasz-baldy-26318b44/'>Lukasz Baldy</a></li>
             <li><a href='https://github.com/rtf-const'>Konstantin Vdovkin</a></li>
+            <li><a href='https://github.com/carolinux'>Karolina Alexiou</a></li>
+            <li><a href='https://github.com/basilemorane'>Basile Morane</a></li>
           </ul>
         </p>
       </div>
@@ -179,7 +188,7 @@
             and associated with connected accounts.
           </p>
           <p>
-            When you connect an Oura and/or Fitbit account, this site will access the
+            When you connect an Oura, Google Fit and/or Fitbit account, this site will access the
             following data and store it as an archive in your Open Humans
             account.
           </p>
@@ -207,8 +216,8 @@
           <p>
             You can always delete your account and all associated data from
             the <a href="#"><i>Dashboard</i></a>.
-            This includes the Open Humans and Oura/Fitbit authentication credentials,
-            i.e. we won't be able to access your Open Humans &amp; Oura/Fitbit
+            This includes the Open Humans and Oura/Fitbit/Google Fit authentication credentials,
+            i.e. we won't be able to access your Open Humans &amp; Oura/Fitbit/Google Fit
             accounts any longer.
           </p>
           <p>

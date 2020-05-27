@@ -6,13 +6,13 @@
 {% if not request.user.is_authenticated %}
 
 <h1 class="mt-3 text-center">Welcome to the <i>Quantified Flu</i>!</h1>
-<h4 class="text-center text-muted">Whether the flu or the common cold: Can wearables warn us when we're getting sick? Help us find out!</h4>
+<h4 class="text-center text-muted">Whether COVID-19, the flu or the common cold: Can wearables warn us when we're getting sick? Help us find out!</h4>
 
 <img class="img-fluid mb-3" src="{% static 'img/example_graph.png' %}">
 <p>We have two ways you can contribute…</p>
 <h3>Report past illness</h3>
 <p>
-  Report when you got sick and share your wearable device data. <b>We'll plot your data for you!</b> Currently we support <em>Fitbit</em> & <em>Oura Ring</em> wearables.
+  Report when you got sick and share your wearable device data. <b>We'll plot your data for you!</b> Currently we support <em>Fitbit</em> & <em>Oura Ring</em>, <em> Apple Watch</em> and <em>Google Fit</em>.
   <a href='https://docs.google.com/forms/d/e/1FAIpQLSdDjzLyL_HJ79ij4GbepqeNYAyYf4LWapXFyIDFwMRdXOBBXg/viewform'>Ask us to add support for your wearable</a>, if yours is missing so far!
 </p>
 <h3>Track symptoms going forward</h3>
@@ -37,7 +37,7 @@
 
 {% if request.user.is_authenticated %}
 
-{% if missing_sources|length == 3 %}
+{% if missing_sources|length == 4 %}
 <h2>Data Sources</h2>
 <p>
   You can connect these data sources to correlate them with reported illness.
@@ -53,10 +53,16 @@
       Connect Oura account
     </a>
   </div>
-  <a
-  href="{%url 'import_data:authorize-googlefit' %}" class="btn btn-primary btn-lg">
-  Connect GoogleFit account
-</a>
+  <div class="col-md">
+    <a
+    href="https://apps.apple.com/us/app/oh-data-port/id1512384252" class="btn btn-primary btn-lg">
+    Connect Apple Watch
+    </a>
+  </div>
+    <a
+    href="{%url 'import_data:authorize-googlefit' %}" class="btn btn-primary btn-lg">
+    Connect GoogleFit account
+    </a>
 </div>
 <hr>
 {% endif %}
@@ -102,7 +108,7 @@
 If at least one data source has been connected, management of data sources is
 moved to below the "actions" (retrospective analysis & scheduling check-ins).
 {% endcomment %}
-{% if missing_sources|length < 3 %}
+{% if missing_sources|length < 4 %}
 <hr>
 <h2>Data Sources</h2>
   {% comment %}
@@ -127,6 +133,11 @@ moved to below the "actions" (retrospective analysis & scheduling check-ins).
       {% if source == 'googlefit' %}
       <a href="{% url 'import_data:authorize-googlefit' %}">
         <li>Connect GoogleFit account</li>
+      </a>
+      {% endif %}
+      {% if source == 'apple_health' %}
+      <a href="https://apps.apple.com/us/app/oh-data-port/id1512384252">
+        <li>Connect Apple Watch / Apple Health</li>
       </a>
       {% endif %}
     {% endfor %}
@@ -169,9 +180,10 @@ For each connected data source, display info on how to get files & manage connec
         You can manage this connection at:<br>
       <a href="https://fitbit.openhumans.org">fitbit.openhumans.org</a>
       </p>
-      {% endif %}
+      {% endif %} {# if request.user.openhumansmember.fitbit_member #}
     </div>
-  {% endif %}
+  {% endif %} {# if 'fitbit' not in missing_sources #}
+
   {% if 'oura' not in missing_sources %}
     <div class="col-md-6">
       <h3>Manage Oura</h3>
@@ -202,10 +214,30 @@ For each connected data source, display info on how to get files & manage connec
         You can manage this connection at:<br>
       <a href="https://oura.openhumans.org">oura.openhumans.org</a>
       </p>
-      {% endif %}
-      {% endif %}
+      {% endif %} {# if request.user.openhumansmember.oura_user #}
+    </div>
+  {% endif %} {# if 'oura' not in missing_sources #}
 
-       {% if 'googlefit' not in missing_sources %}
+  {% if 'apple_health' not in missing_sources %}
+    <div class="col-md-6">
+      <h3>Manage Apple Watch / Apple Health </h3>
+
+      <p>
+        <b>Your data files:</b> You've shared Oura data via the
+        Open Humans importer app. Your data file (<code>"heartrate_samples*.csv"</code>)
+        should be available in your Open Humans account here:<br>
+        <a href="https://www.openhumans.org/activity/oh-data-port-for-apple-health/#activity-panel-data">
+          https://www.openhumans.org/activity/oh-data-port-for-apple-health/
+        </a>
+      </p>
+      <p>
+        You can update your data through the
+      <a href="https://apps.apple.com/us/app/oh-data-port/id1512384252">iPhone app</a>.
+      </p>
+    </div>
+  {% endif %} {# if 'apple_health' not in missing_sources #}
+
+  {% if 'googlefit' not in missing_sources %}
     <div class="col-md-6">
       <h3>Manage GoogleFit</h3>
       {% if request.user.openhumansmember.googlefit_member %}
@@ -235,11 +267,11 @@ For each connected data source, display info on how to get files & manage connec
         You can manage this connection at:<br>
       <a href="https://google-fit.openhumans.org">google-fit.openhumans.org</a>
       </p>
-      {% endif %}
+      {% endif %} {# if request.user.openhumansmember.googlefit_member #}
     </div>
-  {% endif %}
+  {% endif %} {# if 'googlefit' not in missing_sources #}
 </div> <!-- .row -->
-{% endif %} {# if missing_sources < 3 #}
+{% endif %} {# if missing_sources < 4 #}
 {% endif %} {# if user.is_authenticated #}
 
 {% endblock main %}
