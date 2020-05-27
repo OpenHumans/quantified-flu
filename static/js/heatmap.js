@@ -114,7 +114,7 @@ width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    brushGroup(maingroup);
+    git sbrushGroup(maingroup);
     showMonthsAxis(maingroup);
     showDaysAxis(maingroup);
     showTitleandSubtitle(maingroup);
