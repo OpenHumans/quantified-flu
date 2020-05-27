@@ -3,7 +3,7 @@
 {% load tz %}
 
 {% block main %}
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <h2>
   {% if member_id %}
   Symptom reports for {{ member_id }}
@@ -53,7 +53,12 @@
 
 {% timezone timezone %}
 
-<div id="container"> </div>
+<div id="container"> 
+  <div id="symptom" style = "width: 10%; height: 200px; background-color: aqua; float:left;"> </div>
+  <div id="heatmap" style = "width: 80%; height: auto; background-color: red; float:left; overflow-x: auto;"> </div>
+  <div id="legend" style = "width: 10%; height: 200px; background-color: purple; float:left;"> </div>
+</div>
+
 
 {% if member_id %}
 <script>
@@ -64,16 +69,15 @@
  url =  "{% url 'reports:list_member' member_id %}" + ".json";</script>
 {% else %}
 <script> 
- //url = "https://quantifiedflu.org/report/list/member/25102556.json"
+ url = "https://quantifiedflu.org/report/list/member/25102556.json"
  console.log("succed to loading private data");
- url =  "{% url 'reports:list_member' request.user.openhumansmember.oh_id %}" + ".json";
+ //url =  "{% url 'reports:list_member' request.user.openhumansmember.oh_id %}" + ".json";
 </script>
 
 {% endif %}
 
 {% load static %}
-<script src="{% static 'js/heatmap.js' %}">
-</script>
+<script src="{% static 'js/heatmap.js' %}"></script>
 
 
 
