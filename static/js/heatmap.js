@@ -1,48 +1,46 @@
-
 $names = ["Fever", "Anosmia", "Body ache", "Chills", "Cough", "Diarrhea", "Ear ache", "Fatigue", "Headache", "Nausea", "Runny nose", "Short breath", "Sore throat", "Stomach ache", "", "Comments"];
-sizedisplay = chooseDisplay(); 
+sizedisplay = chooseDisplay();
 
-switch(sizedisplay) {
-  case 1: 
-  width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
-  createheatmap(url);
-  break;
-  case 2: 
-  width = 0.9 * Math.max(Math.min(window.innerWidth, 800), 300);
-  createheatmap800(url);
-  break;
-  case 3: 
-  width = 0.9 * Math.max(Math.min(window.innerWidth, 340), 300);
-  createheatmapPhone(url);
-  break;
-  case 4: 
-  width = 0.9 * Math.max(Math.min(window.innerWidth, 650), 300);
-  createheatmapPhone(url);
-  break;
+switch (sizedisplay) {
+  case 1:
+    width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
+    createheatmap(url);
+    break;
+  case 2:
+    width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
+    createheatmap(url);
+    break;
+  case 3:
+    width = 0.9 * Math.max(Math.min(window.innerWidth, 340), 300);
+    createheatmapPhone(url);
+    break;
+  case 4:
+    width = 0.9 * Math.max(Math.min(window.innerWidth, 650), 300);
+    createheatmapPhone(url);
+    break;
   case 5:
-  width = 0.9 * Math.max(Math.min(window.innerWidth, 300), 300);
-  createheatmapPhone(url);
-  break;
+    width = 0.9 * Math.max(Math.min(window.innerWidth, 300), 300);
+    createheatmapPhone(url);
+    break;
 }
 
-
 function createheatmap800(url) {
-  
+
   margin = {
     top: 0.3 * width,
-    right:  -0.11 * width,
+    right: -0.11 * width,
     bottom: 0.14 * width,
     left: 0.05 * width
   };
   gridSize = Math.floor(width / 18);
   brushHeight = width / 35;
 
-  $.get(url, function (data) {  
+  $.get(url, function (data) {
     getDatafromFile(data);
     var maingroup = d3.select('#container')
       .append("svg")
       .attr("class", "svg")
-      .attr("width", innerwidth + margin.left + margin.right)
+      .attr("width", gridSize * days.length)
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -56,19 +54,23 @@ function createheatmap800(url) {
   })
 }
 
+
+
+
+
 /* fonctions : */
 function createheatmapPhone(url) {
-  if (window.innerWidth < 600 && window.innerWidth > 400 )
-  width = 0.9 * Math.max(Math.min(window.innerWidth, 340), 300);
-  
-  else if (window.innerWidth > 600 && window.innerWidth < 800 )
-  width = 0.9 * Math.max(Math.min(window.innerWidth, 650), 300);
+  if (window.innerWidth < 600 && window.innerWidth > 400)
+    width = 0.9 * Math.max(Math.min(window.innerWidth, 340), 300);
+
+  else if (window.innerWidth > 600 && window.innerWidth < 800)
+    width = 0.9 * Math.max(Math.min(window.innerWidth, 650), 300);
   else {
     width = 0.9 * Math.max(Math.min(window.innerWidth, 300), 300);
   }
   margin = {
     top: 0.5 * width,
-    right:  -0.21 * width,
+    right: -0.21 * width,
     bottom: 0.14 * width,
     left: 0.05 * width
   };
@@ -77,51 +79,145 @@ function createheatmapPhone(url) {
 
   $.get(url, function (data) {
     getDatafromFile(data);
-    var maingroup = d3.select('#container')
-      .append("svg")
-      .attr("class", "svg")
-      .attr("width", innerwidth + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    brushGroupPhone(maingroup);
+    screenbehind800 ();
+    //brushGroupPhone(maingroup);
     showDaysAxisPhone(maingroup);
-    showTitleandSubtitlePhone(maingroup);
+    showTitleandSubtitlePhone(titlegroup);
     showHeatmapPhone(maingroup)
-    showSymptomAxisPhone(maingroup);
-    showLegendPhone(maingroup);
+    showSymptomAxisPhone(symptomgroup);
+    //showLegendPhone(maingroup);
+    tooltip();
+    document.getElementById("heatmap").onscroll = function () { progressScrollBar() };
   })
 }
 
 function createheatmap(url) {
-width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
   margin = {
-    top: 0.1 * width,
-    right: -0.06 * width,
-    bottom: 0.14 * width,
-    left: 0.05 * width
+    top: 0.05 * width,
+    right: -0.05 * width,
+    bottom: 0.04 * width,
+    left: 0.005 * width
   };
   gridSize = Math.floor(width / 30);
   brushHeight = width / 100;
   $.get(url, function (data) {
     getDatafromFile(data);
-    var maingroup = d3.select('#heatmap')
-      .append("svg")
-      .attr("class", "svg")
-      .attr("width", innerwidth + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    git sbrushGroup(maingroup);
+    screenOver800();
+    //brushGroup(maingroup);
     showMonthsAxis(maingroup);
     showDaysAxis(maingroup);
-    showTitleandSubtitle(maingroup);
+    showTitleandSubtitle(titlegroup);
     showHeatmap(maingroup)
-    showSymptomAxis(maingroup);
-    showLegend(maingroup);
+    showSymptomAxis(symptomgroup);
+    showLegend(legendgroup);
+    tooltip();
+    document.getElementById("heatmap").onscroll = function () { progressScrollBar() };
   })
+}
+
+
+function tooltip() {
+  const tooltip = d3
+    .select("body")
+    .append("div")
+    .attr("class", "svg-tooltip")
+    .style("position", "absolute")
+    .style("visibility", "hidden");
+
+  var el = document.getElementById('legend');
+  var elementHeatmap = document.getElementById('heatmap');
+  
+  d3.selectAll("rect")
+    .on("click", function (d) {
+      x = Math.trunc(Math.min(((d3.event.pageX - (el.offsetWidth + margin.left + margin.right - document.getElementById("heatmap").scrollLeft)) / gridSize))) - 1;
+      let calculateMissingHeight =  (elementHeatmap.offsetHeight - document.getElementById("heatmap-title").offsetHeight  - (document.getElementById("myBar").offsetHeight)*2) ;
+      y = Math.trunc((d3.event.pageY - calculateMissingHeight) / gridSize); 
+      d3.select(this)
+        .attr('stroke-width', '2')
+        .attr("stroke", "black");
+      tooltip
+        .style("visibility", "visible")
+        .text(`${showAppendTitle(d, x, y)}`);
+    })
+    .on("mousemove", function () {
+      tooltip
+        .style("top", d3.event.pageY - 10 + "px")
+        .style("left", d3.event.pageX + 10 + "px");
+    })
+    .on("mouseout", function () {
+      d3.select(this).attr("stroke", "#e2e2e2")
+        .attr('stroke-width', '1');
+      tooltip.style("visibility", "hidden");;
+    });
+}
+
+function progressScrollBar() {
+  var winScroll = document.getElementById("heatmap").scrollLeft;
+  var height = document.getElementById("heatmap").scrollWidth - document.getElementById("heatmap").clientWidth;
+  var scrolled = (winScroll / height) * 100;
+  document.getElementById("myBar").style.width = scrolled + "%";
+}
+function screenbehind800() {
+  maingroup = d3.select('#heatmap')
+    .append("svg")
+    .attr("class", "svg")
+    .attr("width", (days.length + 1) * gridSize)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + 0 + "," + margin.top + ")");
+
+  symptomgroup = d3.select('#symptom')
+    .append("svg")
+    .attr("class", "svg")
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  legendgroup = d3.select('#legend')
+    .append("svg")
+    .attr("class", "svg")
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  titlegroup = d3.select('#heatmap-title')
+    .append("svg")
+    .attr("class", "svg")
+    .attr("width", width)
+    .attr("height", 7 + "rem")
+    .append("g")
+    .attr("transform", "translate(" + 0 + "," + 0 + ")");
+}
+function screenOver800() {
+  maingroup = d3.select('#heatmap')
+    .append("svg")
+    .attr("class", "svg")
+    .attr("width", (days.length + 1) * gridSize)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + 0 + "," + margin.top + ")");
+
+  symptomgroup = d3.select('#symptom')
+    .append("svg")
+    .attr("class", "svg")
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  legendgroup = d3.select('#legend')
+    .append("svg")
+    .attr("class", "svg")
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  titlegroup = d3.select('#heatmap-title')
+    .append("svg")
+    .attr("class", "svg")
+    .attr("width", width)
+    .attr("height", 7 + "rem")
+    .append("g")
+    .attr("transform", "translate(" + 0 + "," + 0 + ")");
 }
 
 function getDatafromFile(data) {
@@ -158,11 +254,9 @@ function showHeatmapPhone(maingroup) {
     .html(function (e, i) {
       var r = "<div> Information :  </div> <div>" + showAppendTitle(e, i) + "</div>";
       return r;
-    });
+    })
 }
-mousePos = ({x:0.5, y:0.5});
 
-console.log(mousePos);
 function showHeatmap(maingroup) {
   colorScale = scaleColor();
   y = yScale();
@@ -181,15 +275,15 @@ function showHeatmap(maingroup) {
     .attr("height", gridSize)
     .attr("stroke", "#e2e2e2")
     .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); })
-    .append("title")
+   /* .append("title")
     .html(function (e, i) {
       var r = "<div id = 'test' style= 'border: 50px solid yellow'> Information :  </div> <div>" + showAppendTitle(e, i) + "</div>";
       return r;
-    });
+    })*/;
 }
 
 function brushGroup800(maingroup) {
- 
+
   let speedScrolling = (gridSize * days.length) / (18 * gridSize);
 
   var brushed = () => {
@@ -226,7 +320,7 @@ function brushGroup800(maingroup) {
 }
 
 function brushGroupPhone(maingroup) {
- 
+
   let speedScrolling = (gridSize * days.length) / (10 * gridSize);
 
   var brushed = () => {
@@ -342,7 +436,7 @@ function showDaysAxis800(maingroup) {
     .attr("y", 0)
     .attr("transform", "translate(" + (margin.left + gridSize * 1.5) + ",-10)")
     .style("text-anchor", "middle")
-    .attr("font-size", width/50);
+    .attr("font-size", width / 50);
 
   maingroup.selectAll(".tickSize")
     .data(days_axis)
@@ -368,7 +462,7 @@ function showDaysAxisPhone(maingroup) {
     .attr("y", 0)
     .attr("transform", "translate(" + (margin.left + gridSize * 1.1) + ",-6)")
     .style("text-anchor", "middle")
-    .attr("font-size", width/50);
+    .attr("font-size", width / 50);
 
   maingroup.selectAll(".tickSize")
     .data(days_axis)
@@ -392,15 +486,15 @@ function showDaysAxis(maingroup) {
     .text(function (d) { return d; })
     .attr("x", function (d, i) { return i * gridSize * 7; })
     .attr("y", 0)
-    .attr("transform", "translate(" + (margin.left + gridSize * 1.75) + ",-16)")
+    .attr("transform", "translate(" + (margin.left + gridSize * 0.6) + ",-16)")
     .style("text-anchor", "middle")
-    .attr("font-size", 0.6 + "rem");
+    .attr("font-size", 0.7 + "rem");
 
   maingroup.selectAll(".tickSize")
     .data(days_axis)
     .enter().append("line")
     .attr('id', 'tickSize')
-    .attr("transform", "translate(" + (margin.left + gridSize * 1.75) + ",-10)")
+    .attr("transform", "translate(" + (margin.left + gridSize * 0.6) + ",-10)")
     .attr("x1", function (d, i) { return (i * gridSize * 7); })
     .attr("y1", 0)
     .attr("x2", function (d, i) { return (i * gridSize * 7); })
@@ -421,13 +515,13 @@ function showMonthsAxis(maingroup) {
     .attr("font-weight", 900)
     .style("text-anchor", "middle")
     .attr("font-family", "Saira")
-    .attr("font-size", 0.6 + "rem");
+    .attr("font-size", 0.7 + "rem");
 }
 
 function showTitleandSubtitlePhone(maingroup) {
   maingroup.append("text")
     .attr("class", "title")
-    .attr("x", (width / 2) + margin.left + gridSize/2)
+    .attr("x", (width / 2) + margin.left + gridSize / 2)
     .attr("y", -gridSize * 4.5)
     .style("text-anchor", "middle")
     .attr("font-size", width / 20)
@@ -435,7 +529,7 @@ function showTitleandSubtitlePhone(maingroup) {
 
   maingroup.append("text")
     .attr("class", "subtitle")
-    .attr("x", (width / 2) + margin.left + gridSize/2)
+    .attr("x", (width / 2) + margin.left + gridSize / 2)
     .attr("y", -gridSize * 4)
     .style("text-anchor", "middle")
     .attr("font-size", width / 30)
@@ -443,7 +537,7 @@ function showTitleandSubtitlePhone(maingroup) {
 
   maingroup.append("text")
     .attr("class", "subtitle")
-    .attr("x", (width / 2) + margin.left + gridSize/2)
+    .attr("x", (width / 2) + margin.left + gridSize / 2)
     .attr("y", -gridSize * 3.5)
     .style("text-anchor", "middle")
     .attr("font-size", width / 30)
@@ -453,24 +547,24 @@ function showTitleandSubtitlePhone(maingroup) {
 function showTitleandSubtitle(maingroup) {
   maingroup.append("text")
     .attr("class", "title")
-    .attr("x", (width / 2) + margin.left)
-    .attr("y", -70)
-    .style("text-anchor", "middle")
+    .style("text-anchor", "end")
+    .attr("transform", "translate(" + ((width)/1.8) + "," + gridSize*2 + ")")
     .attr("font-size", 1.5 + "rem")
+    .style("text-anchor", "middle")
     .text("Heatmap of Symptom reports");
 
   maingroup.append("text")
     .attr("class", "subtitle")
-    .attr("x", width / 2 + margin.left)
-    .attr("y", -50)
+    .attr("transform", "translate(" + ((width)/1.8) + "," + gridSize*3 + ")")
     .style("text-anchor", "middle")
+    .attr("font-size", 1 + "rem")
     .text("Study on " + days.length + " days - start the " + days[0]);
 
   maingroup.append("text")
     .attr("class", "subtitle")
-    .attr("x", width / 2 + margin.left)
-    .attr("y", -30)
+    .attr("transform", "translate(" + ((width)/1.8) + "," + gridSize*3.5 + ")")
     .style("text-anchor", "middle")
+    .attr("font-size", 1 + "rem")
     .text("Last update - " + days[days.length - 1]);
 }
 
@@ -492,7 +586,7 @@ function showSymptomAxis800(maingroup) {
     .attr("y", function (d, i) { return i * gridSize; })
     .attr("transform", "translate(" + gridSize / 1.5 + "," + gridSize / 1.5 + ")")
     .style("text-anchor", "end")
-    .attr("font-size", width/50);
+    .attr("font-size", width / 50);
 }
 
 function showSymptomAxisPhone(maingroup) {
@@ -513,24 +607,16 @@ function showSymptomAxisPhone(maingroup) {
     .attr("y", function (d, i) { return i * gridSize; })
     .attr("transform", "translate(" + gridSize / 1.5 + "," + gridSize / 1.5 + ")")
     .style("text-anchor", "end")
-    .attr("font-size", width/50);
+    .attr("font-size", width / 50);
 }
 
 function showSymptomAxis(maingroup) {
-  maingroup.append("rect")
-    .attr("class", "rect")
-    .attr("dx", 0)
-    .attr("x", -margin.left)
-    .attr("y", -gridSize)
-    .attr("width", margin.left + gridSize * 2)
-    .attr("height", symptom_data.length * (gridSize + 3))
-    .style("fill", "white");
 
   maingroup.selectAll(".symptomLabel")
     .data($names)
     .enter().append("text")
     .text(function (d) { return d; })
-    .attr("x", 30)
+    .attr("x", gridSize * 2)
     .attr("y", function (d, i) { return i * gridSize; })
     .attr("transform", "translate(" + gridSize / 1.5 + "," + gridSize / 1.5 + ")")
     .style("text-anchor", "end")
@@ -561,7 +647,7 @@ function showLegend800(maingroup) {
     .data(countPoint)
     .enter()
     .append("rect")
-    .attr("x",function (d, i) { return (i * gridSize * 3) + margin.left * 3; })
+    .attr("x", function (d, i) { return (i * gridSize * 3) + margin.left * 3; })
     .attr("y", -gridSize * 2)
     .attr("height", gridSize / 1.5)
     .attr("width", gridSize / 1.5)
@@ -576,10 +662,10 @@ function showLegend800(maingroup) {
     .data(commentScale)
     .enter().append("text")
     .text(function (d) { return d; })
-    .attr("x",function (d, i) { return (i * gridSize * 2.9) + margin.left * 3; })
+    .attr("x", function (d, i) { return (i * gridSize * 2.9) + margin.left * 3; })
     .attr("y", -gridSize * 2)
     .attr("transform", "translate(" + 15 + "," + -10 + ")")
-    .attr("font-size", width/50);
+    .attr("font-size", width / 50);
 }
 
 function showLegendPhone(maingroup) {
@@ -615,8 +701,8 @@ function showLegendPhone(maingroup) {
     .data(countPoint)
     .enter()
     .append("rect")
-    .attr("x",function (d, i) { return (i * gridSize * 2); })
-    .attr("y", -gridSize*2)
+    .attr("x", function (d, i) { return (i * gridSize * 2); })
+    .attr("y", -gridSize * 2)
     .attr("height", gridSize / 1.5)
     .attr("width", gridSize / 1.5)
     .attr("stroke", "#e2e2e2")
@@ -630,10 +716,10 @@ function showLegendPhone(maingroup) {
     .data(commentScale)
     .enter().append("text")
     .text(function (d) { return d; })
-    .attr("x",function (d, i) { return (i * gridSize * 1.9); })
+    .attr("x", function (d, i) { return (i * gridSize * 1.9); })
     .attr("y", -gridSize * 2)
     .attr("transform", "translate(" + 5 + "," + -10 + ")")
-    .attr("font-size", width/50);
+    .attr("font-size", width / 50);
 }
 
 function showLegend(maingroup) {
@@ -648,33 +734,23 @@ function showLegend(maingroup) {
     5: ["Unbearable ", "#8a0886"],
   }
 
-  maingroup.append("rect")
-    .attr("class", "rect")
-    .attr("dx", 0)
-    .attr("x", (26 * (gridSize) + (margin.left * 2) - (gridSize * 0.35)))
-    .attr("y", - gridSize * 1.5)
-    .attr("width", 5.5 * (gridSize))
-    .attr("height", symptom_data.length * (gridSize * 1.1))
-    .style("fill", "white");
-
   maingroup.append("text")
     .attr("class", "title")
-    .attr("x", width)
+    .attr("x", gridSize)
     .attr("y", (height / 2 - gridSize * 3))
-    .attr("font-size", 14)
-    .style("text-anchor", "middle")
+    .attr("font-size", 1 + "rem")
     .text("Legend");
 
   maingroup.selectAll('rect-legend')
     .data(countPoint)
     .enter()
     .append("rect")
-    .attr("x", width - gridSize)
+    .attr("x", gridSize)
     .attr("y", function (d, i) { return i * (height / symptom_data.length); })
     .attr("height", gridSize / 1.5)
     .attr("width", gridSize / 1.5)
     .attr("stroke", "#e2e2e2")
-    .attr("transform", "translate(" + 10 + "," + (height / 2 - gridSize * 2) + ")")
+    .attr("transform", "translate(" + 0 + "," + (height / 2 - gridSize * 2) + ")")
     .style("fill", function (d) {
       var color = color_hash[countPoint.indexOf(d)][1];
       return color;
@@ -684,37 +760,30 @@ function showLegend(maingroup) {
     .data(commentScale)
     .enter().append("text")
     .text(function (d) { return d; })
-    .attr("x", width)
+    .attr("x", gridSize)
     .attr("y", function (d, i) { return i * (height / symptom_data.length); })
-    .attr("transform", "translate(" + 10 + "," + (height / 2 - gridSize * 2 + 12) + ")")
-    .attr("font-size", 9);
+    .attr("transform", "translate(" + gridSize + "," + (height / 2 - gridSize * 2 + 12) + ")")
+    .attr("font-size", 0.6 + "rem");
 }
 
-function showAppendTitle(data, i) {
+function showAppendTitle(data, i, y) {
   if (data == -2)
-    return "no comments reported"
-
+    return "Reports : no comments reported \n Date : " + days[i];
   if (data == -1)
-    return "no report"
-
+    return "Reports : no report \n Date : " + days[i];
   if (data == 0)
-    return "no symptom"
-
+    return "Reports : no symptom \n Date : " + days[i];
   if (data == 1)
-    return "Low symptom"
-
+    return "Reports : Low symptom \n Date : " + days[i] + " \n Symptom : " + $names[y] + " \n Values: " +  data; 
   if (data == 2)
-    return "Middle symptom"
-
+    return "Reports : Middle symptom \n Date : " + days[i] + " \n Symptom : " + $names[y] + " \n Values: " +  data; 
   if (data == 3)
-    return "Strong symptom"
-
+    return "Reports : Strong symptom\n Date : " + days[i] + " \n Symptom : " + $names[y] + " \n Values: " +  data; 
   if (data == 4)
-    return "Unbearable symptom"
-
-  if (data == 5)
-    return comments[i];
-
+    return "Reports : Unbearable symptom \n Date : " + days[i] + " \n Symptom : " + $names[y] + " \n Values: " +  data; 
+  if (data == 5) {
+    return "Comments : " + comments[i] + " \n Date : "  + days[i];
+  }
 
 }
 
@@ -1003,17 +1072,17 @@ function showingDayOnTheMap(data) {
   return day_break1;
 }
 
-function chooseDisplay () {
+function chooseDisplay() {
   if (window.innerWidth > 1100) {
-    return 1; 
-  }else if (window.innerWidth > 900 && window.innerWidth < 1100 ) {
-    return 2; 
-  } else if (window.innerWidth < 600 && window.innerWidth > 400 )
-  return 3; 
-  else if (window.innerWidth > 600 && window.innerWidth < 800 )
-  return 4; 
+    return 1;
+  } else if (window.innerWidth > 900 && window.innerWidth < 1100) {
+    return 2;
+  } else if (window.innerWidth < 600 && window.innerWidth > 400)
+    return 3;
+  else if (window.innerWidth > 600 && window.innerWidth < 800)
+    return 4;
   else {
-    return 5; 
+    return 5;
   }
 }
 

@@ -1,9 +1,31 @@
+<style>
+  .svg-tooltip {
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple   Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    background: rgba(69, 77, 93, .9);
+    border-radius: .1rem;
+    color: #fff;
+    display: block;
+    font-size: 8px;
+    padding: .2rem .4rem;
+    position: absolute;
+    text-overflow: ellipsis;
+    white-space: pre;
+    display:inline;
+    justify-content: flex-start;
+    z-index: 300;
+    max-width: 450px; 
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    visibility: hidden;
+  }
+</style>
+
 {% extends 'base.html' %}
 
 {% load tz %}
 
 {% block main %}
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <h2>
   {% if member_id %}
   Symptom reports for {{ member_id }}
@@ -53,31 +75,33 @@
 
 {% timezone timezone %}
 
-<div id="container"> 
-  <div id="symptom" style = "width: 10%; height: 200px; background-color: aqua; float:left;"> </div>
-  <div id="heatmap" style = "width: 80%; height: auto; background-color: red; float:left; overflow-x: auto;"> </div>
-  <div id="legend" style = "width: 10%; height: 200px; background-color: purple; float:left;"> </div>
+<div id="container">
+  <div id="heatmap-title" style="width: 100%; height: auto; margin-left: auto; margin-right: auto;"></div>
+  <div id="legend-phone" style="width: 100%; height: auto;"> </div>
+  <div class="progress-container" style="width: 71.1%; height: 8px; margin-left: 10%;">
+    <div class="progress-bar" id="myBar" style="width: 0%; height: 8px; background-color: #4caf50;"></div>
+  </div>
+</div>
+<div id="symptom" style="width: 10%; height: auto;  float:left;"> </div>
+<div id="heatmap" style="width: 71.1%; height: auto;  float:left; overflow-x: scroll;"> </div>
+<div id="legend" style="width: 18.9%; height: auto;float:left;"> </div>
 </div>
 
-
-{% if member_id %}
 <script>
-   console.log("succed to loading public data");
-  // url = "https://quantifiedflu.org/report/list/member/43462825.json"
+  console.log("Loading data...");
+  //url = "{{ request.path }}.json";
+  console.log("succed to loading public data");
+
+  url = "https://quantifiedflu.org/report/list/member/25102556.json"
+
+  //url = "https://quantifiedflu.org/report/list/member/43462825.json"
   //url ="https://quantifiedflu.org/report/list/member/02631468.json"
   //url = "https://quantifiedflu.org/report/list/member/25102556.json"
- url =  "{% url 'reports:list_member' member_id %}" + ".json";</script>
-{% else %}
-<script> 
- url = "https://quantifiedflu.org/report/list/member/25102556.json"
- console.log("succed to loading private data");
- //url =  "{% url 'reports:list_member' request.user.openhumansmember.oh_id %}" + ".json";
 </script>
 
-{% endif %}
-
 {% load static %}
-<script src="{% static 'js/heatmap.js' %}"></script>
+<script src="{% static 'js/heatmap.js' %}">
+</script>
 
 
 
