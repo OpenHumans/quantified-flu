@@ -9,16 +9,75 @@
     padding: .2rem .4rem;
     position: absolute;
     text-overflow: ellipsis;
-    white-space: pre;
+    white-space: pre-line;
     display:inline;
     justify-content: flex-start;
     z-index: 300;
-    max-width: 450px; 
-    text-overflow: ellipsis;
-    word-wrap: break-word;
+    max-width: 25%;
     visibility: hidden;
   }
+
+  @media screen and (min-width: 200px) and (max-width: 799px) {
+  #legend {
+    width: 0%;
+  }
+  #symptom {
+    width: 25%;
+    font-size: xx-small;
+  }
+
+  #progress-container {
+    width: 71.1%; 
+    height: 8px; 
+    margin-left: 25%;
+  }
+  #myBar {
+    width: 0%; 
+    height: 8px; 
+    margin-left: 25%;
+    background-color: #4caf50;
+  }
+
+  #legend-phone {
+    width: 100%; 
+    height: auto; 
+  }
+
+  #tickSize {
+    stroke:  black;
+    stroke-width : 0.5;
+  }
+
+  #xAxis {
+    text-anchor :middle;
+  }
+}
+
+@media screen and (min-width: 800px) {
+  #legend {
+    width: 18.9%;
+    height: auto; 
+    float:left;
+  }
+  #symptom {
+    width: 10%;
+    font-size: x-small;
+  }
+  #progress-container {
+    width: 71.1%; 
+    height: 8px; 
+    margin-left: 10%;
+  }
+  #myBar {
+    width: 0%; 
+    height: 8px; 
+    margin-left: 10%;
+    background-color: #4caf50;
+  }
+}
 </style>
+
+
 
 {% extends 'base.html' %}
 
@@ -76,23 +135,23 @@
 {% timezone timezone %}
 
 <div id="container">
-  <div id="heatmap-title" style="width: 100%; height: auto; margin-left: auto; margin-right: auto;"></div>
-  <div id="legend-phone" style="width: 100%; height: auto;"> </div>
-  <div class="progress-container" style="width: 71.1%; height: 8px; margin-left: 10%;">
-    <div class="progress-bar" id="myBar" style="width: 0%; height: 8px; background-color: #4caf50;"></div>
+  <div id="heatmap-title" style="width: 100%; height: auto;"></div>
+  <div id="legend-phone"> </div>
+  <div class="progress-container">
+    <div class="progress-bar" id="myBar"></div>
   </div>
 </div>
-<div id="symptom" style="width: 10%; height: auto;  float:left;"> </div>
-<div id="heatmap" style="width: 71.1%; height: auto;  float:left; overflow-x: scroll;"> </div>
-<div id="legend" style="width: 18.9%; height: auto;float:left;"> </div>
+<div id="symptom" style=" height: auto; float:left;"> </div>
+<div id="heatmap" style="width: 71.1%; height: auto; float:left; overflow-x: scroll;"></div> </div>
+<div id="legend"> </div>
 </div>
 
 <script>
   console.log("Loading data...");
-  //url = "{{ request.path }}.json";
+  url = "{{ request.path }}.json";
   console.log("succed to loading public data");
 
-  url = "https://quantifiedflu.org/report/list/member/25102556.json"
+ // url = "https://quantifiedflu.org/report/list/member/25102556.json"
 
   //url = "https://quantifiedflu.org/report/list/member/43462825.json"
   //url ="https://quantifiedflu.org/report/list/member/02631468.json"
