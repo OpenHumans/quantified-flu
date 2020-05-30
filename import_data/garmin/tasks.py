@@ -1,9 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+import time
 
 from import_data.models import GarminMember
 from ohapi import api
 
-from import_data.helpers import write_jsonfile_to_tmp_dir, download_to_json
+from import_data.helpers import write_jsonfile_to_tmp_dir, download_to_json, unix_time_seconds
 from retrospective.tasks import analyze_existing_events, analyze_existing_reports
 
 from celery.decorators import task
@@ -13,6 +14,7 @@ from django.conf import settings
 
 
 MAX_FILE_BYTES = 256000000 # 256 MB
+MIN_GARMIN_YEAR = 2015 # that's when the smart watches with tracking capabilities came out
 
 
 @task
@@ -24,15 +26,27 @@ def handle_backfill(garmin_user_id):
         resource_owner_key=garmin_member.access_token,
         resource_owner_secret=garmin_member.access_token_secret)
 
-    start_epoch = 0
-    end_epoch = 48 * 36000
+    end_date =  datetime.utcnow()
+    start_date = end_date - timedelta(days=30)
 
-    summary_url = "https://healthapi.garmin.com/wellness-api/rest/backfill/dailies?summaryStartTimeInSeconds={}&summaryEndTimeInSeconds={}".format(
-        start_epoch, end_epoch)
+    while start_date.year >= MIN_GARMIN_YEAR:
 
-    res = oauth.get(url=summary_url)
-    if res.status_code != 202:
-        raise Exception("Invalid backlfill query response: {},{}".format(res.content, res.status_code))
+        start_epoch = unix_time_seconds(start_date)
+        end_epoch = unix_time_seconds(end_date)
+
+        summary_url = "https://healthapi.garmin.com/wellness-api/rest/backfill/dailies?summaryStartTimeInSeconds={}&summaryEndTimeInSeconds={}".format(
+            start_epoch, end_epoch)
+        # this schedules a backfill
+
+
+        res = oauth.get(url=summary_url)
+        if res.status_code != 202:
+            raise Exception("Invalid backlfill query response: {},{}".format(res.content, res.status_code))
+        else:
+            print("Called async backfill for {}-{}".format(start_date, end_date))
+        time.sleep(2)
+        end_date = end_date - timedelta(days=30)
+        start_date = start_date - timedelta(days=30)
     return res
 
 
