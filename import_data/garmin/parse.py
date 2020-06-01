@@ -19,4 +19,5 @@ def user_map_to_timeseries(user_map):
             recs.append(rec1)
             #recs.append(rec2)
     s = pd.Series(data=[r[1] for r in recs], index=[r[0] for r in recs])
+    s = s.loc[~s.index.duplicated(keep='first')] # sometimes we have a few duplicate entries over the days
     return s.sort_index()

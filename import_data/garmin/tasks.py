@@ -146,7 +146,8 @@ def dailies_to_user_maps(data):
                      'timeOffsetHeartRateSamples',
                      'startTimeOffsetInSeconds',
                      'summaryId',
-                     'startTimeInSeconds']
+                     'startTimeInSeconds',
+                     'calendarDate']
 
     for user_dailies in data['dailies']:
         userId = user_dailies['userId']

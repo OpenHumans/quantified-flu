@@ -205,7 +205,7 @@ def garmin_to_qf(json_data, min_date, max_date):
             continue
         rec = {"timestamp": dt.isoformat(), "data": {"heart_rate": int(value)}}
         res.append(rec)
-        print(rec)
+        #print(rec)
     return res
 
 
