@@ -134,27 +134,30 @@
 
 {% timezone timezone %}
 
-<div id="container">
+
+<div id="container" style=" width: 100%; height: auto; display: inline-block">
   <div id="heatmap-title" style="width: 100%; height: auto;"></div>
   <div id="legend-phone"> </div>
   <div class="progress-container">
     <div class="progress-bar" id="myBar"></div>
   </div>
-</div>
+
 <div id="symptom" style=" height: auto; float:left;"> </div>
-<div id="heatmap" style="width: 71.1%; height: auto; float:left; overflow-x: scroll;"></div> </div>
+<div id="heatmap" style="width: 71.1%; height: auto; float:left; overflow-x: scroll;"></div> 
 <div id="legend"> </div>
 </div>
+
+
 
 <script>
   console.log("Loading data...");
   url = "{{ request.path }}.json";
   console.log("succed to loading public data");
 
- // url = "https://quantifiedflu.org/report/list/member/25102556.json"
+ //url = "https://quantifiedflu.org/report/list/member/25102556.json"
 
   //url = "https://quantifiedflu.org/report/list/member/43462825.json"
-  //url ="https://quantifiedflu.org/report/list/member/02631468.json"
+ //url ="https://quantifiedflu.org/report/list/member/02631468.json"
   //url = "https://quantifiedflu.org/report/list/member/25102556.json"
 </script>
 
@@ -190,7 +193,7 @@
   </thead>
   <tbody>
     {% for report in object_list %}
-    <tr style="{% if report.severity == 0 %}background-color:#ffffff{% elif report.severity == 1 %}background-color:#ffffaa{% elif report.severity == 2 %}
+    <tr style="{% if report.severity == 0 %} background-color:#ffffff {% elif report.severity == 1 %} background-color:#ffffaa{% elif report.severity == 2 %}
       background-color:#ffcc88
     {% elif report.severity == 3 %}
       background-color:#ffaa66
