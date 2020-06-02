@@ -32,9 +32,7 @@ function display () {
 }
 
 window.addEventListener("orientationchange", function () {
-  //display ();
   this.location.reload();
-  console.log('test');
 });
 
 /* fonctions : */
