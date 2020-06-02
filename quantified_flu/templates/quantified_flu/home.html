@@ -69,19 +69,17 @@
 
 <div class="row pt-2">
   <div class="col-md">
-    {% include 'retrospective/partials/home-panel.html' %}
-    <hr class="d-md-none">
-  </div>
-  <div class="col-md">
     <h3>Symptom reports</h3>
     <p>
       <b>Note: "no symptoms" reports are also important!</b> By tracking if and when you have
       symptoms of illness, we can develop better models to understand this data.
     </p>
-    <a href="{% url 'reports:symptoms' %}" class="btn btn-primary">Report now</a>
-    {% if openhumansmember.symptomreport_set.all %}
-    <a href="{% url 'reports:list' %}" class="btn btn-primary">View past reports</a>
-    {% endif %}
+    <p>
+      <a href="{% url 'reports:symptoms' %}" class="btn btn-lg btn-primary">Report symptoms</a>
+      {% if openhumansmember.symptomreport_set.all %}
+      <a href="{% url 'reports:list' %}" class="btn btn-info ml-2 mt-2">View past reports</a>
+      {% endif %}
+    </p>
     <hr>
     <h4>Schedule check-ins</h4>
     {% if not openhumansmember.checkinschedule or not openhumansmember.checkinschedule.active %}
@@ -98,9 +96,13 @@
       <b>Check-ins scheduled:</b> {{ checkin_form.instance.time }} {{ checkin_form.instance.timezone }}
     </p>
     <p>
-      <a href="{% url 'checkin:schedule' %}" class="btn btn-secondary">Update schedule</a>
+      <a href="{% url 'checkin:schedule' %}" class="btn btn-info">Update schedule</a>
     </p>
     {% endif %}
+  </div>
+  <div class="col-md">
+    {% include 'retrospective/partials/home-panel.html' %}
+    <hr class="d-md-none">
   </div>
 </div>
 

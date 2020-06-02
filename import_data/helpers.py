@@ -27,6 +27,10 @@ def unix_time_millis(dt):
     return int((dt - epoch).total_seconds() * 1000.0)
 
 
+def unix_time_seconds(dt):
+    return int((dt - epoch).total_seconds())
+
+
 def start_of_day(dt):
     return dt.replace(hour=0, minute=0, second=0, microsecond=0)
 

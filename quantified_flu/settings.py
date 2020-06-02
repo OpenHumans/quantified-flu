@@ -127,6 +127,7 @@ STATIC_URL = "/static/"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "managedfiles")
 MEDIA_URL = "/files/"
+DATA_UPLOAD_MAX_MEMORY_SIZE = None # to allow garmin to send us big data bodies
 
 # openhumans configurations
 OPENHUMANS_APP_BASE_URL = os.getenv("OPENHUMANS_APP_BASE_URL", "http://localhost:5000")
