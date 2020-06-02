@@ -1,28 +1,41 @@
 $names = ["Fever", "Anosmia", "Body ache", "Chills", "Cough", "Diarrhea", "Ear ache", "Fatigue", "Headache", "Nausea", "Runny nose", "Short breath", "Sore throat", "Stomach ache", "", "Comments"];
-sizedisplay = chooseDisplay();
 
-switch (sizedisplay) {
-  case 1:
-    width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
-    createheatmap(url);
-    break;
-  case 2:
-    width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
-    createheatmap(url);
-    break;
-  case 3:
-    width = 0.9 * Math.max(Math.min(window.innerWidth, 340), 300);
-    createheatmapPhone(url);
-    break;
-  case 4:
-    width = 0.9 * Math.max(Math.min(window.innerWidth, 650), 300);
-    createheatmapPhone(url);
-    break;
-  case 5:
-    width = 0.9 * Math.max(Math.min(window.innerWidth, 300), 300);
-    createheatmapPhone(url);
-    break;
+display ();
+
+function display () {
+  sizedisplay = chooseDisplay();
+  switch (sizedisplay) {
+    case 1:
+      width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
+      createheatmap(url);
+      break;
+    case 2:
+      width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
+      createheatmap(url);
+      break;
+    case 3:
+      width = 0.9 * Math.max(Math.min(window.innerWidth, 340), 300);
+      gridSize = Math.floor(width / 10);
+      createheatmapPhone(url);
+      break;
+    case 4:
+      width = 0.9 * Math.max(Math.min(window.innerWidth, 650), 300);
+      gridSize = Math.floor(width / 12);
+      createheatmapPhone(url);
+      break;
+    case 5:
+      width = 0.9 * Math.max(Math.min(window.innerWidth, 300), 300);
+      gridSize = Math.floor(width / 10);
+      createheatmapPhone(url);
+      break;
+  }
 }
+
+window.addEventListener("orientationchange", function () {
+  //display ();
+  this.location.reload();
+  console.log('test');
+});
 
 /* fonctions : */
 function createheatmapPhone(url) {
@@ -32,7 +45,6 @@ function createheatmapPhone(url) {
     bottom: 0.14 * width,
     left: 0.05 * width
   };
-  gridSize = Math.floor(width / 10);
   $.get(url, function (data) {
     getDatafromFile(data);
     screen(0);
@@ -300,16 +312,9 @@ function showSymptomAxis(maingroup) {
 
 
 function showLegendPhone(maingroup) {
-  var countPoint = [0, 1, 2, 3, 4, 5];
+  var countPoint = [-1, 0, 1, 2, 3, 4];
   var commentScale = ["No report", "No symptom", "Low", "Middle", "Strong", "Unbearable"];
-  var color_hash = {
-    0: ["no report", "#faf6f6"],
-    1: ["no symptom", "#fff"],
-    2: ["low", "#f5a9f2"],
-    3: ["middle", "#e2b2f0"],
-    4: ["strong", "#cc2efa"],
-    5: ["Unbearable ", "#8a0886"],
-  }
+  
   var title = maingroup.append("text")
     .attr("class", "title")
     .attr("font-size", 0.7 + "rem")
@@ -326,10 +331,7 @@ function showLegendPhone(maingroup) {
     .attr("width", gridSize / 2)
     .attr("stroke", "#e2e2e2")
     .attr("transform", "translate(" + margin.left + "," + -10 + ")")
-    .style("fill", function (d) {
-      var color = color_hash[countPoint.indexOf(d)][1];
-      return color;
-    });
+    .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
 
   var legende = maingroup.selectAll(".legende")
     .data(commentScale)
@@ -342,17 +344,9 @@ function showLegendPhone(maingroup) {
 }
 
 function showLegend(maingroup) {
-  var countPoint = [0, 1, 2, 3, 4, 5];
+  var countPoint = [-1, 0, 1, 2, 3, 4];
   var commentScale = ["No report", "No symptom", "Low symptom", "Middle symptom", "Strong symptom", "Unbearable symptom"];
-  var color_hash = {
-    0: ["no report", "#faf6f6"],
-    1: ["no symptom", "#fff"],
-    2: ["low", "#f5a9f2"],
-    3: ["middle", "#e2b2f0"],
-    4: ["strong", "#cc2efa"],
-    5: ["Unbearable ", "#8a0886"],
-  }
-
+  
   var title = maingroup.append("text")
     .attr("class", "title")
     .attr("x", gridSize)
@@ -370,10 +364,8 @@ function showLegend(maingroup) {
     .attr("width", gridSize / 1.5)
     .attr("stroke", "#e2e2e2")
     .attr("transform", "translate(" + 0 + "," + (height / 2 - gridSize * 2) + ")")
-    .style("fill", function (d) {
-      var color = color_hash[countPoint.indexOf(d)][1];
-      return color;
-    });
+    .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
+
 
   var legende = maingroup.selectAll(".legende")
     .data(commentScale)
