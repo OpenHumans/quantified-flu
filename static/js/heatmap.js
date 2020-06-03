@@ -31,9 +31,9 @@ function display () {
   }
 }
 
-window.addEventListener("orientationchange", function () {
+/*window.addEventListener("orientationchange", function () {
   this.location.reload();
-});
+});*/
 
 /* fonctions : */
 function createheatmapPhone(url) {
@@ -41,7 +41,7 @@ function createheatmapPhone(url) {
     top: 0.1 * width,
     right: -0.01 * width,
     bottom: 0.14 * width,
-    left: 0.05 * width
+    left: 0.03 * width
   };
   $.get(url, function (data) {
     getDatafromFile(data);
@@ -139,14 +139,16 @@ function screen(sizescreen) {
   if (sizescreen == 1) {
     var divlegend = "legend";
     var heigtlegend = height + margin.top + margin.bottom;
+    var widthlegend = 100 + "%";
   } else {
     var divlegend = "legend-phone";
     var heigtlegend = gridSize * 3;
+    var widthlegend = width;
   }
   legendgroup = d3.select('#' + divlegend)
     .append("svg")
     .attr("class", "svg")
-    .attr("width", 100 + "%")
+    .attr("width", widthlegend)
     .attr("height", heigtlegend)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -275,7 +277,7 @@ function showTitleandSubtitle(maingroup) {
     .attr("class", "title")
     .attr("x", 50 + "%")
     .attr("y", 50 + "%")
-    .attr("font-size", 1.5 + "rem")
+    .attr("font-size", 1.4 + "rem")
     .style("text-anchor", "middle")
     .text("Heatmap of Symptom reports");
 
@@ -495,19 +497,19 @@ function dataControlSymptom(data) {
     if (data[i] === undefined || data[i] === "")
       data[i] = 0;
 
-    if (data[i] >= 95 && data[i] < 99.5)
+    if ((data[i] >= 95 && data[i] < 99.5) || (data[i] >= 37 && data[i] < 37.5) )
       data[i] = 0;
     /* Managing of the entering data symptom of the fever */
-    if (data[i] >= 99.5 && data[i] < 100.4)
+    if ((data[i] >= 99.5 && data[i] < 100.4) || (data[i] >= 37.5 && data[i] < 38))
       data[i] = 1;
 
-    if (data[i] >= 100.4 && data[i] < 102.2)
+    if ((data[i] >= 100.4 && data[i] < 102.2) || (data[i] >= 38 && data[i] < 39))
       data[i] = 2;
 
-    if (data[i] >= 102.2 && data[i] < 104)
+    if ((data[i] >= 102.2 && data[i] < 104) || (data[i] >= 39 && data[i] < 40))
       data[i] = 3;
 
-    if (data[i] >= 104)
+    if (data[i] >= 104 || data[i] >= 40 )
       data[i] = 4;
   }
 
