@@ -1,4 +1,5 @@
-$names = ["Fever", "Anosmia", "Body ache", "Chills", "Cough", "Wet cough", "Diarrhea", "Fatigue", "Headache", "Nausea", "Runny nose", "Short breath", "Sore throat", "", "Comments"];
+//$names = ["Fever", "Anosmia", "Body ache", "Chills", "Cough", "Wet cough", "Diarrhea", "Fatigue", "Headache", "Nausea", "Runny nose", "Short breath", "Sore throat", "", "Comments"];
+$names = ["Cough", "Wet cough", "Anosmia", "Runny nose", "Sore throat", "Short breath", "Diarrhea", "Nausea", "Chills", "Fatigue", "Headache", "Body ache", "Fever", "", "Comments"];
 //"Stomach ache", "Ear ache"
 display ();
 
@@ -453,39 +454,37 @@ function loadComments(data, days) {
 }
 
 function loadDataSymptom(data) {
-  var chills = data.symptom_report.map(d => d.data.symptom_chills);
-  //var ear_ache = data.symptom_report.map(d => d.data.symptom_ear_ache);
-  var headache = data.symptom_report.map(d => d.data.symptom_headache);
-  var nausea = data.symptom_report.map(d => d.data.symptom_nausea);
-  var diarrhea = data.symptom_report.map(d => d.data.symptom_diarrhea);
+  var cough = data.symptom_report.map(d => d.data.symptom_cough);
+  var wet_cought = data.symptom_report.map(d => d.data.symptom_wet_cough);
+  var anosmia = data.symptom_report.map(d => d.data.symptom_anosmia);
   var runny_nose = data.symptom_report.map(d => d.data.symptom_runny_nose);
   var short_breath = data.symptom_report.map(d => d.data.symptom_short_breath);
-  var body_ache = data.symptom_report.map(d => d.data.symptom_body_ache);
+  var diarrhea = data.symptom_report.map(d => d.data.symptom_diarrhea);
+  var nausea = data.symptom_report.map(d => d.data.symptom_nausea);
+  var chills = data.symptom_report.map(d => d.data.symptom_chills);
   var fatigue = data.symptom_report.map(d => d.data.symptom_fatigue);
+  var headache = data.symptom_report.map(d => d.data.symptom_headache);
+  var body_ache = data.symptom_report.map(d => d.data.symptom_body_ache);
   var sore_throat = data.symptom_report.map(d => d.data.symptom_sore_throat);
   //var stomach_ache = data.symptom_report.map(d => d.data.symptom_stomach_ache);
-  var wet_cought = data.symptom_report.map(d => d.data.symptom_wet_cough);
-  var cough = data.symptom_report.map(d => d.data.symptom_cough);
-  var anosmia = data.symptom_report.map(d => d.data.symptom_anosmia);
+  //var ear_ache = data.symptom_report.map(d => d.data.symptom_ear_ache);
   var fever = data.symptom_report.map(d => d.data.fever);
   var comments = loadCommentsValues(data);
-
+  
   var symptom_data = [];
-  symptom_data[0] = dataControlSymptom(fever);
-  symptom_data[1] = dataControlSymptom(anosmia);
-  symptom_data[2] = dataControlSymptom(body_ache);
-  symptom_data[3] = dataControlSymptom(chills);
-  symptom_data[4] = dataControlSymptom(cough);
-  symptom_data[5] = dataControlSymptom(wet_cought);
+  symptom_data[0] = dataControlSymptom(cough);
+  symptom_data[1] = dataControlSymptom(wet_cought);
+  symptom_data[2] = dataControlSymptom(anosmia);
+  symptom_data[3] = dataControlSymptom(runny_nose);
+  symptom_data[4] = dataControlSymptom(sore_throat);
+  symptom_data[5] = dataControlSymptom(short_breath);
   symptom_data[6] = dataControlSymptom(diarrhea);
-  //symptom_data[7] = dataControlSymptom(ear_ache);
-  symptom_data[7] = dataControlSymptom(fatigue);
-  symptom_data[8] = dataControlSymptom(headache);
-  symptom_data[9] = dataControlSymptom(nausea);
-  symptom_data[10] = dataControlSymptom(runny_nose);
-  symptom_data[11] = dataControlSymptom(short_breath);
-  symptom_data[12] = dataControlSymptom(sore_throat);
-  //symptom_data[13] = dataControlSymptom(stomach_ache);
+  symptom_data[7] = dataControlSymptom(nausea);
+  symptom_data[8] = dataControlSymptom(chills);
+  symptom_data[9] = dataControlSymptom(fatigue);
+  symptom_data[10] = dataControlSymptom(headache);
+  symptom_data[11] = dataControlSymptom(body_ache);
+  symptom_data[12] = dataControlSymptom(fever);
   symptom_data[13] = "";
   symptom_data[14] = comments;
   return symptom_data;
