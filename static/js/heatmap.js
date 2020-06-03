@@ -1,28 +1,40 @@
-$names = ["Fever", "Anosmia", "Body ache", "Chills", "Cough", "Diarrhea", "Ear ache", "Fatigue", "Headache", "Nausea", "Runny nose", "Short breath", "Sore throat", "Stomach ache", "", "Comments"];
-sizedisplay = chooseDisplay();
+//$names = ["Fever", "Anosmia", "Body ache", "Chills", "Cough", "Wet cough", "Diarrhea", "Fatigue", "Headache", "Nausea", "Runny nose", "Short breath", "Sore throat", "", "Comments"];
+$names = ["Cough", "Wet cough", "Anosmia", "Runny nose", "Sore throat", "Short breath", "Diarrhea", "Nausea", "Chills", "Fatigue", "Headache", "Body ache", "Fever", "", "Comments"];
+//"Stomach ache", "Ear ache"
+display ();
 
-switch (sizedisplay) {
-  case 1:
-    width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
-    createheatmap(url);
-    break;
-  case 2:
-    width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
-    createheatmap(url);
-    break;
-  case 3:
-    width = 0.9 * Math.max(Math.min(window.innerWidth, 340), 300);
-    createheatmapPhone(url);
-    break;
-  case 4:
-    width = 0.9 * Math.max(Math.min(window.innerWidth, 650), 300);
-    createheatmapPhone(url);
-    break;
-  case 5:
-    width = 0.9 * Math.max(Math.min(window.innerWidth, 300), 300);
-    createheatmapPhone(url);
-    break;
+function display () {
+  sizedisplay = chooseDisplay();
+  switch (sizedisplay) {
+    case 1:
+      width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
+      createheatmap(url);
+      break;
+    case 2:
+      width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
+      createheatmap(url);
+      break;
+    case 3:
+      width = 0.9 * Math.max(Math.min(window.innerWidth, 340), 300);
+      gridSize = Math.floor(width / 10);
+      createheatmapPhone(url);
+      break;
+    case 4:
+      width = 0.9 * Math.max(Math.min(window.innerWidth, 650), 300);
+      gridSize = Math.floor(width / 12);
+      createheatmapPhone(url);
+      break;
+    case 5:
+      width = 0.9 * Math.max(Math.min(window.innerWidth, 300), 300);
+      gridSize = Math.floor(width / 10);
+      createheatmapPhone(url);
+      break;
+  }
 }
+
+/*window.addEventListener("orientationchange", function () {
+  this.location.reload();
+});*/
 
 /* fonctions : */
 function createheatmapPhone(url) {
@@ -30,9 +42,8 @@ function createheatmapPhone(url) {
     top: 0.1 * width,
     right: -0.01 * width,
     bottom: 0.14 * width,
-    left: 0.05 * width
+    left: 0.03 * width
   };
-  gridSize = Math.floor(width / 10);
   $.get(url, function (data) {
     getDatafromFile(data);
     screen(0);
@@ -57,6 +68,7 @@ function createheatmap(url) {
   $.get(url, function (data) {
     getDatafromFile(data);
     screen(1);
+    console.log(data);
     showMonthsAxis(maingroup);
     showDaysAxis(maingroup);
     showTitleandSubtitle(titlegroup);
@@ -129,14 +141,16 @@ function screen(sizescreen) {
   if (sizescreen == 1) {
     var divlegend = "legend";
     var heigtlegend = height + margin.top + margin.bottom;
+    var widthlegend = 100 + "%";
   } else {
     var divlegend = "legend-phone";
     var heigtlegend = gridSize * 3;
+    var widthlegend = width;
   }
   legendgroup = d3.select('#' + divlegend)
     .append("svg")
     .attr("class", "svg")
-    .attr("width", 100 + "%")
+    .attr("width", widthlegend)
     .attr("height", heigtlegend)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -187,8 +201,6 @@ function showHeatmap(maingroup) {
     .attr("height", gridSize)
     .attr("stroke", "#e2e2e2")
     .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
-
-
 }
 
 function scaleXaxis() {
@@ -265,7 +277,7 @@ function showTitleandSubtitle(maingroup) {
     .attr("class", "title")
     .attr("x", 50 + "%")
     .attr("y", 50 + "%")
-    .attr("font-size", 1.5 + "rem")
+    .attr("font-size", 1.4 + "rem")
     .style("text-anchor", "middle")
     .text("Heatmap of Symptom reports");
 
@@ -300,16 +312,9 @@ function showSymptomAxis(maingroup) {
 
 
 function showLegendPhone(maingroup) {
-  var countPoint = [0, 1, 2, 3, 4, 5];
+  var countPoint = [-1, 0, 1, 2, 3, 4];
   var commentScale = ["No report", "No symptom", "Low", "Middle", "Strong", "Unbearable"];
-  var color_hash = {
-    0: ["no report", "#faf6f6"],
-    1: ["no symptom", "#fff"],
-    2: ["low", "#f5a9f2"],
-    3: ["middle", "#e2b2f0"],
-    4: ["strong", "#cc2efa"],
-    5: ["Unbearable ", "#8a0886"],
-  }
+  
   var title = maingroup.append("text")
     .attr("class", "title")
     .attr("font-size", 0.7 + "rem")
@@ -326,10 +331,7 @@ function showLegendPhone(maingroup) {
     .attr("width", gridSize / 2)
     .attr("stroke", "#e2e2e2")
     .attr("transform", "translate(" + margin.left + "," + -10 + ")")
-    .style("fill", function (d) {
-      var color = color_hash[countPoint.indexOf(d)][1];
-      return color;
-    });
+    .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
 
   var legende = maingroup.selectAll(".legende")
     .data(commentScale)
@@ -342,17 +344,9 @@ function showLegendPhone(maingroup) {
 }
 
 function showLegend(maingroup) {
-  var countPoint = [0, 1, 2, 3, 4, 5];
+  var countPoint = [-1, 0, 1, 2, 3, 4];
   var commentScale = ["No report", "No symptom", "Low symptom", "Middle symptom", "Strong symptom", "Unbearable symptom"];
-  var color_hash = {
-    0: ["no report", "#faf6f6"],
-    1: ["no symptom", "#fff"],
-    2: ["low", "#f5a9f2"],
-    3: ["middle", "#e2b2f0"],
-    4: ["strong", "#cc2efa"],
-    5: ["Unbearable ", "#8a0886"],
-  }
-
+  
   var title = maingroup.append("text")
     .attr("class", "title")
     .attr("x", gridSize)
@@ -370,10 +364,8 @@ function showLegend(maingroup) {
     .attr("width", gridSize / 1.5)
     .attr("stroke", "#e2e2e2")
     .attr("transform", "translate(" + 0 + "," + (height / 2 - gridSize * 2) + ")")
-    .style("fill", function (d) {
-      var color = color_hash[countPoint.indexOf(d)][1];
-      return color;
-    });
+    .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
+
 
   var legende = maingroup.selectAll(".legende")
     .data(commentScale)
@@ -462,41 +454,42 @@ function loadComments(data, days) {
 }
 
 function loadDataSymptom(data) {
-  var chills = data.symptom_report.map(d => d.data.symptom_chills);
-  var ear_ache = data.symptom_report.map(d => d.data.symptom_ear_ache);
-  var headache = data.symptom_report.map(d => d.data.symptom_headache);
-  var nausea = data.symptom_report.map(d => d.data.symptom_nausea);
-  var diarrhea = data.symptom_report.map(d => d.data.symptom_diarrhea);
+  var cough = data.symptom_report.map(d => d.data.symptom_cough);
+  var wet_cought = data.symptom_report.map(d => d.data.symptom_wet_cough);
+  var anosmia = data.symptom_report.map(d => d.data.symptom_anosmia);
   var runny_nose = data.symptom_report.map(d => d.data.symptom_runny_nose);
   var short_breath = data.symptom_report.map(d => d.data.symptom_short_breath);
-  var body_ache = data.symptom_report.map(d => d.data.symptom_body_ache);
+  var diarrhea = data.symptom_report.map(d => d.data.symptom_diarrhea);
+  var nausea = data.symptom_report.map(d => d.data.symptom_nausea);
+  var chills = data.symptom_report.map(d => d.data.symptom_chills);
   var fatigue = data.symptom_report.map(d => d.data.symptom_fatigue);
+  var headache = data.symptom_report.map(d => d.data.symptom_headache);
+  var body_ache = data.symptom_report.map(d => d.data.symptom_body_ache);
   var sore_throat = data.symptom_report.map(d => d.data.symptom_sore_throat);
-  var stomach_ache = data.symptom_report.map(d => d.data.symptom_stomach_ache);
-  var cough = data.symptom_report.map(d => d.data.symptom_cough);
-  var anosmia = data.symptom_report.map(d => d.data.symptom_anosmia);
+  //var stomach_ache = data.symptom_report.map(d => d.data.symptom_stomach_ache);
+  //var ear_ache = data.symptom_report.map(d => d.data.symptom_ear_ache);
   var fever = data.symptom_report.map(d => d.data.fever);
   var comments = loadCommentsValues(data);
-
+  
   var symptom_data = [];
-  symptom_data[0] = dataControlSymptom(fever);
-  symptom_data[1] = dataControlSymptom(anosmia);
-  symptom_data[2] = dataControlSymptom(body_ache);
-  symptom_data[3] = dataControlSymptom(chills);
-  symptom_data[4] = dataControlSymptom(cough);
-  symptom_data[5] = dataControlSymptom(diarrhea);
-  symptom_data[6] = dataControlSymptom(ear_ache);
-  symptom_data[7] = dataControlSymptom(fatigue);
-  symptom_data[8] = dataControlSymptom(headache);
-  symptom_data[9] = dataControlSymptom(nausea);
-  symptom_data[10] = dataControlSymptom(runny_nose);
-  symptom_data[11] = dataControlSymptom(short_breath);
-  symptom_data[12] = dataControlSymptom(sore_throat);
-  symptom_data[13] = dataControlSymptom(stomach_ache);
-  symptom_data[14] = "";
-  symptom_data[15] = comments;
+  symptom_data[0] = dataControlSymptom(cough);
+  symptom_data[1] = dataControlSymptom(wet_cought);
+  symptom_data[2] = dataControlSymptom(anosmia);
+  symptom_data[3] = dataControlSymptom(runny_nose);
+  symptom_data[4] = dataControlSymptom(sore_throat);
+  symptom_data[5] = dataControlSymptom(short_breath);
+  symptom_data[6] = dataControlSymptom(diarrhea);
+  symptom_data[7] = dataControlSymptom(nausea);
+  symptom_data[8] = dataControlSymptom(chills);
+  symptom_data[9] = dataControlSymptom(fatigue);
+  symptom_data[10] = dataControlSymptom(headache);
+  symptom_data[11] = dataControlSymptom(body_ache);
+  symptom_data[12] = dataControlSymptom(fever);
+  symptom_data[13] = "";
+  symptom_data[14] = comments;
   return symptom_data;
 }
+
 
 function dataControlSymptom(data) {
   dayscontrol = dayControl(file_days);
@@ -505,19 +498,19 @@ function dataControlSymptom(data) {
     if (data[i] === undefined || data[i] === "")
       data[i] = 0;
 
-    if (data[i] >= 95 && data[i] < 99.5)
+    if ((data[i] >= 95 && data[i] < 99.5) || (data[i] >= 37 && data[i] < 37.5) )
       data[i] = 0;
     /* Managing of the entering data symptom of the fever */
-    if (data[i] >= 99.5 && data[i] < 100.4)
+    if ((data[i] >= 99.5 && data[i] < 100.4) || (data[i] >= 37.5 && data[i] < 38))
       data[i] = 1;
 
-    if (data[i] >= 100.4 && data[i] < 102.2)
+    if ((data[i] >= 100.4 && data[i] < 102.2) || (data[i] >= 38 && data[i] < 39))
       data[i] = 2;
 
-    if (data[i] >= 102.2 && data[i] < 104)
+    if ((data[i] >= 102.2 && data[i] < 104) || (data[i] >= 39 && data[i] < 40))
       data[i] = 3;
 
-    if (data[i] >= 104)
+    if (data[i] >= 104 || data[i] >= 40 )
       data[i] = 4;
   }
 
