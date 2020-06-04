@@ -341,18 +341,22 @@ def complete_garmin(request, resource_owner_secret):
 
 @csrf_exempt
 def remove_garmin(request):
-    oauth = OAuth1Session(
-        client_key=settings.GARMIN_KEY,
-        client_secret=settings.GARMIN_SECRET,
-        resource_owner_key= request.user.openhumansmember.garmin_member.access_token,
-        resource_owner_secret=request.user.openhumansmember.garmin_member.access_token_secret)
 
-    res = oauth.delete(url="https://healthapi.garmin.com/wellness-api/rest/user/registration")
-    print("deleted {}".format(res))
-    print(res.content)
+    if hasattr(request, 'user'):
+        oauth = OAuth1Session(
+            client_key=settings.GARMIN_KEY,
+            client_secret=settings.GARMIN_SECRET,
+            resource_owner_key=request.user.openhumansmember.garmin_member.access_token,
+            resource_owner_secret=request.user.openhumansmember.garmin_member.access_token_secret)
 
-    request.user.openhumansmember.garmin_member.delete()
-    messages.info(request,
+        res = oauth.delete(url="https://healthapi.garmin.com/wellness-api/rest/user/registration")
+        print("deleted {}".format(res))
+        print(res.content)
+
+        request.user.openhumansmember.garmin_member.delete()
+        messages.info(request,
                   "Your Garmin account has been successfully deleted.")
-
-    return HttpResponse(status=200)
+        return redirect('/')
+    else:
+        # called by Garmin API itself
+        return HttpResponse(status=200)
