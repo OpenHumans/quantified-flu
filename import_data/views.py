@@ -339,6 +339,7 @@ def complete_garmin(request, resource_owner_secret):
     return redirect('/')
 
 
+@csrf_exempt
 def remove_garmin(request):
     oauth = OAuth1Session(
         client_key=settings.GARMIN_KEY,
