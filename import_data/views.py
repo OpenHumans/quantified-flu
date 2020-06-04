@@ -342,7 +342,7 @@ def complete_garmin(request, resource_owner_secret):
 @csrf_exempt
 def remove_garmin(request):
 
-    if hasattr(request, 'user'):
+    if hasattr(request, 'user') and hasattr(request.user, 'openhumansmember'):
         oauth = OAuth1Session(
             client_key=settings.GARMIN_KEY,
             client_secret=settings.GARMIN_SECRET,
