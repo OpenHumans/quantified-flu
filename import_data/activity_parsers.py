@@ -12,7 +12,9 @@ from import_data.garmin.parse import user_map_to_timeseries
 
 WEEKS_BEFORE_SICK = 3
 WEEKS_AFTER_SICK = 2
-GARMIN_PERIODICITY_SECS = 10 * 60 # use one measurement every 10 minutes (Garmin gives up to 4 measurements per minute, which is heavy to plot)
+GARMIN_PERIODICITY_SECS = (
+    10 * 60
+)  # use one measurement every 10 minutes (Garmin gives up to 4 measurements per minute, which is heavy to plot)
 
 
 def oura_parser(oura_object, event_start, event_end=False):
@@ -193,8 +195,6 @@ def garmin_parser(garmin_file_info, event_start, event_end=None):
     return data_in_qf_format
 
 
-
-
 def garmin_to_qf(json_data, min_date, max_date):
     res = []
     data = json_data
@@ -206,10 +206,12 @@ def garmin_to_qf(json_data, min_date, max_date):
         if dt < min_date or dt > max_date:
             continue
         rec = {"timestamp": dt.isoformat(), "data": {"heart_rate": int(value)}}
-        if prev_dt is None or dt - prev_dt >= timedelta(seconds=GARMIN_PERIODICITY_SECS):
+        if prev_dt is None or dt - prev_dt >= timedelta(
+            seconds=GARMIN_PERIODICITY_SECS
+        ):
             res.append(rec)
             prev_dt = dt
-            #print(rec)
+            # print(rec)
     return res
 
 
