@@ -57,7 +57,7 @@
 
   {# Explanations if analyses aren't available. #}
   {% if not object.retrospectiveeventanalysis_set.all %}
-    {% if request.user.openhumansmember|missing_sources|length == 4 %}
+    {% if request.user.openhumansmember|missing_sources|length == 5 %}
     <div class="alert alert-danger" role="alert">
       <p>
         <b>No connected data?</b> This event appears to have no associated analyses.

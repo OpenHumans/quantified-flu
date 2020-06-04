@@ -3,7 +3,7 @@
 <h2>Visualize past events</h2>
 
 {% if openhumansmember.retrospectiveevent_set.all %}
-{% if missing_sources|length == 3 %}
+{% if missing_sources|length == 5 %}
 <div class="alert alert-danger" role="alert">
   <b>No connected data!</b> If you haven't added a data source, there's no data to graph.
   See buttons above to add a data source.

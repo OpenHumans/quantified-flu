@@ -14,6 +14,7 @@ def identify_missing_sources(oh_member):
         "fitbit": True,
         "googlefit": True,
         "apple_health": True,
+        "garmin": True,
     }
 
     # Check data already in Open Humans.
@@ -28,6 +29,8 @@ def identify_missing_sources(oh_member):
             "heartrate_samples"
         ):
             missing_sources.pop("apple_health", None)
+        if i["basename"].startswith("garmin"):
+            missing_sources.pop("garmin", None)
 
     # Check data imported by this app.
     if hasattr(oh_member, "fitbit_member"):
@@ -36,6 +39,8 @@ def identify_missing_sources(oh_member):
         missing_sources.pop("oura", None)
     if hasattr(oh_member, "googlefit_member"):
         missing_sources.pop("googlefit", None)
+    if hasattr(oh_member, "garmin_member"):
+        missing_sources.pop("garmin", None)
 
     return list(missing_sources.keys())
 
