@@ -12,7 +12,7 @@ from import_data.garmin.parse import user_map_to_timeseries
 
 WEEKS_BEFORE_SICK = 3
 WEEKS_AFTER_SICK = 2
-GARMIN_PERIODICITY_SECS = 120 # use one measurement every 2 minutes (Garmin gives up to 4 measurements per minute, which is heavy to plot)
+GARMIN_PERIODICITY_SECS = 10 * 60 # use one measurement every 10 minutes (Garmin gives up to 4 measurements per minute, which is heavy to plot)
 
 
 def oura_parser(oura_object, event_start, event_end=False):
