@@ -354,4 +354,4 @@ def remove_garmin(request):
     messages.info(request,
                   "Your Garmin account has been successfully deleted.")
 
-    return redirect("/")
+    return HttpResponse(status=200)
