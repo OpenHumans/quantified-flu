@@ -367,7 +367,7 @@ function showreportedSickIncident(svgName, coord) {
 function compareDateReport() {
     let compteday = 0;
     var dayinmonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    datereport = days_axis[0].split('/');
+    datereport = days[0].split('/');
     dateapple = appledayAxis[0].split('/');;
 
     for (let i = dateapple[1]; i < datereport[1]; i++) {
