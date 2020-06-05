@@ -1,11 +1,12 @@
 <style>
   .svg-tooltip {
-    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple   Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: "system-ui", "BlinkMacSystemFont", "Segoe UI", Helvetica, Arial, sans-serif, "Apple   Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     background: rgba(69, 77, 93, .9);
     border-radius: .1rem;
     color: #fff;
     display: block;
     font-size: 8px;
+    font-weight :  300;
     padding: .2rem .4rem;
     position: absolute;
     text-overflow: ellipsis;
@@ -25,6 +26,9 @@
     width: 25%;
     font-size: xx-small;
   }
+  #apple-legend {
+    width: 25%;
+  }
 
   #progress-container {
     width: 71.1%; 
@@ -43,14 +47,6 @@
     height: auto; 
   }
 
-  #tickSize {
-    stroke:  black;
-    stroke-width : 0.5;
-  }
-
-  #xAxis {
-    text-anchor :middle;
-  }
 }
 
 @media screen and (min-width: 800px) {
@@ -63,6 +59,11 @@
     width: 10%;
     font-size: x-small;
   }
+
+  #apple-legend {
+    width: 10%;
+  }
+
   #progress-container {
     width: 71.1%; 
     height: 8px; 
@@ -135,36 +136,46 @@
 {% timezone timezone %}
 
 
-<div id="container" style=" width: 100%; height: auto; display: inline-block">
-  <div id="heatmap-title" style="width: 100%; height: auto;"></div>
+<div id="heatmap-report-symptom-container" style=" width: 100%; height: auto; display: inline-block;" >
+  <h2>Symptom reports </h2>
+  <div id="heatmap-title" style="width: 100%; height: auto; font-family: system-ui"></div>
   <div id="legend-phone"> </div>
   <div class="progress-container">
     <div class="progress-bar" id="myBar"></div>
   </div>
-
 <div id="symptom" style=" height: auto; float:left;"> </div>
 <div id="heatmap" style="width: 71.1%; height: auto; float:left; overflow-x: scroll;"></div> 
 <div id="legend"> </div>
 </div>
 
-
+<div id = "apple-watch-container">
+  <h2>Apple Health Resting Heartrate </h2>
+<div id="message-no-apple" style="width: 75%; height: auto; float:left;"></div>
+<div id ="button-no-apple" style="width: 25%; height: auto; float:left;"></div>
+<div id="apple-title" style="width: 100%; height: auto; font-family: system-ui"></div>
+<div id="apple-legend" style=" font-family: system-ui; height:auto; float:left;"> </div>
+<div id="heartrate-apple" style="width: 71.1%; height: auto;  float:left; overflow-x: scroll;"> </div>
+</div>
 
 <script>
   console.log("Loading data...");
-  url = "{{ request.path }}.json";
+  //url = "{{ request.path }}.json";
   console.log("succed to loading public data");
+
+ // url = "https://quantifiedflu.org/report/list/member/79502270.json";
 
  //url = "https://quantifiedflu.org/report/list/member/25102556.json"
  //url = "https://quantifiedflu.org/report/list/member/57494882.json"
   //url = "https://quantifiedflu.org/report/list/member/43462825.json"
- //url ="https://quantifiedflu.org/report/list/member/02631468.json"
+ url ="https://quantifiedflu.org/report/list/member/02631468.json"
   //url = "https://quantifiedflu.org/report/list/member/25102556.json"
 </script>
 
 {% load static %}
 <script src="{% static 'js/heatmap.js' %}">
 </script>
-
+<script src="{% static 'js/heart_rate.js' %}">
+</script>
 
 
 

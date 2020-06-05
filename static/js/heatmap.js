@@ -68,15 +68,16 @@ function createheatmap(url) {
   $.get(url, function (data) {
     getDatafromFile(data);
     screen(1);
-    console.log(data);
-    showMonthsAxis(maingroup);
+    showMonthsAxis(maingroup, namesmonths, -26);
     showDaysAxis(maingroup);
     showTitleandSubtitle(titlegroup);
     showHeatmap(maingroup)
     showSymptomAxis(symptomgroup);
     showLegend(legendgroup);
     tooltip();
-    document.getElementById("heatmap").onscroll = function () { progressScrollBar() };
+    document.getElementById("heatmap").onscroll = function () { 
+      progressScrollBar();
+    };
   })
 }
 
@@ -135,6 +136,7 @@ function screen(sizescreen) {
     .append("svg")
     .attr("class", "svg")
     .attr("height", height + margin.top + margin.bottom)
+    .attr("width", 100 + "%")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -240,6 +242,7 @@ function showDaysAxis(maingroup) {
     .attr("y", 0)
     .attr("transform", "translate(" + (gridSize * 0.5) + ",-" + (gridSize * 0.5) + ")")
     .style("text-anchor", "middle")
+    .style("font-weight", "300")
     .attr("font-size", 0.7 + "rem");
 
   var ticksize = maingroup.selectAll(".tickSize")
@@ -251,51 +254,51 @@ function showDaysAxis(maingroup) {
     .attr("y1", 0)
     .attr("x2", function (d, i) { return (i * gridSize * 7); })
     .attr("y2", 10)
-    .style("stroke", "black")
+    .style("stroke", "#212529")
     .style("stroke-width", "1");
 }
 
-function showMonthsAxis(maingroup) {
+function showMonthsAxis(maingroup, namesmonths, y) {
   var months = maingroup.selectAll(".monthsLabel")
     .data(namesmonths)
     .enter().append("text")
     .attr('id', 'xmonthAxis')
     .text(function (d) { return d; })
-    .attr("x", function (d, i) { return i * gridSize; })
-    .attr("y", 0)
-    .attr("transform", "translate(" + (gridSize * 1.75) + ",-26)")
-    .attr("font-weight", 900)
+    .attr("x", function (d, i) { return (i * gridSize) + (gridSize * 1.5); })
+    .attr("y", y)
+    //.attr("transform", "translate(" + (gridSize * 1.5) + ",-26)")
     .style("text-anchor", "middle")
-    .attr("font-family", "Saira")
-    .attr("font-size", 0.7 + "rem");
+    .style("font-weight", "300")
+    .style("fill", "#212529")
+    .style("letter-spacing", "0.5rem")
+    .attr("font-size", 1 + "rem");
 }
-
-
 
 function showTitleandSubtitle(maingroup) {
   var title = maingroup.append("text")
-    .attr("class", "title")
     .attr("x", 50 + "%")
     .attr("y", 50 + "%")
     .attr("font-size", 1.4 + "rem")
     .style("text-anchor", "middle")
+    .style("font-weight", "300")
+    .attr("class", "mg-chart-title")
     .text("Heatmap of Symptom reports");
 
   var subtitle = maingroup.append("text")
-    .attr("class", "subtitle")
     .attr("x", 50 + "%")
     .attr("y", 70 + "%")
     .style("text-anchor", "middle")
     .attr("font-size", 1 + "rem")
-    .text("Study on " + days.length + " days - start the " + days[0]);
+    .style("font-weight", "300")
+    .text("Study on " + days.length + " days - start the " + formatdateshow(days[0], 0));
 
   var subtitle2 = maingroup.append("text")
-    .attr("class", "subtitle")
     .attr("x", 50 + "%")
     .attr("y", 90 + "%")
     .style("text-anchor", "middle")
     .attr("font-size", 1 + "rem")
-    .text("Last update - " + days[days.length - 1]);
+    .style("font-weight", "300")
+    .text("Last update - " + formatdateshow(days[days.length - 1], days.length - 1));
 }
 
 function showSymptomAxis(maingroup) {
@@ -304,10 +307,101 @@ function showSymptomAxis(maingroup) {
     .data($names)
     .enter().append("text")
     .text(function (d) { return d; })
-    .attr("y", function (d, i) { return i * gridSize; })
+    .attr("x", "80%")
+    .attr("y", function (d, i) { return (i * gridSize * 1) })
     .attr("transform", "translate(" + 0 + "," + gridSize / 1.5 + ")")
-    .style("text-anchor", "start")
+    .style("text-anchor", "end")
+    .style("font-weight", "300")
     .attr("font-size", 0.6 + "rem");
+    
+    maingroup.append("g")
+    .attr("class", "y axis")
+    .append("text")
+    .style("fill", "#212529")
+    .attr("transform", "rotate(-90)")
+    .attr("x",- 3 * gridSize)
+    .attr("y", '1%')
+    .style("text-anchor", "middle")
+    .attr("font-size", 0.5 + "rem")
+    .text("RESPIRATORY");
+
+    maingroup.append("line")
+        .attr("x1", '10%')
+        .attr("y1", 0.5 * gridSize)
+        .attr("x2", '10%')
+        .attr("y2",  5.5 * gridSize)
+        .style("stroke", "#212529")
+        .style("stroke-width", "0.5");
+
+    maingroup.append("g")
+    .attr("class", "y axis")
+    .append("text")
+    .attr("transform", "rotate(-90)")
+    .style("fill", "#212529")
+    .attr("x", - 7 * gridSize)
+    .attr("y", '1%')
+    .style("text-anchor", "middle")
+    .attr("font-size", 0.5 + "rem")
+    .text("GASTROINTESTINAL");
+
+    maingroup.append("line")
+        .attr("x1", '10%')
+        .attr("y1", 6.25 * gridSize)
+        .attr("x2", '10%')
+        .attr("y2",  7.75 * gridSize)
+        .style("stroke", "#212529")
+        .style("stroke-width", "0.5");
+
+    maingroup.append("g")
+    .attr("class", "y axis")
+    .append("text")
+    .attr("transform", "rotate(-90)")
+    .style("fill", "#212529")
+    .attr("x",  - 10 * gridSize)
+    .attr("y", '1%')
+    .style("text-anchor", "middle")
+    .attr("font-size", 0.5 + "rem")
+    .text("SYSTEMIC");
+
+    maingroup.append("line")
+    .attr("x1", '10%')
+    .attr("y1", 8.5 * gridSize)
+    .attr("x2", '10%')
+    .attr("y2",  11.5 * gridSize)
+    .style("stroke", "#212529")
+    .style("stroke-width", "0.5");
+    
+    
+    
+    /*maingroup.append("g")
+    .attr("class", "y axis")
+    .append("text")
+    .style("fill", "#212529")
+    .attr("x", 0)
+    .attr("y", 0.25 * gridSize)
+    .style("text-anchor", "start")
+    .attr("font-size", 0.5 + "rem")
+    .text("RESPIRATORY");
+
+    maingroup.append("g")
+    .attr("class", "y axis")
+    .append("text")
+    .style("fill", "#212529")
+    .attr("x", 0)
+    .attr("y", 6.25 * gridSize)
+    .style("text-anchor","start")
+    .attr("font-size", 0.5 + "rem")
+    .text("GASTROINTESTINAL");
+
+    maingroup.append("g")
+    .attr("class", "y axis")
+    .append("text")
+    .style("fill", "#212529")
+    .attr("x", 0)
+    .attr("y", 8.25 * gridSize)
+    .style("text-anchor", "start")
+    .attr("font-size", 0.5 + "rem")
+    .text("SYSTEMIC");*/
 }
 
 
@@ -340,7 +434,8 @@ function showLegendPhone(maingroup) {
     .attr("x", function (d, i) { return (i * gridSize * 1.6); })
     .attr("y", gridSize * 1.5)
     .attr("transform", "translate(" + margin.left + "," + 0 + ")")
-    .attr("font-size", 0.5 + "rem");
+    .attr("font-size", 0.5 + "rem")
+    .style("font-weight", "300");
 }
 
 function showLegend(maingroup) {
@@ -352,6 +447,7 @@ function showLegend(maingroup) {
     .attr("x", gridSize)
     .attr("y", (height / 2 - gridSize * 3))
     .attr("font-size", 1 + "rem")
+    .style("font-weight", "300")
     .text("Legend");
 
   var rect = maingroup.selectAll('rect-legend')
@@ -374,26 +470,27 @@ function showLegend(maingroup) {
     .attr("x", gridSize)
     .attr("y", function (d, i) { return i * (height / symptom_data.length); })
     .attr("transform", "translate(" + gridSize + "," + (height / 2 - gridSize * 2 + 12) + ")")
-    .attr("font-size", 0.6 + "rem");
+    .attr("font-size", 0.6 + "rem")
+    .style("font-weight", "300");
 }
 
 function showAppendTitle(data, i, y) {
   if (data == -2)
-    return "Reports : no comments reported \n Date : " + days[i];
+    return "Reports : no comments reported \n Date : " + formatdateshow(days[i], i);
   if (data == -1)
-    return "Reports : no report \n Date : " + days[i];
+    return "Reports : no report \n Date : " + formatdateshow(days[i], i);
   if (data == 0)
-    return "Reports : no symptom \n Date : " + days[i];
+    return "Reports : no symptom \n Date : " + formatdateshow(days[i], i);
   if (data == 1)
-    return "Reports : Low symptom \n Date : " + days[i] + " \n Symptom : " + $names[y] + " \n Values: " + data;
+    return "Reports : Low symptom \n Date : " + formatdateshow(days[i], i) + " \n Symptom : " + $names[y] + " \n Values: " + data;
   if (data == 2)
-    return "Reports : Middle symptom \n Date : " + days[i] + " \n Symptom : " + $names[y] + " \n Values: " + data;
+    return "Reports : Middle symptom \n Date : " + formatdateshow(days[i], i) + " \n Symptom : " + $names[y] + " \n Values: " + data;
   if (data == 3)
-    return "Reports : Strong symptom\n Date : " + days[i] + " \n Symptom : " + $names[y] + " \n Values: " + data;
+    return "Reports : Strong symptom\n Date : " + formatdateshow(days[i], i) + " \n Symptom : " + $names[y] + " \n Values: " + data;
   if (data == 4)
-    return "Reports : Unbearable symptom \n Date : " + days[i] + " \n Symptom : " + $names[y] + " \n Values: " + data;
+    return "Reports : Unbearable symptom \n Date : " + formatdateshow(days[i], i)+ " \n Symptom : " + $names[y] + " \n Values: " + data;
   if (data == 5) {
-    return "Comments : " + comments[i] + " \n Date : " + days[i];
+    return "Comments : " + comments[i] + " \n Date : " + formatdateshow(days[i], i);
   }
 
 }
