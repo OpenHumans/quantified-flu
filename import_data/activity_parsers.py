@@ -104,10 +104,10 @@ def apple_health_parser(apple_health_info, event_start, event_end=None):
             sdate = arrow.get(entry[1])
             if sdate >= period_start and sdate <= period_end:
                 returned_apple_data.append(
-                    {"timestamp": entry[1], "data": {"heart_rate": entry[0]},}
+                    {"timestamp": entry[1], "data": {"heart_rate": entry[0]}}
                 )
-
-    return returned_apple_data[::-1]  # invert list as CSV is newest to oldest
+    returned_apple_data.reverse()  # invert list as CSV is newest to oldest
+    return returned_apple_data
 
 
 def googlefit_to_qf(json_data, min_date, max_date):
