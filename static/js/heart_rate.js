@@ -1,89 +1,173 @@
-getAppleData();
+getHeartRateDatafromAppleWatch();
+getTemparatureDatafromOuraSleepSummary()
 
-function getAppleData() {
+comparedateApple = 0;
+comparedate = 0;
+finaldataAppleWatch = [];
+finaldataOuraTemperature = [];
+/*document.getElementById("heatmap").onscroll = function () {
+    syncronizationScrollHeatmapTemp("temperature-oura_sleep_summary", (comparedate * gridSize))
+};
+
+document.getElementById("temperature-oura_sleep_summary").onscroll = function () {
+    syncronizationScrollTempHeatmap("temperature-oura_sleep_summary", (comparedate * gridSize));
+};*/
+
+function getHeartRateDatafromAppleWatch() {
     $.getJSON(url, function (data) {
         if (data.apple_health_summary == undefined) {
-            console.log("test");
-            showbutton();
+            showbuttonNoConnection("button-no-apple", "message-no-apple", "https://apps.apple.com/us/app/oh-data-port/id1512384252", "Connect Apple Watch")
         }
         else
-            main(data);
+            mainAppleWatch(data);
     })
 }
-function showbutton() {
-    let dct = document.getElementById("button-no-apple");
-    let htmlContent = "<a href='https://apps.apple.com/us/app/oh-data-port/id1512384252' class= 'btn btn-primary btn-lg' >"
-        + " Connect Apple Watch" +
+
+function getTemparatureDatafromOuraSleepSummary() {
+    $.getJSON(url, function (data) {
+        if (data.oura_sleep_summary == undefined) {
+            showbuttonNoConnection("button-no-oura_sleep_summary", "message-no-oura_sleep_summary", "/import_data/authorize-oura/", "Connect Oura account")
+        }
+        else
+            mainTemperature_oura_sleep_summary(data);
+    })
+}
+
+function showbuttonNoConnection(idbutton, idmessage, hrefbutton, buttonmessage) {
+    let dct = document.getElementById(idbutton);
+    let htmlContent = "<a class= 'btn btn-primary btn-lg' href=" + hrefbutton + ">"
+        + buttonmessage +
         "</a>";
     dct.insertAdjacentHTML('afterend', htmlContent);
 
     var para = document.createElement("p");
-    var node = document.createTextNode("Notes : You have not activated the data synchronization of your apple watch. Please click on the button to change this setting. Thank you for sharing! 💖");
+    var node = document.createTextNode("Notes : You have not  connect these data sources to correlate them with reported illness. Please click on the button to change this setting. Thank you for sharing! 💖");
     para.appendChild(node);
-    var element = document.getElementById("message-no-apple");
+    var element = document.getElementById(idmessage);
     element.appendChild(para);
 
 
     /*document.getElementById("myBar").style.width = scrolled + "%";*/
 }
 
-function main(data) {
-    appledata = [];
-    appleday = [];
-    appleyear = [];
-    symptomData = [];
-    cnt = 0;
-    appledate = [];
-    repeat = [];
-    noRepeatDataApple = [];
+function mainTemperature_oura_sleep_summary(data) {
+    tempAxis = ["-1", "-0.5", "0", "0.5", "1", "1.5", "2", "2.5"];
+    tempdata = [], tempday = [], tempyear = [], tempdayAxis = [], tempdate = [], repeat = [], noRepeatData = [];
+    day = [];
+    monthtemp = [];
+    heightGraph = determineHeigth() / 2;
+
+    /* Recupérer les données dans le fichier*/
+    getTemperatureDatafromFile(data);
+    finrepeatday(tempday, tempdate, repeat);
+    repeatdata(tempday, tempdata, noRepeatData);
+
+    /*Find the day */
+    noMissingDayTemp = controlDay(tempday, day, monthtemp);
+    tempdayAxis = getDayonAxis(noMissingDayTemp);
+    month = determinenamemonth(noMissingDayTemp);
+
+    finaldata = dataControl(noRepeatData, noMissingDayTemp, day, monthtemp);
+
+    //let comparedate = 0;
+    comparedate = compareDateReport(tempdayAxis);
+    /* Trouver les jours ou il y ades reports :) */
+    symptomData = getSymptomDatafromFile(comparedate);
+
+
+    /* Element graphique */
+    createSvg('temperature-oura_sleep_summary', ((this.noMissingDayTemp.length) * gridSize), 'oura_sleep_summary-legend', (heightGraph), 'oura_sleep_summary-title', (margin.top));
+    createChartePoint(maingroupapple, finaldata, tempAxis, "circle-temperature")
+    getreportedSickIncident(maingroupapple, symptomData)
+    createTitle(titleapple, "Temperature evolution");
+    createLegendAxeY(legendapple, tempAxis, "BODY TEMPERATURE");
+    createLegendAxeX(maingroupapple, tempdayAxis);
+    showMonthsAxis(maingroupapple, month, (heightGraph - 5));
+
+    /* Afficher les données */
+    templetooltip("circle-temperature");
+
+    document.getElementById("temperature-oura_sleep_summary").scroll(((comparedate) * gridSize), 0);
+
+    document.getElementById("temperature-oura_sleep_summary").onscroll = function () {
+        syncronizationScrollReportOura(((comparedate) * gridSize));
+        }
+}
+
+function mainAppleWatch(data) {
+    heartrateAxis = ["50", "60", "70", "80", "90", "100", "110", "120"];
+    dayapp = [], monthapp = [], appledata = [], appleday = [], appleyear = [], symptomData = [];
+    cnt = 0, appledate = [], repeat = [], noRepeatDataApple = [];
+    heightGraph = determineHeigth() / 2;
 
     /* Recupérer les données dans le fichier*/
     getAppleDatafromFile(data);
-    finrepeatday();
-    repeatdata();
-    appledayAxis = getDayonAxis(appledate);
+    finrepeatday(appleday.reverse(), appledate, repeat);
+    repeatdata(appleday.reverse(), appledata, noRepeatDataApple);
 
-    let comparedateApple = 0;
-    comparedateApple = compareDateReport();
+    /*Find the day */
+    noMissingDay = controlDay(appleday.reverse(), dayapp.reverse(), monthapp.reverse());
+    appledayAxis = getDayonAxis(noMissingDay);
+    applemonth = determinenamemonth(noMissingDay);
+
+    finaldataAppleWatch = dataControl(appledata, appleday, dayapp, monthapp);
+
+    //let comparedateApple = 0;
+    comparedateApple = compareDateReport(appledayAxis);
+
     /* Trouver les jours ou il y ades reports :) */
     symptomData = getSymptomDatafromFile(comparedateApple);
 
-    applemonth = determinenamemonth(appledate);
-
     /* Element graphique */
-    createSvg();
-    createChartePoint(maingroupapple)
+    createSvg('heartrate-apple', ((this.noMissingDay.length + 1) * gridSize), 'apple-legend', (heightGraph), 'apple-title', (margin.top));
+    createChartePoint(maingroupapple, finaldataAppleWatch, heartrateAxis, "circle-apple-watch")
     getreportedSickIncident(maingroupapple, symptomData)
     createTitle(titleapple, "Heart rate evolution");
-    createLegendAxeY(legendapple);
-    createLegendAxeX(maingroupapple);
+    createLegendAxeY(legendapple, heartrateAxis, "HEART RATE [BPM]");
+    createLegendAxeX(maingroupapple, axisdays);
 
-    showMonthsAxis(maingroupapple, applemonth, (height - 5));
+    showMonthsAxis(maingroupapple, applemonth, (heightGraph - 5));
 
     /* Afficher les données */
-    appletooltip();
+    appletooltip("circle-apple-watch");
     /* Controler le scroll  */
     document.getElementById("heartrate-apple").scroll(((comparedateApple) * gridSize), 0);
-    document.getElementById("heatmap").onscroll = function () {
-        syncronizationScrollAppleReport((comparedateApple * gridSize))
-    };
+    
     document.getElementById("heartrate-apple").onscroll = function () {
-        syncronizationScrollReportApple((comparedateApple * gridSize))
-    };
+    syncronizationScrollReportApple(((comparedateApple) * gridSize));
+    }
 }
 
+/* GET THE DATA FROM FILE .JSON */
+
 function getAppleDatafromFile(data) {
+    cnt = 0;
     this.file = data.apple_health_summary.map(d => d);
     this.file.forEach(element => {
         appledata[cnt] = Math.round(element.data.heart_rate);
         appleday[cnt] = formatdate(parseTime(element.timestamp));
         appleyear[cnt] = formatyear(parseTime(element.timestamp));
+        dayapp[cnt] = formatdateday(parseTime(element.timestamp));
+        monthapp[cnt] = formatdatemonth(parseTime(element.timestamp));
         cnt++;
     });
 }
 
-function repeatdata() {
-    data1 = appleday.reverse();
+function getTemperatureDatafromFile(data) {
+    cnt = 0;
+    this.file = data.oura_sleep_summary.map(d => d);
+    this.file.forEach(element => {
+        tempdata[cnt] = element.data.temperature_delta;
+        tempday[cnt] = formatdate(parseTimeTemp(element.timestamp));
+        day[cnt] = formatdateday(parseTimeTemp(element.timestamp));
+        monthtemp[cnt] = formatdatemonth(parseTimeTemp(element.timestamp));
+        tempyear[cnt] = formatyear(parseTimeTemp(element.timestamp));
+        cnt++;
+    });
+}
+
+function repeatdata(appleday, appledata, noRepeatDataApple) {
+    data1 = appleday;
     var cnt = 0;
     for (let i = 0; i < appleday.length - 1; i++) {
         let calcul = data1[i + 1].split('/')[0] - data1[i].split('/')[0];
@@ -156,7 +240,7 @@ function getreportedSickIncident(maingroupapple, data) {
     }
 }
 
-function appletooltip() {
+function templetooltip(circleid) {
 
     const tooltip = d3
         .select("body")
@@ -165,9 +249,45 @@ function appletooltip() {
         .style("position", "absolute")
         .style("visibility", "hidden");
 
-    d3.selectAll("circle")
+    d3.selectAll("#" + circleid)
         .on("click", function (d) {
-            let coordXY = this.getAttribute('id').split('- ')[1];
+            let coordXY = this.getAttribute('class').split('- ')[1];
+            d3.select(this)
+                .attr("r", gridSize / 5)
+                .attr('stroke-width', 1)
+                .attr("fill", "#015483");
+            tooltip
+                .style("visibility", "visible")
+                .text(formatdateshow(noMissingDayTemp[coordXY], coordXY) + " " + d);
+        })
+
+        .on("mousemove", function () {
+            tooltip
+                .style("top", d3.event.pageY + 10 + "px")
+                .style("left", d3.event.pageX - (gridSize * 3.5) + "px");
+        })
+
+        .on("mouseout", function () {
+            d3.select(this).attr("r", gridSize / 10)
+                .attr("fill", "#A5DAEC")
+                .style("stroke", "#015483")
+                .style("stroke-width", "0.5");
+
+            tooltip.style("visibility", "hidden");
+        });
+}
+
+function appletooltip(circleid) {
+    const tooltip = d3
+        .select("body")
+        .append("div")
+        .attr("class", "svg-tooltip")
+        .style("position", "absolute")
+        .style("visibility", "hidden");
+
+    d3.selectAll("#" + circleid)//"circle-apple-watch")
+        .on("click", function (d) {
+            let coordXY = this.getAttribute('class').split('- ')[1];
             d3.select(this)
                 .attr("r", gridSize / 5)
                 .attr('stroke-width', 1)
@@ -175,7 +295,10 @@ function appletooltip() {
 
             tooltip
                 .style("visibility", "visible")
-                .text(formatdateshow(appledate[coordXY], coordXY) + " " + d + " bpm");
+                .text(formatdateshow(noMissingDay[coordXY], coordXY) + " " + d + " bmp"
+
+                    // return noMissingDay[coordXY] + " " + d +  ' bmp';
+                )
         })
 
         .on("mousemove", function () {
@@ -195,49 +318,56 @@ function appletooltip() {
 }
 
 /* Graphic Functions */
-function createSvg() {
-    maingroupapple = d3.select('#heartrate-apple')
+function createSvg(div1, widthdiv1, div2, heightdiv2, div3, heightdiv3) {
+    maingroupapple = d3.select('#' + div1)
         .append("svg")
         .attr("class", "svg")
-        .attr("width", (this.appledate.length + 1) * gridSize)
-        .attr("height", height)
+        .attr("width", widthdiv1) //(this.appledate.length + 1) * gridSize)
+        .attr("height", heightdiv2)
 
-    legendapple = d3.select('#apple-legend')
+    legendapple = d3.select('#' + div2)
         .append("svg")
         .attr("class", "svg")
         .attr("width", 100 + "%")
-        .attr("height", height)
+        .attr("height", heightdiv2)
 
-    titleapple = d3.select('#apple-title')
+    titleapple = d3.select('#' + div3)
         .append("svg")
         .attr("class", "svg")
         .attr("width", 100 + "%")
-        .attr("height", margin.top)
+        .attr("height", heightdiv3) //margin.top)
 }
 
-function createChartePoint(maingroupapple) {
+function createChartePoint(maingroupapple, data, axe, id) {
     maingroupapple.selectAll("circle")
-        .data(noRepeatDataApple.reverse())
+        .data(data)
         .enter()
         .append("circle")
-        .attr('id', function (d, i) { return "circle - " + i })
+        .attr('id', id)
+        .attr('class', function (d, i) { return "circle - " + i })
         .attr("cx", function (d, i) {
             return ((gridSize * 0.5)) + (i * gridSize);
         })
         .attr("cy", function (d) {
-            return (height - margin.bottom) - ((d - 50) * ((height - margin.bottom - 1) / (120 - 50 + 1)));
+            if (d == undefined) return (heightGraph - margin.bottom)
+            else
+                return (heightGraph - margin.bottom) - ((d - axe[0]) * ((heightGraph - margin.bottom - 1) / (axe[axe.length - 1] - axe[0] + 1)));
+
         })
         .attr("r", gridSize / 10)
-        .attr("fill", "#A5DAEC")
+        .attr("fill", function (d) {
+            if (d == undefined) return 'red'
+            else return "#A5DAEC"
+        })
         .style("stroke", "#015483")
         .style("stroke-width", "0.5");
 
     maingroupapple.append("line")
         .attr('id', 'tickSize')
         .attr("x1", 100 + "%")
-        .attr("y1", margin.top)
+        .attr("y1", margin.top / 2)
         .attr("x2", 100 + "%")
-        .attr("y2", height - margin.bottom)
+        .attr("y2", heightGraph - margin.bottom)
         .style("stroke", "#778899")
         .style("stroke-width", "1");
 }
@@ -254,17 +384,15 @@ function createTitle(titleapple, title) {
         .text(title);
 }
 
-function createLegendAxeY(legendapple) {
+function createLegendAxeY(legendapple, heartrateAxis, title) {
     legendapple.append("line")
         .attr('id', 'tickSize')
         .attr("x1", 100 + "%")
-        .attr("y1", margin.top)
+        .attr("y1", margin.top / 2.5)
         .attr("x2", 100 + "%")
-        .attr("y2", height - margin.bottom)
+        .attr("y2", heightGraph - margin.bottom)
         .style("stroke", "#778899")
         .style("stroke-width", "1");
-
-    heartrateAxis = ["50", "60", "70", "80", "90", "100", "110", "120"]
 
     legendapple.selectAll(".daysLabel")
         .data(heartrateAxis)
@@ -272,7 +400,7 @@ function createLegendAxeY(legendapple) {
         .text(function (d) { return d; })
         .style("fill", "#212529")
         .attr("x", 95 + "%")
-        .attr("y", function (d, i) { return (height - margin.bottom - 1) - (i * ((height - margin.bottom) / 8)) })
+        .attr("y", function (d, i) { return (heightGraph - margin.bottom - 1) - (i * ((heightGraph - margin.bottom) / (heartrateAxis.length))) })
         .style("text-anchor", "end")
         .attr("font-size", 0.7 + "rem");
 
@@ -281,32 +409,32 @@ function createLegendAxeY(legendapple) {
         .append("text")
         .attr("transform", "rotate(-90)")
         .style("fill", "#212529")
-        .attr("x", -(height - margin.bottom) / 2)
+        .attr("x", -(heightGraph - margin.bottom) / 2)
         .attr("y", 5 + "%")
         .style("text-anchor", "middle")
         .style("font-weight", "300")
         .attr("font-size", 0.7 + "rem")
-        .text("HEART RATE [BPM]");
+        .text(title);
 
     legendapple.selectAll(".tickSize")
         .data(heartrateAxis)
         .enter().append("line")
         .attr("x1", 95 + "%")
-        .attr("y1", function (d, i) { return (height - margin.bottom - 5) - (i * ((height - margin.bottom) / 8)) })
+        .attr("y1", function (d, i) { return (heightGraph - margin.bottom - 5) - (i * ((heightGraph - margin.bottom) / 8)) })
         .attr("x2", 100 + "%")
-        .attr("y2", function (d, i) { return (height - margin.bottom - 5) - (i * ((height - margin.bottom) / 8)) })
+        .attr("y2", function (d, i) { return (heightGraph - margin.bottom - 5) - (i * ((heightGraph - margin.bottom) / 8)) })
         .style("stroke", "#212529")
         .style("stroke-width", "0.5");
 }
 
-function createLegendAxeX(legendapple) {
+function createLegendAxeX(legendapple, axisdays) {
 
     legendapple.append("line")
         .attr('id', 'tickSize')
         .attr("x1", 0)
-        .attr("y1", height - margin.bottom)
+        .attr("y1", heightGraph - margin.bottom)
         .attr("x2", 100 + "%")
-        .attr("y2", height - margin.bottom)
+        .attr("y2", heightGraph - margin.bottom)
         .style("stroke", "#778899")
         .style("stroke-width", "0.5");
 
@@ -316,7 +444,7 @@ function createLegendAxeX(legendapple) {
         .text(function (d) { return d; })
         .style("fill", "#212529")
         .attr("x", function (d, i) { return gridSize * 1 + (i * gridSize * 7) })
-        .attr("y", height - (margin.bottom / 2))
+        .attr("y", heightGraph - (margin.bottom / 2))
         .style("text-anchor", "end")
         .attr("font-size", 0.7 + "rem");
 
@@ -324,9 +452,9 @@ function createLegendAxeX(legendapple) {
         .data(axisdays)
         .enter().append("line")
         .attr("x1", function (d, i) { return gridSize * 1 + ((i * gridSize * 7) - (gridSize / 2)) })
-        .attr("y1", height - margin.bottom)
+        .attr("y1", heightGraph - margin.bottom)
         .attr("x2", function (d, i) { return gridSize * 1 + ((i * gridSize * 7) - (gridSize / 2)) })
-        .attr("y2", height - (margin.bottom / 1.25))
+        .attr("y2", heightGraph - (margin.bottom / 1.25))
         .style("stroke", "#212529")
         .style("stroke-width", "0.5");
 }
@@ -334,13 +462,12 @@ function createLegendAxeX(legendapple) {
 function showreportedSickIncident(svgName, coord) {
     coordX = coord.split('/');
     let x = ((gridSize * 0.5)) + coordX[0] * gridSize;
-    let y = margin.top;
+    let y = (margin.top / 2);
     if (coordX[1] == 0) {
         text = "Reported sick incident";
     } else {
         text = "";
     }
-
 
     svgName.append("g")
         .append("text")
@@ -355,30 +482,30 @@ function showreportedSickIncident(svgName, coord) {
         .text(text);
 
     svgName.append("line")
-        .attr("x1", ((gridSize *  0.5) + coordX[0] * gridSize))
-        .attr("y1", margin.top * 1.1)
+        .attr("x1", ((gridSize * 0.5) + coordX[0] * gridSize))
+        .attr("y1", margin.top / 2)
         .attr("x2", ((gridSize * 0.5) + coordX[0] * gridSize))
-        .attr("y2", height - margin.bottom)
+        .attr("y2", heightGraph - margin.bottom)
         .style("stroke", "#A7AAAA")
         .style("stroke-dasharray", 5)
         .style("stroke-width", "1");
 }
 
-function compareDateReport() {
+function compareDateReport(appledayAxis) {
     let compteday = 0;
     var dayinmonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     datereport = days[0].split('/');
-    dateapple = appledayAxis[0].split('/');;
+    date = appledayAxis[0].split('/');;
 
-    for (let i = dateapple[1]; i < datereport[1]; i++) {
+    for (let i = date[1]; i < datereport[1]; i++) {
         compteday += dayinmonth[i];
     }
-    return compteday += (datereport[0] - dateapple[0]);
+    return compteday += (datereport[0] - date[0]);
 }
 
-function finrepeatday() {
+function finrepeatday(appleday, appledate, repeat) {
     /* On vérifie que les jours sont pas en double */
-    data1 = appleday.reverse();
+    data1 = appleday;
     var cnt = 0;
     var cnt2 = 0;
     for (let i = 0; i < appleday.length - 1; i++) {
@@ -414,16 +541,113 @@ function formatdateshow(data, id) {
     }
 }
 
+
+/* Deal with the scroll */
+function syncronizationScrollHeatmapTemp(divId, comparedateTemp) {
+    var winScroll = document.getElementById("heatmap").scrollLeft;
+    document.getElementById(divId).scroll((winScroll + comparedateTemp), 0);
+}
+
+function syncronizationScrollTempHeatmap(divId, comparedateTemp) {
+    var winScroll = document.getElementById(divId).scrollLeft;
+    document.getElementById("heatmap").scroll((winScroll - comparedateTemp), 0);
+}
+
+
+function syncronizationScrollTempReport(comparedateApple) {
+    var winScroll = document.getElementById("heatmap").scrollLeft;
+    document.getElementById("temperature-oura_sleep_summary").scroll((winScroll + comparedateApple), 0);
+}
+
+function syncronizationScrollReportTemp(comparedateApple) {
+    var winScroll = document.getElementById("temperature-oura_sleep_summary").scrollLeft;
+    document.getElementById("heatmap").scroll((winScroll - comparedateApple), 0);
+}
+
 function syncronizationScrollAppleReport(comparedateApple) {
     var winScroll = document.getElementById("heatmap").scrollLeft;
     document.getElementById("heartrate-apple").scroll((winScroll + comparedateApple), 0);
 }
+
 function syncronizationScrollReportApple(comparedateApple) {
     var winScroll = document.getElementById("heartrate-apple").scrollLeft;
     document.getElementById("heatmap").scroll((winScroll - comparedateApple), 0);
 }
 
+function syncronizationScrollReportOura(comparedateApple) {
+    var winScroll = document.getElementById("temperature-oura_sleep_summary").scrollLeft;
+    document.getElementById("heatmap").scroll((winScroll - comparedateApple), 0);
+}
+
+function missingday(data) {
+    let compteday = [];
+    var dayinmonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    let day = [];
+    let cnt = 0;
+
+    for (let i = 0; i < data.length - 1; i++) {
+        let d1 = data[i + 1].split('/');
+        let d0 = data[i].split('/');
+        day[i + cnt] = d0[0] + '/' + d0[1];;
+        compteday[i] = d1[0] - d0[0] - 1;
+
+        if (compteday[i] != 0 && compteday[i] != -30 && compteday[i] != -31 && (compteday[i] != -29 && d0[1] != 1)) {
+            for (let x = 1; x < compteday[i] + 1; x++) {
+                cnt++;
+                day[i + cnt] = d0[0] - (-x) + '/' + d0[1];
+            }
+        }
+    }
+    day.push(data[data.length - 1])
+}
+
+function dayControlGraph(data, days2, month) {
+    var days_fixed = [];
+    var days4_fixed = [];
+    for (var i = 0; i < data.length - 1; i++) {
+        days4_fixed[i] = days2[i + 1] - days2[i] - 1;
+    }
+    days4_fixed.push(0);
+    for (let i = 0; i < days4_fixed.length; i++) {
+        if (days4_fixed[i] < -1) {
+            if (month[i] == 1 || month[i] == 3 || month[i] == 5 || month[i] == 7 || month[i] == 8 || month[i] == 10 || month[i] == 12) {
+                days_fixed[i] = days4_fixed[i] + 31;
+            } else
+                days_fixed[i] = days4_fixed[i] + 30;
+        } else
+            days_fixed[i] = days4_fixed[i];
+    }
+    return days_fixed;
+}
+
+function dataControl(data, tempdate, day, monthtemp) {
+    dayscontrol = dayControlGraph(tempdate, day, monthtemp);
+    const data2 = [];
+    var cnt = 0;
+    for (var i = 0; i < dayscontrol.length; i++) {
+        data2[i + cnt] = data[i];
+        // console.log(data);
+        if (dayscontrol[i] != -1 && dayscontrol[i] != -30 && dayscontrol[i] != -31) {
+            for (var t = 0; t < dayscontrol[i]; t++) {
+                cnt++;
+                data2[i + cnt] = undefined;
+            }
+        }
+        else if (dayscontrol[i] == -1) {
+            cnt--;
+        }
+    }
+    return data2;
+}
+
+function addday(data) {
+    test = data[data.length - 1].split('/')[0] - days[data.length - 1].split('/')[O];
+    console.log(test);
+
+}
+
 parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S.%f%Z");
+parseTimeTemp = d3.timeParse("%Y-%m-%d");
 formatyear = d3.timeFormat("%y");
 formatdate = d3.timeFormat("%d/%m");
 formatdateday = d3.timeFormat("%d");

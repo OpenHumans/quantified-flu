@@ -1,49 +1,79 @@
-//$names = ["Fever", "Anosmia", "Body ache", "Chills", "Cough", "Wet cough", "Diarrhea", "Fatigue", "Headache", "Nausea", "Runny nose", "Short breath", "Sore throat", "", "Comments"];
-$names = ["Cough", "Wet cough", "Anosmia", "Runny nose", "Sore throat", "Short breath", "Diarrhea", "Nausea", "Chills", "Fatigue", "Headache", "Body ache", "Fever", "", "Comments"];
-//"Stomach ache", "Ear ache"
-display ();
 
-function display () {
+$names = ["Cough", "Wet cough", "Anosmia", "Runny nose", "Sore throat", "Short breath", "Diarrhea", "Nausea", "Chills", "Fatigue", "Headache", "Body ache", "Fever", "", "Comments"];
+display();
+
+function display() {
   sizedisplay = chooseDisplay();
   switch (sizedisplay) {
     case 1:
       width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
+      gridSize = Math.floor(width / 30);
+      margin = {
+        top: 0.05 * width,
+        right: -0.05 * width,
+        bottom: 0.04 * width,
+        left: 0.005 * width
+      };
       createheatmap(url);
       break;
     case 2:
       width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
+      gridSize = Math.floor(width / 30);
+      margin = {
+        top: 0.05 * width,
+        right: -0.05 * width,
+        bottom: 0.04 * width,
+        left: 0.005 * width
+      };
       createheatmap(url);
       break;
     case 3:
       width = 0.9 * Math.max(Math.min(window.innerWidth, 340), 300);
+      margin = {
+        top: 0.1 * width,
+        right: -0.01 * width,
+        bottom: 0.14 * width,
+        left: 0.03 * width
+      };
+      
       gridSize = Math.floor(width / 10);
-      createheatmapPhone(url);
+      createheatmap(url);
       break;
     case 4:
       width = 0.9 * Math.max(Math.min(window.innerWidth, 650), 300);
+      margin = {
+        top: 0.1 * width,
+        right: -0.01 * width,
+        bottom: 0.14 * width,
+        left: 0.03 * width
+      };
+     
       gridSize = Math.floor(width / 12);
-      createheatmapPhone(url);
+      createheatmap(url);
       break;
     case 5:
       width = 0.9 * Math.max(Math.min(window.innerWidth, 300), 300);
+      margin = {
+        top: 0.1 * width,
+        right: -0.01 * width,
+        bottom: 0.14 * width,
+        left: 0.03 * width
+      };
       gridSize = Math.floor(width / 10);
-      createheatmapPhone(url);
+      createheatmap(url);
       break;
   }
 }
 
-/*window.addEventListener("orientationchange", function () {
-  this.location.reload();
-});*/
-
 /* fonctions : */
-function createheatmapPhone(url) {
+/*function createheatmapPhone(url) {
   margin = {
     top: 0.1 * width,
     right: -0.01 * width,
     bottom: 0.14 * width,
     left: 0.03 * width
   };
+
   $.get(url, function (data) {
     getDatafromFile(data);
     screen(0);
@@ -56,31 +86,28 @@ function createheatmapPhone(url) {
     document.getElementById("heatmap").onscroll = function () { progressScrollBar() };
   })
 }
+*/
 function createheatmap(url) {
-  margin = {
-    top: 0.05 * width,
-    right: -0.05 * width,
-    bottom: 0.04 * width,
-    left: 0.005 * width
-  };
-  gridSize = Math.floor(width / 30);
-
+  
   $.get(url, function (data) {
     getDatafromFile(data);
     screen(1);
-    showMonthsAxis(maingroup, namesmonths, -26);
+    showMonthsAxis(maingroup, namesmonths, -6);
     showDaysAxis(maingroup);
     showTitleandSubtitle(titlegroup);
     showHeatmap(maingroup)
     showSymptomAxis(symptomgroup);
     showLegend(legendgroup);
+    showLegendPhone(legendgroupphone);
     tooltip();
-    document.getElementById("heatmap").onscroll = function () { 
+    document.getElementById("heatmap").onscroll = function () {
       progressScrollBar();
-    };
+      var winScroll = document.getElementById("heatmap").scrollLeft;
+          document.getElementById("temperature-oura_sleep_summary").scroll(winScroll + (comparedate * gridSize), 0);
+          document.getElementById("heartrate-apple").scroll(winScroll + (comparedateApple * gridSize), 0);
+      };
   })
 }
-
 
 function tooltip() {
   const tooltip = d3
@@ -91,7 +118,13 @@ function tooltip() {
     .style("visibility", "hidden");
 
   d3.selectAll("#rect-heatmap")
-    .on("click", function (d) {
+    
+  .on("mouseover", function (d) {
+    d3.select(this)
+    .style("fill", "yellow");
+  })
+
+  .on("click", function (d) {
       var coordXY = this.getAttribute('class').split('-');
 
       d3.select(this)
@@ -99,7 +132,7 @@ function tooltip() {
         .attr("stroke", "black");
       tooltip
         .style("visibility", "visible")
-        .text(`${showAppendTitle(d, coordXY[0], coordXY[1])}`);
+        .text(`${showAppendTitle(d, coordXY[0], coordXY[1])}`); //+ finaldataAppleWatch[(coordXY[0] + 20)]}`);
     })
 
     .on("mousemove", function () {
@@ -110,7 +143,9 @@ function tooltip() {
 
     .on("mouseout", function () {
       d3.select(this).attr("stroke", "#e2e2e2")
-        .attr('stroke-width', '1');
+        .attr('stroke-width', '1')
+        .style("fill", function (d) {return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
+
       tooltip.style("visibility", "hidden");;
     });
 }
@@ -121,7 +156,6 @@ function progressScrollBar() {
   var scrolled = (winScroll / height) * 70.1;
   document.getElementById("myBar").style.width = scrolled + "%";
 }
-
 
 function screen(sizescreen) {
   maingroup = d3.select('#heatmap')
@@ -140,20 +174,27 @@ function screen(sizescreen) {
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  if (sizescreen == 1) {
+
     var divlegend = "legend";
     var heigtlegend = height + margin.top + margin.bottom;
     var widthlegend = 100 + "%";
-  } else {
-    var divlegend = "legend-phone";
-    var heigtlegend = gridSize * 3;
-    var widthlegend = width;
-  }
-  legendgroup = d3.select('#' + divlegend)
+  
+    var divlegend2 = "legend-phone";
+    heigtlegend2 = gridSize * 3;
+  
+    legendgroup = d3.select('#' + divlegend)
     .append("svg")
     .attr("class", "svg")
     .attr("width", widthlegend)
     .attr("height", heigtlegend)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    legendgroupphone = d3.select('#' + divlegend2)
+    .append("svg")
+    .attr("class", "svg")
+    .attr("width", widthlegend)
+    .attr("height", heigtlegend2)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -168,7 +209,9 @@ function screen(sizescreen) {
 function getDatafromFile(data) {
   this.timestamp = data.symptom_report.map(d => d.timestamp);
   this.file_days = timestamp.map(d => formatdate(parseTime(d)));
-  this.days = controlDay(file_days);
+  this.days2 = timestamp.map(d => formatdateday(parseTime(d)))
+  this.month = timestamp.map(d => formatdatemonth(parseTime(d)))
+  this.days = controlDay(file_days, days2, month);
 
   this.days_axis = showingDayOnTheMap(days);
   this.symptom_data = loadDataSymptom(data);
@@ -264,9 +307,8 @@ function showMonthsAxis(maingroup, namesmonths, y) {
     .enter().append("text")
     .attr('id', 'xmonthAxis')
     .text(function (d) { return d; })
-    .attr("x", function (d, i) { return (i * gridSize) + (gridSize * 1.5); })
+    .attr("x", function (d, i) { return (i * gridSize) + (gridSize * 2.5); })
     .attr("y", y)
-    //.attr("transform", "translate(" + (gridSize * 1.5) + ",-26)")
     .style("text-anchor", "middle")
     .style("font-weight", "300")
     .style("fill", "#212529")
@@ -313,27 +355,27 @@ function showSymptomAxis(maingroup) {
     .style("text-anchor", "end")
     .style("font-weight", "300")
     .attr("font-size", 0.6 + "rem");
-    
-    maingroup.append("g")
+
+  maingroup.append("g")
     .attr("class", "y axis")
     .append("text")
     .style("fill", "#212529")
     .attr("transform", "rotate(-90)")
-    .attr("x",- 3 * gridSize)
+    .attr("x", - 3 * gridSize)
     .attr("y", '1%')
     .style("text-anchor", "middle")
     .attr("font-size", 0.5 + "rem")
     .text("RESPIRATORY");
 
-    maingroup.append("line")
-        .attr("x1", '10%')
-        .attr("y1", 0.5 * gridSize)
-        .attr("x2", '10%')
-        .attr("y2",  5.5 * gridSize)
-        .style("stroke", "#212529")
-        .style("stroke-width", "0.5");
+  maingroup.append("line")
+    .attr("x1", '10%')
+    .attr("y1", 0.5 * gridSize)
+    .attr("x2", '10%')
+    .attr("y2", 5.5 * gridSize)
+    .style("stroke", "#212529")
+    .style("stroke-width", "0.5");
 
-    maingroup.append("g")
+  maingroup.append("g")
     .attr("class", "y axis")
     .append("text")
     .attr("transform", "rotate(-90)")
@@ -344,71 +386,38 @@ function showSymptomAxis(maingroup) {
     .attr("font-size", 0.5 + "rem")
     .text("GASTROINTESTINAL");
 
-    maingroup.append("line")
-        .attr("x1", '10%')
-        .attr("y1", 6.25 * gridSize)
-        .attr("x2", '10%')
-        .attr("y2",  7.75 * gridSize)
-        .style("stroke", "#212529")
-        .style("stroke-width", "0.5");
+  maingroup.append("line")
+    .attr("x1", '10%')
+    .attr("y1", 6.25 * gridSize)
+    .attr("x2", '10%')
+    .attr("y2", 7.75 * gridSize)
+    .style("stroke", "#212529")
+    .style("stroke-width", "0.5");
 
-    maingroup.append("g")
+  maingroup.append("g")
     .attr("class", "y axis")
     .append("text")
     .attr("transform", "rotate(-90)")
     .style("fill", "#212529")
-    .attr("x",  - 10 * gridSize)
+    .attr("x", - 10 * gridSize)
     .attr("y", '1%')
     .style("text-anchor", "middle")
     .attr("font-size", 0.5 + "rem")
     .text("SYSTEMIC");
 
-    maingroup.append("line")
+  maingroup.append("line")
     .attr("x1", '10%')
     .attr("y1", 8.5 * gridSize)
     .attr("x2", '10%')
-    .attr("y2",  11.5 * gridSize)
+    .attr("y2", 11.5 * gridSize)
     .style("stroke", "#212529")
     .style("stroke-width", "0.5");
-    
-    
-    
-    /*maingroup.append("g")
-    .attr("class", "y axis")
-    .append("text")
-    .style("fill", "#212529")
-    .attr("x", 0)
-    .attr("y", 0.25 * gridSize)
-    .style("text-anchor", "start")
-    .attr("font-size", 0.5 + "rem")
-    .text("RESPIRATORY");
-
-    maingroup.append("g")
-    .attr("class", "y axis")
-    .append("text")
-    .style("fill", "#212529")
-    .attr("x", 0)
-    .attr("y", 6.25 * gridSize)
-    .style("text-anchor","start")
-    .attr("font-size", 0.5 + "rem")
-    .text("GASTROINTESTINAL");
-
-    maingroup.append("g")
-    .attr("class", "y axis")
-    .append("text")
-    .style("fill", "#212529")
-    .attr("x", 0)
-    .attr("y", 8.25 * gridSize)
-    .style("text-anchor", "start")
-    .attr("font-size", 0.5 + "rem")
-    .text("SYSTEMIC");*/
 }
-
 
 function showLegendPhone(maingroup) {
   var countPoint = [-1, 0, 1, 2, 3, 4];
   var commentScale = ["No report", "No symptom", "Low", "Middle", "Strong", "Unbearable"];
-  
+
   var title = maingroup.append("text")
     .attr("class", "title")
     .attr("font-size", 0.7 + "rem")
@@ -419,29 +428,29 @@ function showLegendPhone(maingroup) {
     .data(countPoint)
     .enter()
     .append("rect")
-    .attr("x", function (d, i) { return (i * gridSize * 1.6); })
-    .attr("y", gridSize)
+    .attr("x", function (d, i) { return (margin.left + (i * 14) + "%"); })
+    .attr("y", gridSize/2)
     .attr("height", gridSize / 2)
     .attr("width", gridSize / 2)
     .attr("stroke", "#e2e2e2")
-    .attr("transform", "translate(" + margin.left + "," + -10 + ")")
     .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
 
   var legende = maingroup.selectAll(".legende")
     .data(commentScale)
     .enter().append("text")
     .text(function (d) { return d; })
-    .attr("x", function (d, i) { return (i * gridSize * 1.6); })
+    .attr("x", function (d, i) { return (margin.left + (i * 15) + "%"); })
     .attr("y", gridSize * 1.5)
-    .attr("transform", "translate(" + margin.left + "," + 0 + ")")
+    .style("text-anchor", "middle")
     .attr("font-size", 0.5 + "rem")
     .style("font-weight", "300");
 }
 
+
 function showLegend(maingroup) {
   var countPoint = [-1, 0, 1, 2, 3, 4];
   var commentScale = ["No report", "No symptom", "Low symptom", "Middle symptom", "Strong symptom", "Unbearable symptom"];
-  
+
   var title = maingroup.append("text")
     .attr("class", "title")
     .attr("x", gridSize)
@@ -488,7 +497,7 @@ function showAppendTitle(data, i, y) {
   if (data == 3)
     return "Reports : Strong symptom\n Date : " + formatdateshow(days[i], i) + " \n Symptom : " + $names[y] + " \n Values: " + data;
   if (data == 4)
-    return "Reports : Unbearable symptom \n Date : " + formatdateshow(days[i], i)+ " \n Symptom : " + $names[y] + " \n Values: " + data;
+    return "Reports : Unbearable symptom \n Date : " + formatdateshow(days[i], i) + " \n Symptom : " + $names[y] + " \n Values: " + data;
   if (data == 5) {
     return "Comments : " + comments[i] + " \n Date : " + formatdateshow(days[i], i);
   }
@@ -551,23 +560,28 @@ function loadComments(data, days) {
 }
 
 function loadDataSymptom(data) {
-  var cough = data.symptom_report.map(d => d.data.symptom_cough);
-  var wet_cought = data.symptom_report.map(d => d.data.symptom_wet_cough);
-  var anosmia = data.symptom_report.map(d => d.data.symptom_anosmia);
-  var runny_nose = data.symptom_report.map(d => d.data.symptom_runny_nose);
-  var short_breath = data.symptom_report.map(d => d.data.symptom_short_breath);
-  var diarrhea = data.symptom_report.map(d => d.data.symptom_diarrhea);
-  var nausea = data.symptom_report.map(d => d.data.symptom_nausea);
-  var chills = data.symptom_report.map(d => d.data.symptom_chills);
-  var fatigue = data.symptom_report.map(d => d.data.symptom_fatigue);
-  var headache = data.symptom_report.map(d => d.data.symptom_headache);
-  var body_ache = data.symptom_report.map(d => d.data.symptom_body_ache);
-  var sore_throat = data.symptom_report.map(d => d.data.symptom_sore_throat);
-  //var stomach_ache = data.symptom_report.map(d => d.data.symptom_stomach_ache);
-  //var ear_ache = data.symptom_report.map(d => d.data.symptom_ear_ache);
-  var fever = data.symptom_report.map(d => d.data.fever);
+  cnt = 0;
+  cough = [], wet_cought = [], anosmia = [], runny_nose = [], short_breath = [], diarrhea = [], nausea = [], chills = [], fatigue = [], headache = [], body_ache = [], sore_throat = [], fever = [];
+  this.file = data.symptom_report.map(d => d);
+  this.file.forEach(element => {
+    cough[cnt] = element.data.symptom_cough;
+    wet_cought[cnt] = element.data.symptom_wet_cough;
+    anosmia[cnt] = element.data.symptom_anosmia;
+    runny_nose[cnt] = element.data.symptom_runny_nose;
+    short_breath[cnt] = element.data.symptom_short_breath;
+    diarrhea[cnt] = element.data.symptom_diarrhea;
+    nausea[cnt] = element.data.symptom_nausea;
+    chills[cnt] = element.data.symptom_chills;
+    fatigue[cnt] = element.data.symptom_fatigue;
+    headache[cnt] = element.data.symptom_headache;
+    body_ache[cnt] = element.data.symptom_body_ache;
+    sore_throat[cnt] = element.data.symptom_sore_throat;
+    fever[cnt] = element.data.fever;
+    cnt++;
+  });
+
   var comments = loadCommentsValues(data);
-  
+
   var symptom_data = [];
   symptom_data[0] = dataControlSymptom(cough);
   symptom_data[1] = dataControlSymptom(wet_cought);
@@ -595,7 +609,7 @@ function dataControlSymptom(data) {
     if (data[i] === undefined || data[i] === "")
       data[i] = 0;
 
-    if ((data[i] >= 95 && data[i] < 99.5) || (data[i] >= 37 && data[i] < 37.5) )
+    if ((data[i] >= 95 && data[i] < 99.5) || (data[i] >= 37 && data[i] < 37.5))
       data[i] = 0;
     /* Managing of the entering data symptom of the fever */
     if ((data[i] >= 99.5 && data[i] < 100.4) || (data[i] >= 37.5 && data[i] < 38))
@@ -607,7 +621,7 @@ function dataControlSymptom(data) {
     if ((data[i] >= 102.2 && data[i] < 104) || (data[i] >= 39 && data[i] < 40))
       data[i] = 3;
 
-    if (data[i] >= 104 || data[i] >= 40 )
+    if (data[i] >= 104 || data[i] >= 40)
       data[i] = 4;
   }
 
@@ -646,17 +660,15 @@ function dayControl(data) {
   }
   return days_fixed;
 }
-
-function controlDay(data) {
-  days2 = timestamp.map(d => formatdateday(parseTime(d)))
-  month = timestamp.map(d => formatdatemonth(parseTime(d)))
+function controlDay(data, days2, month) {
+  // days2 = timestamp.map(d => formatdateday(parseTime(d)))
+  // month = timestamp.map(d => formatdatemonth(parseTime(d)))
   const days_fixed = [];
   const days2_fixed = [];
   const days3_fixed = [];
   const days4_fixed = [];
   var daybeug = [];
   var count = 0;
-
   for (var i = 0; i < data.length - 1; i++) {
     days4_fixed[i] = days2[i + 1] - days2[i] - 1;
 
@@ -668,7 +680,7 @@ function controlDay(data) {
     }
   }
   days4_fixed.push(0);
-
+  // console.log()
   for (let i = 0; i < days4_fixed.length; i++) {
     if (days4_fixed[i] < -1) {
       if (month[i] == 1 || month[i] == 3 || month[i] == 5 || month[i] == 7 || month[i] == 8 || month[i] == 10 || month[i] == 12) {
@@ -739,6 +751,7 @@ function controlDay(data) {
   days3_fixed.push(data[data.length - 1]);
   return days3_fixed;
 }
+
 
 function determinenamemonth(data) {
   var idmonths = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]

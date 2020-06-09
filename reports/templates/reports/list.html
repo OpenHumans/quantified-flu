@@ -21,15 +21,22 @@
   @media screen and (min-width: 200px) and (max-width: 799px) {
   #legend {
     width: 0%;
-  }
-  #symptom {
-    width: 25%;
-    font-size: xx-small;
-  }
-  #apple-legend {
-    width: 25%;
+    visibility: hidden;
   }
 
+  #legend-phone {
+    width: 100%; 
+    height:auto; 
+    visibility: visible;
+  }
+
+  #symptom, #apple-legend, #oura_sleep_summary-legend {
+    width: 25%;
+  }
+  #heatmap {
+    width: 71.1%;
+  }
+ 
   #progress-container {
     width: 71.1%; 
     height: 8px; 
@@ -42,25 +49,26 @@
     background-color: #4caf50;
   }
 
-  #legend-phone {
-    width: 100%; 
-    height: auto; 
-  }
-
 }
 
 @media screen and (min-width: 800px) {
+
   #legend {
     width: 18.9%;
     height: auto; 
     float:left;
+    visibility: visible;
   }
-  #symptom {
-    width: 10%;
-    font-size: x-small;
+  #heatmap {
+    width: 71.1%;
+  }
+  #legend-phone {
+    width: 0; 
+    height: 0;
+    visibility: hidden;
   }
 
-  #apple-legend {
+  #symptom, #apple-legend,#oura_sleep_summary-legend {
     width: 10%;
   }
 
@@ -135,7 +143,7 @@
 
 {% timezone timezone %}
 
-
+<meta name="viewport" content="initial-scale=1" />
 <div id="heatmap-report-symptom-container" style=" width: 100%; height: auto; display: inline-block;" >
   <h2>Symptom reports </h2>
   <div id="heatmap-title" style="width: 100%; height: auto; font-family: system-ui"></div>
@@ -144,25 +152,37 @@
     <div class="progress-bar" id="myBar"></div>
   </div>
 <div id="symptom" style=" height: auto; float:left;"> </div>
-<div id="heatmap" style="width: 71.1%; height: auto; float:left; overflow-x: scroll;"></div> 
+<div id="heatmap" style="height: auto; float:left; overflow-x: scroll;"></div> 
 <div id="legend"> </div>
 </div>
 
-<div id = "apple-watch-container">
+<div id = "apple-watch-container" style=" width: 100%; height: auto; display: inline-block;">
   <h2>Apple Health Resting Heartrate </h2>
 <div id="message-no-apple" style="width: 75%; height: auto; float:left;"></div>
 <div id ="button-no-apple" style="width: 25%; height: auto; float:left;"></div>
+
 <div id="apple-title" style="width: 100%; height: auto; font-family: system-ui"></div>
 <div id="apple-legend" style=" font-family: system-ui; height:auto; float:left;"> </div>
-<div id="heartrate-apple" style="width: 71.1%; height: auto;  float:left; overflow-x: scroll;"> </div>
+<div id="heartrate-apple" style="width: 71.1%; height: auto; float:left; overflow-x: scroll;"> </div>
+</div>
+
+<div id = "oura_sleep_summary-container" style=" width: 100%; height: auto; display: inline-block;">
+  <h2>Oura Temperature</h2> 
+<div id="message-no-oura_sleep_summary" style="width: 75%; height: auto; float:left;"></div>
+<div id ="button-no-oura_sleep_summary" style="width: 25%; height: auto; float:left;"></div>
+
+<div id="oura_sleep_summary-title" style="width: 100%; height: auto; font-family: system-ui"></div>
+<div id="oura_sleep_summary-legend" style=" font-family: system-ui; height:auto; float:left;"> </div>
+<div id="temperature-oura_sleep_summary" style="width: 71.1%; height: auto;  float:left; overflow-x: scroll;"> </div>
 </div>
 
 <script>
   console.log("Loading data...");
-  url = "{{ request.path }}.json";
+ 
+  //url = "{{ request.path }}.json";
   console.log("succed to loading public data");
 
- // url = "https://quantifiedflu.org/report/list/member/79502270.json";
+  url = "https://quantifiedflu.org/report/list/member/79502270.json";
 
  //url = "https://quantifiedflu.org/report/list/member/25102556.json"
  //url = "https://quantifiedflu.org/report/list/member/57494882.json"
