@@ -104,9 +104,9 @@ def apple_health_parser(apple_health_info, event_start, event_end=None):
             sdate = arrow.get(entry[1])
             if sdate >= period_start and sdate <= period_end:
                 returned_apple_data.append(
-                    {"timestamp": entry[1], "data": {"heart_rate": entry[0]},}
+                    {"timestamp": entry[1], "data": {"heart_rate": entry[0]}}
                 )
-
+    returned_apple_data.reverse()  # invert list as CSV is newest to oldest
     return returned_apple_data
 
 
@@ -203,7 +203,6 @@ def garmin_to_qf(json_data, min_date, max_date):
             continue
         rec = {"timestamp": dt.isoformat(), "data": {"heart_rate": int(value)}}
         res.append(rec)
-
     return res
 
 
