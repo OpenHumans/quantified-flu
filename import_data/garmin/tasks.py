@@ -15,6 +15,8 @@ from django.conf import settings
 
 MAX_FILE_BYTES = 256000000 # 256 MB
 MIN_GARMIN_YEAR = 2015 # that's when the smart watches with tracking capabilities came out
+DAYS_PER_BACKFILL = 10
+SLEEP_BETWEEN_BACKFILL_CALLS_SECS = 10
 
 
 @task
@@ -27,7 +29,7 @@ def handle_backfill(garmin_user_id):
         resource_owner_secret=garmin_member.access_token_secret)
 
     end_date =  datetime.utcnow()
-    start_date = end_date - timedelta(days=30)
+    start_date = end_date - timedelta(days=DAYS_PER_BACKFILL)
 
     while start_date.year >= MIN_GARMIN_YEAR:
 
@@ -44,9 +46,9 @@ def handle_backfill(garmin_user_id):
             raise Exception("Invalid backlfill query response: {},{}".format(res.content, res.status_code))
         else:
             print("Called async backfill for {}-{}".format(start_date, end_date))
-        time.sleep(2)
-        end_date = end_date - timedelta(days=30)
-        start_date = start_date - timedelta(days=30)
+        time.sleep(SLEEP_BETWEEN_BACKFILL_CALLS_SECS)
+        end_date = end_date - timedelta(days=DAYS_PER_BACKFILL)
+        start_date = start_date - timedelta(days=DAYS_PER_BACKFILL)
     return res
 
 
