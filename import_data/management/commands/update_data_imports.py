@@ -30,6 +30,6 @@ class Command(BaseCommand):
 
         gf_users = GoogleFitMember.objects.all()
         for g in gf_users:
-            update_googlefit_data.delay(g.id, g.user.user)
+            update_googlefit_data.delay(g.id, g.user.user.id)
             print("submitted googlefit update for {}".format(f.id))
             time.sleep(2)
