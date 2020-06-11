@@ -35,7 +35,7 @@ function display() {
         bottom: 0.14 * width,
         left: 0.03 * width
       };
-      
+
       gridSize = Math.floor(width / 10);
       createheatmap(url);
       break;
@@ -47,7 +47,7 @@ function display() {
         bottom: 0.14 * width,
         left: 0.03 * width
       };
-     
+
       gridSize = Math.floor(width / 12);
       createheatmap(url);
       break;
@@ -65,51 +65,35 @@ function display() {
   }
 }
 
-/* fonctions : */
-/*function createheatmapPhone(url) {
-  margin = {
-    top: 0.1 * width,
-    right: -0.01 * width,
-    bottom: 0.14 * width,
-    left: 0.03 * width
-  };
+function createheatmap(url) {
+  symptom_data = [];
+    days_axis = [];
+    days = [];
 
   $.get(url, function (data) {
+    
     getDatafromFile(data);
-    screen(0);
-    showDaysAxis(maingroup);
-    showTitleandSubtitle(titlegroup);
-    showHeatmap(maingroup)
-    showSymptomAxis(symptomgroup);
-    showLegendPhone(legendgroup);
-    tooltip();
-    document.getElementById("heatmap").onscroll = function () { progressScrollBar() };
-  })
-}
-*/
-function createheatmap(url) {
-  
-  $.get(url, function (data) {
-    getDatafromFile(data);
-    screen(1);
+    createSvgReport("heatmap", ((days.length * gridSize) + 1), (height + margin.top + margin.bottom), "symptom", "heatmap-title", "legend", "legend-phone");
     showMonthsAxis(maingroup, namesmonths, -6);
-    showDaysAxis(maingroup);
-    showTitleandSubtitle(titlegroup);
+    showDaysAxis(maingroup, days_axis);
+    showTitleandSubtitle(titlegroup, "Heatmap of Symptom reports");
     showHeatmap(maingroup)
     showSymptomAxis(symptomgroup);
     showLegend(legendgroup);
     showLegendPhone(legendgroupphone);
-    tooltip();
-    document.getElementById("heatmap").onscroll = function () {
+    tooltip_heatmap();
+    
+    (document.getElementById("heatmap").onscroll) = function () {
       progressScrollBar();
       var winScroll = document.getElementById("heatmap").scrollLeft;
-          document.getElementById("temperature-oura_sleep_summary").scroll(winScroll + (comparedate * gridSize), 0);
-          document.getElementById("heartrate-apple").scroll(winScroll + (comparedateApple * gridSize), 0);
-      };
+        document.getElementById("heartrate-apple").scroll(winScroll + (comparedateApple * gridSize), 0);
+        document.getElementById("heart-rate-fitbit").scroll(winScroll + (comparedate_fitbit * gridSize), 0);
+        document.getElementById("temperature-oura_sleep_summary").scroll(winScroll + (comparedate * gridSize), 0);
+    };
   })
 }
 
-function tooltip() {
+function tooltip_heatmap() {
   const tooltip = d3
     .select("body")
     .append("div")
@@ -118,33 +102,40 @@ function tooltip() {
     .style("visibility", "hidden");
 
   d3.selectAll("#rect-heatmap")
-    
-  .on("mouseover", function (d) {
-    d3.select(this)
-    .style("fill", "yellow");
-  })
 
-  .on("click", function (d) {
+    .on("mouseover", function (d) {
+      /*d3.select(this)
+      .style("fill", "yellow");
+    })
+*/
+   // .on("click", function (d) {
       var coordXY = this.getAttribute('class').split('-');
 
       d3.select(this)
         .attr('stroke-width', 2)
+        .attr("width", gridSize - 1)
+        .attr("height", gridSize - 1)
+        .style("fill", "#EE79FE")
         .attr("stroke", "black");
+      
       tooltip
         .style("visibility", "visible")
-        .text(`${showAppendTitle(d, coordXY[0], coordXY[1])}`); //+ finaldataAppleWatch[(coordXY[0] + 20)]}`);
+        .text(`${showAppendTitle(d, coordXY[0], coordXY[1])}`);
     })
 
     .on("mousemove", function () {
       tooltip
-        .style("top", d3.event.pageY + 10 + "px")
-        .style("left", d3.event.pageX - (gridSize * 3.5) + "px");
+        .style("top", d3.event.pageY)
+        .style("left", d3.event.pageX)
+        .style("margin-left", - (document.getElementsByClassName('svg-tooltip').width));
     })
 
     .on("mouseout", function () {
       d3.select(this).attr("stroke", "#e2e2e2")
         .attr('stroke-width', '1')
-        .style("fill", function (d) {return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
+        .attr("width", gridSize)
+        .attr("height", gridSize)
+        .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
 
       tooltip.style("visibility", "hidden");;
     });
@@ -153,53 +144,44 @@ function tooltip() {
 function progressScrollBar() {
   var winScroll = document.getElementById("heatmap").scrollLeft;
   var height = document.getElementById("heatmap").scrollWidth - document.getElementById("heatmap").clientWidth;
-  var scrolled = (winScroll / height) * 70.1;
+  var scrolled = (winScroll / height) * 71.1;
   document.getElementById("myBar").style.width = scrolled + "%";
 }
 
-function screen(sizescreen) {
-  maingroup = d3.select('#heatmap')
+function createSvgReport(heatmapDiv, heatmpaSize, SVGheight, symptomDiv, titleDiv, legendDiv, legendPhoneDiv) {
+  maingroup = d3.select('#' + heatmapDiv)
     .append("svg")
     .attr("class", "svg")
-    .attr("width", (this.days.length + 1) * gridSize)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("width", heatmpaSize)
+    .attr("height", SVGheight)
     .append("g")
     .attr("transform", "translate(" + 0 + "," + margin.top + ")");
 
-  symptomgroup = d3.select('#symptom')
+  symptomgroup = d3.select('#' + symptomDiv)
     .append("svg")
     .attr("class", "svg")
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("height", SVGheight)
     .attr("width", 100 + "%")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
-    var divlegend = "legend";
-    var heigtlegend = height + margin.top + margin.bottom;
-    var widthlegend = 100 + "%";
-  
-    var divlegend2 = "legend-phone";
-    heigtlegend2 = gridSize * 3;
-  
-    legendgroup = d3.select('#' + divlegend)
+  legendgroup = d3.select('#' + legendDiv)
     .append("svg")
     .attr("class", "svg")
-    .attr("width", widthlegend)
-    .attr("height", heigtlegend)
+    .attr("width", 100 + "%")
+    .attr("height", SVGheight)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    legendgroupphone = d3.select('#' + divlegend2)
+  legendgroupphone = d3.select('#' + legendPhoneDiv)
     .append("svg")
     .attr("class", "svg")
-    .attr("width", widthlegend)
-    .attr("height", heigtlegend2)
+    .attr("width", 100 + "%")
+    .attr("height", gridSize * 3.5)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
-  titlegroup = d3.select('#heatmap-title')
+  titlegroup = d3.select('#' +  titleDiv)
     .append("svg")
     .attr("class", "svg")
     .attr("width", 100 + "%")
@@ -211,10 +193,10 @@ function getDatafromFile(data) {
   this.file_days = timestamp.map(d => formatdate(parseTime(d)));
   this.days2 = timestamp.map(d => formatdateday(parseTime(d)))
   this.month = timestamp.map(d => formatdatemonth(parseTime(d)))
-  this.days = controlDay(file_days, days2, month);
+  days = controlDay(file_days, days2, month);
 
-  this.days_axis = showingDayOnTheMap(days);
-  this.symptom_data = loadDataSymptom(data);
+  days_axis = showingDayOnTheMap(days);
+  symptom_data = loadDataSymptom(data);
   this.comments = loadComments(data, days);
   this.height = determineHeigth();
   this.innerwidth = determineInnerwidth();
@@ -248,11 +230,11 @@ function showHeatmap(maingroup) {
     .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
 }
 
-function scaleXaxis() {
+/*function scaleXaxis() {
   return d3.scaleBand()
     .domain(days_axis)
     .range([margin.left, width - margin.right])
-}
+}*/
 
 function yScale() {
   return d3.scaleBand()
@@ -265,7 +247,7 @@ function determineInnerwidth() {
 }
 
 function determineHeigth() {
-  return gridSize * symptom_data.length;
+  return gridSize * $names.length;
 }
 
 function scaleColor() {
@@ -274,7 +256,7 @@ function scaleColor() {
     .range(["#fff", "#8a0886", "#cc2efa", "#e2a9f3", "#f5a9f2"]);
 }
 
-function showDaysAxis(maingroup) {
+function showDaysAxis(maingroup, days_axis) {
 
   var dayLabel = maingroup.selectAll(".daysLabel")
     .data(days_axis)
@@ -316,7 +298,7 @@ function showMonthsAxis(maingroup, namesmonths, y) {
     .attr("font-size", 1 + "rem");
 }
 
-function showTitleandSubtitle(maingroup) {
+function showTitleandSubtitle(maingroup, title) {
   var title = maingroup.append("text")
     .attr("x", 50 + "%")
     .attr("y", 50 + "%")
@@ -324,7 +306,7 @@ function showTitleandSubtitle(maingroup) {
     .style("text-anchor", "middle")
     .style("font-weight", "300")
     .attr("class", "mg-chart-title")
-    .text("Heatmap of Symptom reports");
+    .text(title);
 
   var subtitle = maingroup.append("text")
     .attr("x", 50 + "%")
@@ -415,6 +397,7 @@ function showSymptomAxis(maingroup) {
 }
 
 function showLegendPhone(maingroup) {
+
   var countPoint = [-1, 0, 1, 2, 3, 4];
   var commentScale = ["No report", "No symptom", "Low", "Middle", "Strong", "Unbearable"];
 
@@ -429,7 +412,7 @@ function showLegendPhone(maingroup) {
     .enter()
     .append("rect")
     .attr("x", function (d, i) { return (margin.left + (i * 14) + "%"); })
-    .attr("y", gridSize/2)
+    .attr("y", gridSize / 2)
     .attr("height", gridSize / 2)
     .attr("width", gridSize / 2)
     .attr("stroke", "#e2e2e2")
@@ -445,7 +428,6 @@ function showLegendPhone(maingroup) {
     .attr("font-size", 0.5 + "rem")
     .style("font-weight", "300");
 }
-
 
 function showLegend(maingroup) {
   var countPoint = [-1, 0, 1, 2, 3, 4];
@@ -484,21 +466,36 @@ function showLegend(maingroup) {
 }
 
 function showAppendTitle(data, i, y) {
+  var commentScale = ["No report", "No symptom", "Low symptom", "Middle symptom", "Strong symptom", "Unbearable symptom"];
   if (data == -2)
     return "Reports : no comments reported \n Date : " + formatdateshow(days[i], i);
+  
   if (data == -1)
-    return "Reports : no report \n Date : " + formatdateshow(days[i], i);
-  if (data == 0)
-    return "Reports : no symptom \n Date : " + formatdateshow(days[i], i);
-  if (data == 1)
-    return "Reports : Low symptom \n Date : " + formatdateshow(days[i], i) + " \n Symptom : " + $names[y] + " \n Values: " + data;
-  if (data == 2)
-    return "Reports : Middle symptom \n Date : " + formatdateshow(days[i], i) + " \n Symptom : " + $names[y] + " \n Values: " + data;
-  if (data == 3)
-    return "Reports : Strong symptom\n Date : " + formatdateshow(days[i], i) + " \n Symptom : " + $names[y] + " \n Values: " + data;
-  if (data == 4)
-    return "Reports : Unbearable symptom \n Date : " + formatdateshow(days[i], i) + " \n Symptom : " + $names[y] + " \n Values: " + data;
-  if (data == 5) {
+    return "Reports : " + commentScale[data+1] 
+    + " \n Date : " + formatdateshow(days[i], i);
+  
+    if (data == 0 )
+    return "Reports : " + commentScale[data+1] 
+    + " \n Date : " + formatdateshow(days[i], i);
+  
+  if (data == 1 || data == 2 || data == 3 || data == 4 ) {
+  var msg = "Reports :  " + commentScale[data+1] 
+  + " \n Date : " + formatdateshow(days[i], i) 
+  + " \n Symptom : " + $names[y] 
+  + " \n Values: " + data + "/4"; 
+
+  if (finaldataAppleWatch[i - (-comparedateApple)] != undefined && finaldataAppleWatch[i- (-comparedateApple)] != '-' && finaldataAppleWatch[i- (-comparedateApple)] != 'NO DATA')
+  msg += " \n Heart Rate (Apple Watch) : " + finaldataAppleWatch[i- (-comparedateApple)] + " bmp";
+
+  if (finaldata_fitbit[i - (-comparedate_fitbit)]  != undefined && finaldata_fitbit[i - (-comparedate_fitbit)]  != '-' && finaldata_fitbit[i - (-comparedate_fitbit)]  != 'NO DATA')
+  msg += " \n Heart Rate (Fitbit) : " + finaldata_fitbit[i - (-comparedate_fitbit)] + " bmp";
+  
+  if (finaldataOuraTemperature[i - (-comparedate)] != undefined && finaldataOuraTemperature[i - (-comparedate)] != '-' && finaldataOuraTemperature[i - (-comparedate)]  != 'NO DATA')
+  msg += " \n Body Temp. (Oura) : " + finaldataOuraTemperature [i - (-comparedate)];
+
+    return msg;
+  }
+    if (data == 5) {
     return "Comments : " + comments[i] + " \n Date : " + formatdateshow(days[i], i);
   }
 
@@ -601,7 +598,6 @@ function loadDataSymptom(data) {
   return symptom_data;
 }
 
-
 function dataControlSymptom(data) {
   dayscontrol = dayControl(file_days);
 
@@ -660,6 +656,7 @@ function dayControl(data) {
   }
   return days_fixed;
 }
+
 function controlDay(data, days2, month) {
   // days2 = timestamp.map(d => formatdateday(parseTime(d)))
   // month = timestamp.map(d => formatdatemonth(parseTime(d)))
@@ -752,7 +749,6 @@ function controlDay(data, days2, month) {
   return days3_fixed;
 }
 
-
 function determinenamemonth(data) {
   var idmonths = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
   var namemonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
@@ -808,3 +804,26 @@ parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S.%f+00:00");
 formatdate = d3.timeFormat("%d/%m");
 formatdateday = d3.timeFormat("%d");
 formatdatemonth = d3.timeFormat("%m");
+
+/* fonctions : */
+/*function createheatmapPhone(url) {
+  margin = {
+    top: 0.1 * width,
+    right: -0.01 * width,
+    bottom: 0.14 * width,
+    left: 0.03 * width
+  };
+
+  $.get(url, function (data) {
+    getDatafromFile(data);
+    screen(0);
+    showDaysAxis(maingroup);
+    showTitleandSubtitle(titlegroup);
+    showHeatmap(maingroup)
+    showSymptomAxis(symptomgroup);
+    showLegendPhone(legendgroup);
+    tooltip();
+    document.getElementById("heatmap").onscroll = function () { progressScrollBar() };
+  })
+}
+*/

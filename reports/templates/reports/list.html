@@ -2,10 +2,10 @@
   .svg-tooltip {
     font-family: "system-ui", "BlinkMacSystemFont", "Segoe UI", Helvetica, Arial, sans-serif, "Apple   Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     background: rgba(69, 77, 93, .9);
-    border-radius: .1rem;
+    border-radius: .5rem;
     color: #fff;
     display: block;
-    font-size: 8px;
+    font-size: 1em;
     font-weight :  300;
     padding: .2rem .4rem;
     position: absolute;
@@ -14,9 +14,9 @@
     display:inline;
     justify-content: flex-start;
     z-index: 300;
-    max-width: 25%;
+    max-width: 50%;
     visibility: hidden;
-  }
+}
 
   @media screen and (min-width: 200px) and (max-width: 799px) {
   #legend {
@@ -30,7 +30,7 @@
     visibility: visible;
   }
 
-  #symptom, #apple-legend, #oura_sleep_summary-legend {
+  #symptom, #apple-legend, #oura_sleep_summary-legend,#fitbit-legend {
     width: 25%;
   }
   #heatmap {
@@ -39,14 +39,15 @@
  
   #progress-container {
     width: 71.1%; 
-    height: 8px; 
+    height: .125rem;
     margin-left: 25%;
   }
   #myBar {
     width: 0%; 
-    height: 8px; 
+    height: .125rem;
     margin-left: 25%;
-    background-color: #4caf50;
+    background-color: pink;
+    border-radius: .5rem;
   }
 
 }
@@ -68,20 +69,21 @@
     visibility: hidden;
   }
 
-  #symptom, #apple-legend,#oura_sleep_summary-legend {
+  #symptom, #apple-legend,#oura_sleep_summary-legend, #fitbit-legend {
     width: 10%;
   }
 
   #progress-container {
     width: 71.1%; 
-    height: 8px; 
+    height: .125rem;
     margin-left: 10%;
   }
   #myBar {
     width: 0%; 
-    height: 8px; 
+    height: .125rem;
     margin-left: 10%;
-    background-color: #4caf50;
+    background-color: pink;
+    border-radius: .5rem;
   }
 }
 </style>
@@ -146,7 +148,7 @@
 <meta name="viewport" content="initial-scale=1" />
 <div id="heatmap-report-symptom-container" style=" width: 100%; height: auto; display: inline-block;" >
   <h2>Symptom reports </h2>
-  <div id="heatmap-title" style="width: 100%; height: auto; font-family: system-ui"></div>
+  <div id="heatmap-title" style="width: 100%; height: auto"></div>
   <div id="legend-phone"> </div>
   <div class="progress-container">
     <div class="progress-bar" id="myBar"></div>
@@ -161,8 +163,8 @@
 <div id="message-no-apple" style="width: 75%; height: auto; float:left;"></div>
 <div id ="button-no-apple" style="width: 25%; height: auto; float:left;"></div>
 
-<div id="apple-title" style="width: 100%; height: auto; font-family: system-ui"></div>
-<div id="apple-legend" style=" font-family: system-ui; height:auto; float:left;"> </div>
+<div id="apple-title" style="width: 100%; height: auto;"></div>
+<div id="apple-legend" style="height:auto; float:left;"> </div>
 <div id="heartrate-apple" style="width: 71.1%; height: auto; float:left; overflow-x: scroll;"> </div>
 </div>
 
@@ -171,18 +173,34 @@
 <div id="message-no-oura_sleep_summary" style="width: 75%; height: auto; float:left;"></div>
 <div id ="button-no-oura_sleep_summary" style="width: 25%; height: auto; float:left;"></div>
 
-<div id="oura_sleep_summary-title" style="width: 100%; height: auto; font-family: system-ui"></div>
-<div id="oura_sleep_summary-legend" style=" font-family: system-ui; height:auto; float:left;"> </div>
+<div id="oura_sleep_summary-title" style="width: 100%; height: auto;"></div>
+<div id="oura_sleep_summary-legend" style="height:auto; float:left;"> </div>
 <div id="temperature-oura_sleep_summary" style="width: 71.1%; height: auto;  float:left; overflow-x: scroll;"> </div>
+</div>
+
+<div id = "fitbit-container" style=" width: 100%; height: auto; display: inline-block;">
+  <h2>Fitbit</h2> 
+<div id="message-no-fitbit" style="width: 75%; height: auto; float:left;"></div>
+<div id ="button-no-fitbit" style="width: 25%; height: auto; float:left;"></div>
+
+<div id="fitbit-title" style="width: 100%; height: auto;"></div>
+<div id="fitbit-legend" style="height:auto; float:left;"> </div>
+<div id="heart-rate-fitbit" style="width: 71.1%; height: auto;  float:left; overflow-x: scroll;"> </div>
 </div>
 
 <script>
   console.log("Loading data...");
  
-  //url = "{{ request.path }}.json";
+  url = "{{ request.path }}.json";
   console.log("succed to loading public data");
 
-  url = "https://quantifiedflu.org/report/list/member/79502270.json";
+  // Fitbit
+  //url =  "https://quantifiedflu.org/report/list/member/49855651.json"
+
+  /*
+Apple Watch and Oura temperature
+*/  
+//url = "https://quantifiedflu.org/report/list/member/79502270.json";
 
  //url = "https://quantifiedflu.org/report/list/member/25102556.json"
  //url = "https://quantifiedflu.org/report/list/member/57494882.json"
