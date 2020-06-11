@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from import_data.models import OuraMember, FitbitMember, GoogleFitMember
+from import_data.garmin.tasks import get_django_user_id_from_garmin_id
 from retrospective.tasks import update_fitbit_data, update_oura_data, update_googlefit_data
 import time
 import requests
@@ -26,6 +27,7 @@ class Command(BaseCommand):
 
         gf_users = GoogleFitMember.objects.all()
         for g in gf_users:
-            update_googlefit_data.delay(g.id)
+            django_user_id = get_django_user_id_from_garmin_id(g.id)
+            update_googlefit_data.delay(g.id, django_user_id)
             print("submitted googlefit update for {}".format(f.id))
             time.sleep(2)
