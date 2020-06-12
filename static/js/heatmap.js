@@ -1,5 +1,10 @@
 
 $names = ["Cough", "Wet cough", "Anosmia", "Runny nose", "Sore throat", "Short breath", "Diarrhea", "Nausea", "Chills", "Fatigue", "Headache", "Body ache", "Fever", "", "Comments"];
+symptom_data = [];
+days_axis = [];
+days = [];
+completedDays = [];
+
 display();
 
 function display() {
@@ -64,31 +69,49 @@ function display() {
       break;
   }
 }
+/* Variable */
 
 function createheatmap(url) {
-  symptom_data = [];
-    days_axis = [];
-    days = [];
-
   $.get(url, function (data) {
+    height = determineHeigth();
+    innerwidth = determineInnerwidth();  
     
-    getDatafromFile(data);
-    createSvgReport("heatmap", ((days.length * gridSize) + 1), (height + margin.top + margin.bottom), "symptom", "heatmap-title", "legend", "legend-phone");
+    timestamp = data.symptom_report.map(d => d.timestamp);
+    file_days = timestamp.map(d => formatdate(parseTime(d)));
+    reportday = timestamp.map(d => formatdateday(parseTime(d)))
+    month = timestamp.map(d => formatdatemonth(parseTime(d)))
+    days = controlDay(file_days, reportday, month);
+    namesmonths = determinenamemonth(days);
+    
+    moreday = getNoReportValues(data);
+    moredayDataSource = getNoReportDataSource(data);
+  
+    completedDays = addDaynoReport(moreday, moredayDataSource, data);
+    
+   // console.log( moredayDataSource);
+
+    symptom_data = loadDataSymptom(data);
+    days_axis = showingDayOnTheMap(completedDays);
+    comments = loadComments(data, days);
+    
+    createSvgReport("heatmap", (((completedDays.length) * gridSize) + 1), (height + margin.top + margin.bottom), "symptom", "heatmap-title", "legend", "legend-phone");
     showMonthsAxis(maingroup, namesmonths, -6);
     showDaysAxis(maingroup, days_axis);
     showTitleandSubtitle(titlegroup, "Heatmap of Symptom reports");
-    showHeatmap(maingroup)
+    showHeatmap(maingroup, symptom_data)
     showSymptomAxis(symptomgroup);
     showLegend(legendgroup);
     showLegendPhone(legendgroupphone);
     tooltip_heatmap();
     
-    (document.getElementById("heatmap").onscroll) = function () {
+    document.getElementById("heatmap").scroll(((moreday) * gridSize), 0);
+    
+    document.getElementById("heatmap").onscroll = function () {
       progressScrollBar();
       var winScroll = document.getElementById("heatmap").scrollLeft;
-        document.getElementById("heartrate-apple").scroll(winScroll + (comparedateApple * gridSize), 0);
-        document.getElementById("heart-rate-fitbit").scroll(winScroll + (comparedate_fitbit * gridSize), 0);
-        document.getElementById("temperature-oura_sleep_summary").scroll(winScroll + (comparedate * gridSize), 0);
+      document.getElementById("heartrate-apple").scroll(winScroll, 0);
+      document.getElementById("heart-rate-fitbit").scroll(winScroll, 0);
+      document.getElementById("temperature-oura_sleep_summary").scroll(winScroll, 0);
     };
   })
 }
@@ -108,7 +131,7 @@ function tooltip_heatmap() {
       .style("fill", "yellow");
     })
 */
-   // .on("click", function (d) {
+      // .on("click", function (d) {
       var coordXY = this.getAttribute('class').split('-');
 
       d3.select(this)
@@ -117,7 +140,7 @@ function tooltip_heatmap() {
         .attr("height", gridSize - 1)
         .style("fill", "#EE79FE")
         .attr("stroke", "black");
-      
+
       tooltip
         .style("visibility", "visible")
         .text(`${showAppendTitle(d, coordXY[0], coordXY[1])}`);
@@ -181,7 +204,7 @@ function createSvgReport(heatmapDiv, heatmpaSize, SVGheight, symptomDiv, titleDi
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  titlegroup = d3.select('#' +  titleDiv)
+  titlegroup = d3.select('#' + titleDiv)
     .append("svg")
     .attr("class", "svg")
     .attr("width", 100 + "%")
@@ -191,19 +214,17 @@ function createSvgReport(heatmapDiv, heatmpaSize, SVGheight, symptomDiv, titleDi
 function getDatafromFile(data) {
   this.timestamp = data.symptom_report.map(d => d.timestamp);
   this.file_days = timestamp.map(d => formatdate(parseTime(d)));
-  this.days2 = timestamp.map(d => formatdateday(parseTime(d)))
+  this.reportday = timestamp.map(d => formatdateday(parseTime(d)))
   this.month = timestamp.map(d => formatdatemonth(parseTime(d)))
-  days = controlDay(file_days, days2, month);
-
-  days_axis = showingDayOnTheMap(days);
-  symptom_data = loadDataSymptom(data);
+  days = controlDay(file_days, reportday, month);
+ 
   this.comments = loadComments(data, days);
   this.height = determineHeigth();
   this.innerwidth = determineInnerwidth();
   this.namesmonths = determinenamemonth(days);
 }
 
-function showHeatmap(maingroup) {
+function showHeatmap(maingroup, symptom_data) {
   colorScale = scaleColor();
   y = yScale();
   let cnt = -1;
@@ -229,12 +250,6 @@ function showHeatmap(maingroup) {
     .attr("stroke", "#e2e2e2")
     .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
 }
-
-/*function scaleXaxis() {
-  return d3.scaleBand()
-    .domain(days_axis)
-    .range([margin.left, width - margin.right])
-}*/
 
 function yScale() {
   return d3.scaleBand()
@@ -468,35 +483,35 @@ function showLegend(maingroup) {
 function showAppendTitle(data, i, y) {
   var commentScale = ["No report", "No symptom", "Low symptom", "Middle symptom", "Strong symptom", "Unbearable symptom"];
   if (data == -2)
-    return "Reports : no comments reported \n Date : " + formatdateshow(days[i], i);
-  
+    return "Reports : no comments reported \n Date : " + formatdateshow(completedDays[i], i);
+
   if (data == -1)
-    return "Reports : " + commentScale[data+1] 
-    + " \n Date : " + formatdateshow(days[i], i);
-  
-    if (data == 0 )
-    return "Reports : " + commentScale[data+1] 
-    + " \n Date : " + formatdateshow(days[i], i);
-  
-  if (data == 1 || data == 2 || data == 3 || data == 4 ) {
-  var msg = "Reports :  " + commentScale[data+1] 
-  + " \n Date : " + formatdateshow(days[i], i) 
-  + " \n Symptom : " + $names[y] 
-  + " \n Values: " + data + "/4"; 
+    return "Reports : " + commentScale[data + 1]
+      + " \n Date : " + formatdateshow(completedDays[i], i);
 
-  if (finaldataAppleWatch[i - (-comparedateApple)] != undefined && finaldataAppleWatch[i- (-comparedateApple)] != '-' && finaldataAppleWatch[i- (-comparedateApple)] != 'NO DATA')
-  msg += " \n Heart Rate (Apple Watch) : " + finaldataAppleWatch[i- (-comparedateApple)] + " bmp";
+  if (data == 0)
+    return "Reports : " + commentScale[data + 1]
+      + " \n Date : " + formatdateshow(completedDays[i], i);
 
-  if (finaldata_fitbit[i - (-comparedate_fitbit)]  != undefined && finaldata_fitbit[i - (-comparedate_fitbit)]  != '-' && finaldata_fitbit[i - (-comparedate_fitbit)]  != 'NO DATA')
-  msg += " \n Heart Rate (Fitbit) : " + finaldata_fitbit[i - (-comparedate_fitbit)] + " bmp";
-  
-  if (finaldataOuraTemperature[i - (-comparedate)] != undefined && finaldataOuraTemperature[i - (-comparedate)] != '-' && finaldataOuraTemperature[i - (-comparedate)]  != 'NO DATA')
-  msg += " \n Body Temp. (Oura) : " + finaldataOuraTemperature [i - (-comparedate)];
+  if (data == 1 || data == 2 || data == 3 || data == 4) {
+    var msg = "Reports :  " + commentScale[data + 1]
+      + " \n Date : " + formatdateshow(completedDays[i], i)
+      + " \n Symptom : " + $names[y]
+      + " \n Values: " + data + "/4";
+
+    if (finaldataAppleWatch[i - (-comparedateApple)] != undefined && finaldataAppleWatch[i - (-comparedateApple)] != '-' && finaldataAppleWatch[i - (-comparedateApple)] != 'NO DATA')
+      msg += " \n Heart Rate (Apple Watch) : " + finaldataAppleWatch[i - (-comparedateApple)] + " bmp";
+
+    if (finaldata_fitbit[i - (-comparedate_fitbit)] != undefined && finaldata_fitbit[i - (-comparedate_fitbit)] != '-' && finaldata_fitbit[i - (-comparedate_fitbit)] != 'NO DATA')
+      msg += " \n Heart Rate (Fitbit) : " + finaldata_fitbit[i - (-comparedate_fitbit)] + " bmp";
+
+    if (finaldataOuraTemperature[i - (-comparedate)] != undefined && finaldataOuraTemperature[i - (-comparedate)] != '-' && finaldataOuraTemperature[i - (-comparedate)] != 'NO DATA')
+      msg += " \n Body Temp. (Oura) : " + finaldataOuraTemperature[i - (-comparedate)];
 
     return msg;
   }
-    if (data == 5) {
-    return "Comments : " + comments[i] + " \n Date : " + formatdateshow(days[i], i);
+  if (data == 5) {
+    return "Comments : " + comments[i] + " \n Date : " + formatdateshow(completedDays[i], i);
   }
 
 }
@@ -521,9 +536,12 @@ function loadCommentsValues(data) {
       cnt--;
     }
   }
+  for (var i = 0; i < moreday; i++) {
+    values[i] = -1;
+  }
 
-  for (var i = 0; i < days.length; i++) {
-    if (data2[i] == "")
+  for (var i = moreday; i < days.length + moreday; i++) {
+   if (data2[i-moreday] == "")
       values[i] = -2;
     else
       values[i] = 5;
@@ -548,12 +566,14 @@ function loadComments(data, days) {
       cnt--;
     }
   }
-
   const comments = [];
-  for (var i = 0; i < days.length; i++) {
-    comments[i] = data2[i];
+  for (var i = 0; i < moreday; i++) {
+      comments[i] = "";
   }
-  return data2;
+  for (var i = moreday; i < data2.length + moreday; i++) {
+    comments[i] = data2[i-moreday];
+}
+  return comments;
 }
 
 function loadDataSymptom(data) {
@@ -635,14 +655,21 @@ function dataControlSymptom(data) {
       cnt--;
     }
   }
-  return data2;
+  newdata = []; 
+  for (let x = 0; x < (data2.length + moreday); x++) {
+    if (x < moreday)
+      newdata[x] = (-1);
+    else 
+    newdata[x] = data2[x - moreday];
+  }
+  return newdata;
 }
 
 function dayControl(data) {
   var days_fixed = [];
   var days4_fixed = [];
   for (var i = 0; i < data.length - 1; i++) {
-    days4_fixed[i] = days2[i + 1] - days2[i] - 1;
+    days4_fixed[i] = reportday[i + 1] - reportday[i] - 1;
   }
   days4_fixed.push(0);
   for (let i = 0; i < days4_fixed.length; i++) {
@@ -799,6 +826,103 @@ function chooseDisplay() {
   }
 }
 
+function getNoReportValues(data) {
+  firstDay_report = formatdate(parseTime(data.symptom_report[0].timestamp));
+  
+  if (data.fitbit_summary != undefined)
+    firstDay_fitbit = formatdate(parseTimeTemp(data.fitbit_summary[0].timestamp));
+  else 
+    firstDay_fitbit = firstDay_report;
+  if (data.apple_health_summary != undefined)
+    firstDay_apple = formatdate(parseTime(data.apple_health_summary[0].timestamp));
+  else 
+    firstDay_apple = firstDay_report;
+  if (data.oura_sleep_summary != undefined)
+    firstDay_oura = formatdate(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
+  else 
+    firstDay_oura = firstDay_report;
+  
+    test = 0;
+  test2 = "";
+
+  if ((firstDay_report.split('/')[0] - firstDay_apple.split('/')[0]) > test && firstDay_apple != undefined) {
+    test = (firstDay_report.split('/')[0] - firstDay_apple.split('/')[0]) ;
+    test2 = '/apple';
+  }
+  if (firstDay_report.split('/')[0] - firstDay_oura.split('/')[0] > test && firstDay_oura != undefined) {
+    test = firstDay_report.split('/')[0] - firstDay_oura.split('/')[0];
+    test2 = '/oura';
+  }
+  if ((firstDay_report.split('/')[0] - firstDay_fitbit.split('/')[0]) > test && firstDay_fitbit != undefined) {
+    test = (firstDay_report.split('/')[0] - firstDay_fitbit.split('/')[0]) ;
+    test2 = '/fitbit';
+  }
+  return (test);
+}
+
+function getNoReportDataSource(data) {
+  firstDay_report = formatdate(parseTime(data.symptom_report[0].timestamp));
+
+  if (data.fitbit_summary != undefined)
+    firstDay_fitbit = formatdate(parseTimeTemp(data.fitbit_summary[0].timestamp));
+  else 
+    firstDay_fitbit = firstDay_report;
+  if (data.apple_health_summary != undefined)
+    firstDay_apple = formatdate(parseTime(data.apple_health_summary[0].timestamp));
+  else 
+    firstDay_apple = firstDay_report;
+  if (data.oura_sleep_summary != undefined)
+    firstDay_oura = formatdate(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
+  else 
+    firstDay_oura = firstDay_report;
+
+  test = 0; 
+  test2 = "n";
+
+  if ((firstDay_report.split('/')[0] - firstDay_apple.split('/')[0]) > test) {
+    test = (firstDay_report.split('/')[0] - firstDay_apple.split('/')[0]) ;
+    test2 = 'apple';
+  }
+  if (firstDay_report.split('/')[0] - firstDay_oura.split('/')[0] > test) {
+    test = firstDay_report.split('/')[0] - firstDay_oura.split('/')[0];
+    test2 = 'oura';
+  }
+  if ((firstDay_report.split('/')[0] - firstDay_fitbit.split('/')[0]) > test) {
+    test = (firstDay_report.split('/')[0] - firstDay_fitbit.split('/')[0]) ;
+    test2 = 'fitbit';
+  }
+  return test2;
+}
+
+function addDaynoReport(numberdays, datasource, data) {
+  var daystoadd = []; 
+ 
+  if (datasource == 'oura' && data.oura_sleep_summary != undefined) {
+    for (let i = 0; i < numberdays; i ++) {
+      daystoadd[i] = formatdate(parseTimeTemp(data.oura_sleep_summary[i].timestamp));
+   }
+  } 
+ else if (datasource == 'fitbit' && data.fitbit_summary != undefined) {
+      for (let i = 0; i < numberdays; i ++) {
+        daystoadd[i] = formatdate(parseTimeTemp(data.fitbit_summary[i].timestamp));
+      }
+  } 
+  
+ else if (datasource == 'apple' && data.apple_health_summary != undefined) {
+      for (let i = 0; i < numberdays; i ++) {
+        daystoadd[i] = formatdate(parseTime(data.apple_health_summary[i].timestamp));
+      }
+  } else numberdays = 0; 
+
+  for (let i = numberdays; i < days.length + numberdays; i++) {
+    daystoadd[i] = days[i-numberdays];
+  }
+
+  return daystoadd;
+}
+function getDays(){
+  return this.days;
+}
 /* Format */
 parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S.%f+00:00");
 formatdate = d3.timeFormat("%d/%m");

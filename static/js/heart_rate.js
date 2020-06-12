@@ -6,16 +6,34 @@ comparedate_fitbit = 0;
 finaldataAppleWatch = [];
 finaldataOuraTemperature = [];
 finaldata_fitbit = [];
+comparateDayReportWearable = [];
+symptom_data_heatmap = [];
 
+function getdataFromSymptomReport(data) {
+    heatmapdata = [], heatmapdate = [], heatmapday = [], heatmapmonth = [], heatmapyear = [];
+    this.file = data.symptom_report.map(d => d);
+    this.file.forEach(element => {
+        //heatmapdata[cnt] = element.data.heart_rate;
+        heatmapdate[cnt] = formatdate(parseTime(element.timestamp));
+        heatmapday[cnt] = formatdateday(parseTime(element.timestamp));
+        heatmapmonth[cnt] = formatdatemonth(parseTime(element.timestamp));
+        heatmapyear[cnt] = formatyear(parseTime(element.timestamp));
+        cnt++;
+    });
+
+    comparateDayReportWearable = controlDay(heatmapdate, heatmapday, heatmapmonth);
+    symptom_data_heatmap = loadDataSymptom(data);
+}
 function getWearableData() {
     $.getJSON(url, function (data) {
-        timestamp3 = data.symptom_report.map(d => d.timestamp);
-        file_days3 =  data.symptom_report.map(d => formatdate(parseTime(d.timestamp)));
-        days23 = timestamp3.map(d => formatdateday(parseTime(d)))
-        month3 = timestamp3.map(d => formatdatemonth(parseTime(d)))
-        days3 = controlDay(file_days3, days23, month3);
-        days_axis3 = showingDayOnTheMap(days3);
-
+        //timestamp3 = data.symptom_report.map(d => d.timestamp);
+        /* file_days3 =  data.symptom_report.map(d => formatdate(parseTime(d.timestamp)));
+         days23 = data.symptom_report.map(d => formatdateday(parseTime(d.timestamp)))
+         month3 = data.symptom_report.map(d => formatdatemonth(parseTime(d.timestamp)))
+         days3 = controlDay(file_days3, days23, month3);
+       */
+       
+       
         if (data.oura_sleep_summary == undefined) {
             showbuttonNoConnection("button-no-oura_sleep_summary", "message-no-oura_sleep_summary", "/import_data/authorize-oura/", "Connect Oura account")
         }
@@ -65,19 +83,21 @@ function main_fitbit_summary_heartrate(data) {
 
     /* Find the day */
     controlday_fitbit = controlDay(fitbitday, fitbitday, fitbitmonth);
-    noMissingDay_fitbit = addorRemoveday(controlday_fitbit, days3);
-    dayAxis_fitbit = getDayonAxis(noMissingDay_fitbit);
-    monthOnAxis_fitbit = determinenamemonth(noMissingDay_fitbit);
-
-    /* Udpate the data with the missing day / repeat day */
-    finaldata_fitbit = dataControl(fitbitdata, fitbitday, fitbitday, fitbitmonth);
+    noMissingDay_fitbit = addorRemoveday(controlday_fitbit, getDays(), data);
 
     /* Get the difference between the day */
-    comparedate_fitbit = compareDateReport(dayAxis_fitbit);
-    symptomData_fitbit = getSymptomDatafromFile(comparedate_fitbit);
-
+    comparedate_fitbit = compareDateReport(noMissingDay_fitbit);
+    fitbit_date = completedLastDay( comparedate_fitbit, noMissingDay_fitbit);
+    dayAxis_fitbit = getDayonAxis(fitbit_date);
+    monthOnAxis_fitbit = determinenamemonth(fitbit_date);
+    
+    
+    /* Udpate the data with the missing day / repeat day */
+    finaldata_fitbit = dataControl(fitbitdata, fitbitday, fitbitday, fitbitmonth, comparedate_fitbit);
+    symptomData_fitbit = getSymptomDatafromFile(0);
+    
     /* Graphic element */
-    createSvg('heart-rate-fitbit', (noMissingDay_fitbit.length * gridSize), 'fitbit-legend', (heightGraph), 'fitbit-title', (margin.top));
+    createSvg('heart-rate-fitbit', (fitbit_date.length * gridSize), 'fitbit-legend', (heightGraph), 'fitbit-title', (margin.top));
     createChartePoint(maingroupapple, finaldata_fitbit, fitbitAxis, "circle-fitbit")
     getreportedSickIncident(maingroupapple, symptomData_fitbit)
     createTitle(titleapple, "Heart Rate evolution");
@@ -86,13 +106,15 @@ function main_fitbit_summary_heartrate(data) {
     showMonthsAxis(maingroupapple, monthOnAxis_fitbit, (heightGraph - 5));
 
     /* Display the data when mouse on it */
-    tooltip("circle-fitbit", noMissingDay_fitbit, "bmp");
-
-    document.getElementById("heart-rate-fitbit").scroll(((comparedate_fitbit) * gridSize), 0);
-
-    document.getElementById("heart-rate-fitbit").onscroll = function () {
-        syncronizationScrollReportFitbit(((comparedate_fitbit) * gridSize));
-    }
+    tooltip("circle-fitbit", fitbit_date, "bmp");
+    
+    var winScroll = document.getElementById("heatmap").scrollLeft;
+    document.getElementById("heart-rate-fitbit").scroll((winScroll), 0);
+   
+     document.getElementById("heart-rate-fitbit").onscroll = function () {
+        var winScroll = document.getElementById("heart-rate-fitbit").scrollLeft;
+        document.getElementById("heatmap").scroll((winScroll), 0);
+     }
 }
 
 function mainTemperature_oura_sleep_summary(data) {
@@ -110,18 +132,20 @@ function mainTemperature_oura_sleep_summary(data) {
 
     /*Find the day */
     controldayTemp = controlDay(tempday, day, monthtemp);
-    noMissingDayTemp = addorRemoveday(controldayTemp, days3);
-    tempdayAxis = getDayonAxis(noMissingDayTemp);
-    month = determinenamemonth(noMissingDayTemp);
+    noMissingDayTemp = addorRemoveday(controldayTemp,getDays(),data);
+    comparedate = compareDateReport(noMissingDayTemp);
+    oura_date = completedLastDay(comparedate, noMissingDayTemp);
 
-    finaldataOuraTemperature = dataControl(tempdata, tempday, day, monthtemp);
-    //let comparedate = 0;
-    comparedate = compareDateReport(tempdayAxis);
+    tempdayAxis = getDayonAxis(oura_date);
+    month = determinenamemonth(oura_date);
+
+    finaldataOuraTemperature = dataControl(tempdata, tempday, day, monthtemp, comparedate);
+   
     /* Trouver les jours ou il y ades reports :) */
-    symptomData = getSymptomDatafromFile(comparedate);
+    symptomData = getSymptomDatafromFile(0);
 
     /* Element graphique */
-    createSvg('temperature-oura_sleep_summary', ((this.noMissingDayTemp.length) * gridSize), 'oura_sleep_summary-legend', (heightGraph), 'oura_sleep_summary-title', (margin.top));
+    createSvg('temperature-oura_sleep_summary', ((oura_date.length) * gridSize), 'oura_sleep_summary-legend', (heightGraph), 'oura_sleep_summary-title', (margin.top));
     createChartePoint(maingroupapple, finaldataOuraTemperature, tempAxis, "circle-temperature")
     getreportedSickIncident(maingroupapple, symptomData)
     createTitle(titleapple, "Temperature evolution");
@@ -130,13 +154,15 @@ function mainTemperature_oura_sleep_summary(data) {
     showMonthsAxis(maingroupapple, month, (heightGraph - 5));
 
     /* Afficher les données */
-    tooltip("circle-temperature", noMissingDayTemp, "");
+    tooltip("circle-temperature", oura_date, "");
+    
+    var winScroll = document.getElementById("heatmap").scrollLeft;
+    document.getElementById("temperature-oura_sleep_summary").scroll((winScroll), 0);
 
-    document.getElementById("temperature-oura_sleep_summary").scroll(((comparedate) * gridSize), 0);
-
-    document.getElementById("temperature-oura_sleep_summary").onscroll = function () {
-        syncronizationScrollReportOura(((comparedate) * gridSize));
-    }
+     document.getElementById("temperature-oura_sleep_summary").onscroll = function () {
+        var winScroll = document.getElementById("temperature-oura_sleep_summary").scrollLeft;
+        document.getElementById("heatmap").scroll((winScroll), 0);
+     }
 }
 
 function mainAppleWatch(data) {
@@ -147,26 +173,22 @@ function mainAppleWatch(data) {
 
     /* Recupérer les données dans le fichier*/
     getAppleDatafromFile(data);
-   // finrepeatday(appleday.reverse(), appledate, repeat);
-   // repeatdata(appleday.reverse(), appledata, noRepeatDataApple);
-    //console.log(dayapp);
-    
     /*Find the day */
     controlday = controlDay(appleday, dayapp, monthapp);
-    noMissingDay = addorRemoveday(controlday, days3);
-    appledayAxis = getDayonAxis(noMissingDay);
-    applemonth = determinenamemonth(noMissingDay);
-    
-    finaldataAppleWatch = dataControl(appledata, appleday, dayapp, monthapp);
-    //let comparedateApple = 0;
-    comparedateApple = compareDateReport(appledayAxis);
+    noMissingDay = addorRemoveday(controlday, getDays(), data);
 
+    comparedateApple = compareDateReport(noMissingDay);
+    apple_date = completedLastDay(comparedateApple, noMissingDay);
+
+    appledayAxis = getDayonAxis(apple_date);
+    applemonth = determinenamemonth(apple_date);
+    finaldataAppleWatch = dataControl(appledata, appleday, dayapp, monthapp,comparedateApple);
     /* Trouver les jours ou il y ades reports :) */
-    symptomData = getSymptomDatafromFile(comparedateApple);
+    symptomData = getSymptomDatafromFile(0);
 
     /* Element graphique */
-    createSvg('heartrate-apple', ((this.noMissingDay.length) * gridSize), 'apple-legend', (heightGraph), 'apple-title', (margin.top));
-    createChartePoint(maingroupapple, finaldataAppleWatch.reverse(), heartrateAxis, "circle-apple-watch")
+    createSvg('heartrate-apple', ((this.apple_date.length) * gridSize), 'apple-legend', (heightGraph), 'apple-title', (margin.top));
+    createChartePoint(maingroupapple, finaldataAppleWatch, heartrateAxis, "circle-apple-watch")
     getreportedSickIncident(maingroupapple, symptomData)
     createTitle(titleapple, "Heart rate evolution");
     createLegendAxeY(legendapple, heartrateAxis, "HEART RATE [BPM]");
@@ -175,13 +197,15 @@ function mainAppleWatch(data) {
     showMonthsAxis(maingroupapple, applemonth, (heightGraph - 5));
 
     /* Afficher les données */
-    tooltip("circle-apple-watch", noMissingDay, "bmp");
+    tooltip("circle-apple-watch", apple_date, "bmp");
     /* Controler le scroll  */
-    document.getElementById("heartrate-apple").scroll(((comparedateApple) * gridSize), 0);
+    var winScroll = document.getElementById("heatmap").scrollLeft;
+    document.getElementById("heartrate-apple").scroll(( winScroll), 0);
 
-    document.getElementById("heartrate-apple").onscroll = function () {
-        syncronizationScrollReportApple(((comparedateApple) * gridSize));
-    }
+      document.getElementById("heartrate-apple").onscroll = function () {
+         var winScroll = document.getElementById("heartrate-apple").scrollLeft;
+         document.getElementById("heatmap").scroll((winScroll), 0);
+      }
 }
 
 /* GET THE DATA FROM FILE .JSON */
@@ -249,7 +273,6 @@ function getSymptomDatafromFile(comparedateApple) {
     var cal2 = [];
 
     var symptomData = [];
-    console.log(symptom_data);
     for (let x = 0; x < symptom_data.length; x++) {
         for (let y = 0; y < symptom_data[0].length; y++) {
             if (symptom_data[x][y] > 0 && symptom_data[x][y] < 5) {
@@ -269,27 +292,27 @@ function getSymptomDatafromFile(comparedateApple) {
             cnt++;
         }
     }
-  
+
     for (let i = 1; i <= cal.length - 1; i++) {
-        if (cal[i] == (cal[i - 1] + 1) || cal[i] == (cal[i - 1] + 1) + '/1')  {
-           
+        if (cal[i] == (cal[i - 1] + 1) || cal[i] == (cal[i - 1] + 1) + '/1') {
+
             if (cal[i] == (cal[i + 1] - 1)) {
-            cal[i+1] += '/1';
+                cal[i + 1] += '/1';
             }
-            
+
             if (cal[i] == (cal[i + 2] - 2)) {
-                cal[i+2] += '/1';
+                cal[i + 2] += '/1';
             }
 
             if (cal[i] == (cal[i + 3] - 3)) {
-                cal[i+3] += '/1';
+                cal[i + 3] += '/1';
             }
-           
+
             cal[i] += '/0';
             cal[i - 1] += '/1';
         }
     }
-    
+
     for (let i = 0; i < cal.length; i++) {
         if ((cal[i] != (cal2[i] + "/1")))
             cal2[i] += '/0';
@@ -389,16 +412,19 @@ function createChartePoint(maingroupapple, data, axe, id) {
             return ((gridSize * 0.5)) + (i * gridSize);
         })
         .attr("cy", function (d) {
-            if (d == "NO DATA" || d == "-") return (heightGraph - margin.bottom)
+            if (d == "NO DATA" || d == "-" || d == "" || d == undefined) return (heightGraph - margin.bottom)
             else
                 return (heightGraph - margin.bottom) - ((d - axe[0]) * ((heightGraph - margin.bottom - 1) / (axe[axe.length - 1] - axe[0] + 1)));
         })
         .attr("r", gridSize / 10)
         .attr("fill", function (d) {
-            if (d == "NO DATA" || d == "-") return '#EAEDED'
+            if (d == "NO DATA" || d == "-" || d == "" || d == undefined) return 'white'
             else return "#67FFFF"
         })
-        .style("stroke", "#015483")
+        .style("stroke", function (d) {
+            if (d == "NO DATA" || d == "-" || d == "" || d == undefined) return 'white'
+            else
+            return "#015483"})
         .style("stroke-width", "0.5");
 
     maingroupapple.append("line")
@@ -533,8 +559,8 @@ function showreportedSickIncident(svgName, coord) {
 function compareDateReport(appledayAxis) {
     let compteday = 0;
     var dayinmonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    datereport = days_axis3[0].split('/');
-    date = appledayAxis[0].split('/');;
+    datereport = completedDays[0].split('/');
+    date = appledayAxis[0].split('/');
 
     for (let i = date[1]; i < datereport[1]; i++) {
         compteday += dayinmonth[i];
@@ -560,14 +586,6 @@ function finrepeatday(appleday, appledate, repeat) {
     appledate.push(data1[appleday.length - 1]);
     /* Permet de retrouver les doublons dans les valeurs de l'apple watch */
     repeat.sort(compare);
-    /* var cnt = 0; 
-     for (let i = 0; i < days.length; i++) {
-         if (data2[i+ comparedateApple] != days[i])
-             data2[i+ comparedateApple + cnt] = days[i]
-     }
-     console.log(data2.reverse());
-     console.log(repeat);
-   */
 }
 
 function formatdateshow(data, id) {
@@ -579,7 +597,6 @@ function formatdateshow(data, id) {
             return months[i - 1] + " " + data.split('/')[0] + ", 2020" //+ appleyear[id];
     }
 }
-
 
 /* Deal with the scroll */
 
@@ -617,29 +634,53 @@ function dayControlGraph(data, days2, month) {
     return days_fixed;
 }
 
-function dataControl(data, tempdate, day, monthtemp) {
+function dataControl(data, tempdate, day, monthtemp, rapport) {
     dayscontrol = dayControlGraph(tempdate, day, monthtemp);
     const data2 = [];
     var cnt = 0;
-    for (var i = 0; i < dayscontrol.length; i++) {
-        data2[i + cnt] = data[i];
-        // console.log(data);
-        if (dayscontrol[i] != -1 && dayscontrol[i] != -30 && dayscontrol[i] != -31) {
-            for (var t = 0; t < dayscontrol[i]; t++) {
-                cnt++;
-                data2[i + cnt] = "NO DATA";
+
+    if (rapport < 0) {
+        let count = -rapport;
+        for (let i = 0; i < count; i++) {
+            data2[i] = "";
+        }
+        for (var i = count; i < dayscontrol.length + count; i++) {
+            data2[i + cnt] = data[i];
+            // console.log(data);
+            if (dayscontrol[i] != -1 && dayscontrol[i] != -30 && dayscontrol[i] != -31) {
+                for (var t = 0; t < dayscontrol[i]; t++) {
+                    cnt++;
+                    data2[i + cnt] = "NO DATA";
+                }
+            }
+            else if (dayscontrol[i] == -1) {
+                cnt--;
             }
         }
-        else if (dayscontrol[i] == -1) {
-            cnt--;
+
+    } else {
+        for (var i = 0; i < dayscontrol.length; i++) {
+            data2[i + cnt] = data[i];
+            // console.log(data);
+            if (dayscontrol[i] != -1 && dayscontrol[i] != -30 && dayscontrol[i] != -31) {
+                for (var t = 0; t < dayscontrol[i]; t++) {
+                    cnt++;
+                    data2[i + cnt] = "NO DATA";
+                }
+            }
+            else if (dayscontrol[i] == -1) {
+                cnt--;
+            }
         }
     }
     return data2;
 }
 
-function addorRemoveday(date, days) {
-    
-    datedif = days[days.length - 1].split('/')[0] - date[date.length - 1].split('/')[0];
+function addorRemoveday(date, days, data) {
+    var length = data.symptom_report.length - 1;
+    test = formatdate(parseTime(data.symptom_report[length].timestamp));
+   
+    datedif = test.split('/')[0] - date[date.length - 1].split('/')[0];
     var cnt = datedif;
     var newListeDate = [];
     if (datedif < 0) {
@@ -651,11 +692,28 @@ function addorRemoveday(date, days) {
             newListeDate[i] = date[i];
         }
         for (let i = (date.length); i < ((date.length) + datedif); i++) {
-            newListeDate.push(days[(days.length - cnt)]);
+            newListeDate.push(formatdate(parseTime(data.symptom_report[length - cnt + 1].timestamp)));
             cnt--;
         }
     }
     return newListeDate;
+}
+
+function completedLastDay(rapport, date) {
+    var cnt = 0;
+    let newdate = [];
+    if (rapport < 0) {
+        cnt = - rapport;
+        for (let i = 0; i < cnt; i++) {
+            newdate[i] = completedDays[i]
+        }
+    } else 
+    cnt = 0;
+        for (let i = cnt; i < date.length + cnt; i++) {
+            newdate[i] = date[i - cnt]
+        }
+    
+    return newdate;
 }
 
 parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S.%f%Z");
