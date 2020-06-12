@@ -10,11 +10,10 @@ finaldata_fitbit = [];
 function getWearableData() {
     $.getJSON(url, function (data) {
         timestamp3 = data.symptom_report.map(d => d.timestamp);
-        file_days3 = timestamp3.map(d => formatdate(parseTime(d)));
+        file_days3 =  data.symptom_report.map(d => formatdate(parseTime(d.timestamp)));
         days23 = timestamp3.map(d => formatdateday(parseTime(d)))
         month3 = timestamp3.map(d => formatdatemonth(parseTime(d)))
         days3 = controlDay(file_days3, days23, month3);
-      
         days_axis3 = showingDayOnTheMap(days3);
 
         if (data.oura_sleep_summary == undefined) {
@@ -250,6 +249,7 @@ function getSymptomDatafromFile(comparedateApple) {
     var cal2 = [];
 
     var symptomData = [];
+    console.log(symptom_data);
     for (let x = 0; x < symptom_data.length; x++) {
         for (let y = 0; y < symptom_data[0].length; y++) {
             if (symptom_data[x][y] > 0 && symptom_data[x][y] < 5) {

@@ -6,86 +6,97 @@
     color: #fff;
     display: block;
     font-size: 1em;
-    font-weight :  300;
+    font-weight: 300;
     padding: .2rem .4rem;
     position: absolute;
     text-overflow: ellipsis;
     white-space: pre-line;
-    display:inline;
+    display: inline;
     justify-content: flex-start;
     z-index: 300;
     max-width: 50%;
     visibility: hidden;
-}
+  }
 
   @media screen and (min-width: 200px) and (max-width: 799px) {
-  #legend {
-    width: 0%;
-    visibility: hidden;
+    #legend {
+      width: 0%;
+      visibility: hidden;
+    }
+
+    #legend-phone {
+      width: 100%;
+      height: auto;
+      visibility: visible;
+    }
+
+    #symptom,
+    #apple-legend,
+    #oura_sleep_summary-legend,
+    #fitbit-legend {
+      width: 25%;
+    }
+
+    #heatmap {
+      width: 71.1%;
+    }
+
+    #progress-container {
+      width: 71.1%;
+      height: .125rem;
+      margin-left: 25%;
+    }
+
+    #myBar {
+      width: 0%;
+      height: .125rem;
+      margin-left: 25%;
+      background-color: pink;
+      border-radius: .5rem;
+    }
+
   }
 
-  #legend-phone {
-    width: 100%; 
-    height:auto; 
-    visibility: visible;
-  }
+  @media screen and (min-width: 800px) {
 
-  #symptom, #apple-legend, #oura_sleep_summary-legend,#fitbit-legend {
-    width: 25%;
-  }
-  #heatmap {
-    width: 71.1%;
-  }
- 
-  #progress-container {
-    width: 71.1%; 
-    height: .125rem;
-    margin-left: 25%;
-  }
-  #myBar {
-    width: 0%; 
-    height: .125rem;
-    margin-left: 25%;
-    background-color: pink;
-    border-radius: .5rem;
-  }
+    #legend {
+      width: 18.9%;
+      height: auto;
+      float: left;
+      visibility: visible;
+    }
 
-}
+    #heatmap {
+      width: 71.1%;
+    }
 
-@media screen and (min-width: 800px) {
+    #legend-phone {
+      width: 0;
+      height: 0;
+      visibility: hidden;
+    }
 
-  #legend {
-    width: 18.9%;
-    height: auto; 
-    float:left;
-    visibility: visible;
-  }
-  #heatmap {
-    width: 71.1%;
-  }
-  #legend-phone {
-    width: 0; 
-    height: 0;
-    visibility: hidden;
-  }
+    #symptom,
+    #apple-legend,
+    #oura_sleep_summary-legend,
+    #fitbit-legend {
+      width: 10%;
+    }
 
-  #symptom, #apple-legend,#oura_sleep_summary-legend, #fitbit-legend {
-    width: 10%;
-  }
+    #progress-container {
+      width: 71.1%;
+      height: .125rem;
+      margin-left: 10%;
+    }
 
-  #progress-container {
-    width: 71.1%; 
-    height: .125rem;
-    margin-left: 10%;
+    #myBar {
+      width: 0%;
+      height: .125rem;
+      margin-left: 10%;
+      background-color: pink;
+      border-radius: .5rem;
+    }
   }
-  #myBar {
-    width: 0%; 
-    height: .125rem;
-    margin-left: 10%;
-    background-color: pink;
-    border-radius: .5rem;
-  }
-}
 </style>
 
 
@@ -146,61 +157,59 @@
 {% timezone timezone %}
 
 <meta name="viewport" content="initial-scale=1" />
-<div id="heatmap-report-symptom-container" style=" width: 100%; height: auto; display: inline-block;" >
+<div id="heatmap-report-symptom-container" style=" width: 100%; height: auto; display: inline-block;">
   <h2>Symptom reports </h2>
   <div id="heatmap-title" style="width: 100%; height: auto"></div>
   <div id="legend-phone"> </div>
   <div class="progress-container">
     <div class="progress-bar" id="myBar"></div>
   </div>
-<div id="symptom" style=" height: auto; float:left;"> </div>
-<div id="heatmap" style="height: auto; float:left; overflow-x: scroll;"></div> 
-<div id="legend"> </div>
+  <div id="symptom" style=" height: auto; float:left;"> </div>
+  <div id="heatmap" style="height: auto; float:left; overflow-x: scroll;"></div>
+  <div id="legend"> </div>
 </div>
 
-<div id = "apple-watch-container" style=" width: 100%; height: auto; display: inline-block;">
+<div id="apple-watch-container" style=" width: 100%; height: auto; display: inline-block;">
   <h2>Apple Health Resting Heartrate </h2>
-<div id="message-no-apple" style="width: 75%; height: auto; float:left;"></div>
-<div id ="button-no-apple" style="width: 25%; height: auto; float:left;"></div>
+  <div id="message-no-apple" style="width: 75%; height: auto; float:left;"></div>
+  <div id="button-no-apple" style="width: 25%; height: auto; float:left;"></div>
 
-<div id="apple-title" style="width: 100%; height: auto;"></div>
-<div id="apple-legend" style="height:auto; float:left;"> </div>
-<div id="heartrate-apple" style="width: 71.1%; height: auto; float:left; overflow-x: scroll;"> </div>
+  <div id="apple-title" style="width: 100%; height: auto;"></div>
+  <div id="apple-legend" style="height:auto; float:left;"> </div>
+  <div id="heartrate-apple" style="width: 71.1%; height: auto; float:left; overflow-x: scroll;"> </div>
 </div>
 
-<div id = "oura_sleep_summary-container" style=" width: 100%; height: auto; display: inline-block;">
-  <h2>Oura Temperature</h2> 
-<div id="message-no-oura_sleep_summary" style="width: 75%; height: auto; float:left;"></div>
-<div id ="button-no-oura_sleep_summary" style="width: 25%; height: auto; float:left;"></div>
+<div id="oura_sleep_summary-container" style=" width: 100%; height: auto; display: inline-block;">
+  <h2>Oura Temperature</h2>
+  <div id="message-no-oura_sleep_summary" style="width: 75%; height: auto; float:left;"></div>
+  <div id="button-no-oura_sleep_summary" style="width: 25%; height: auto; float:left;"></div>
 
-<div id="oura_sleep_summary-title" style="width: 100%; height: auto;"></div>
-<div id="oura_sleep_summary-legend" style="height:auto; float:left;"> </div>
-<div id="temperature-oura_sleep_summary" style="width: 71.1%; height: auto;  float:left; overflow-x: scroll;"> </div>
+  <div id="oura_sleep_summary-title" style="width: 100%; height: auto;"></div>
+  <div id="oura_sleep_summary-legend" style="height:auto; float:left;"> </div>
+  <div id="temperature-oura_sleep_summary" style="width: 71.1%; height: auto;  float:left; overflow-x: scroll;"> </div>
 </div>
 
-<div id = "fitbit-container" style=" width: 100%; height: auto; display: inline-block;">
-  <h2>Fitbit</h2> 
-<div id="message-no-fitbit" style="width: 75%; height: auto; float:left;"></div>
-<div id ="button-no-fitbit" style="width: 25%; height: auto; float:left;"></div>
+<div id="fitbit-container" style=" width: 100%; height: auto; display: inline-block;">
+  <h2>Fitbit</h2>
+  <div id="message-no-fitbit" style="width: 75%; height: auto; float:left;"></div>
+  <div id="button-no-fitbit" style="width: 25%; height: auto; float:left;"></div>
 
-<div id="fitbit-title" style="width: 100%; height: auto;"></div>
-<div id="fitbit-legend" style="height:auto; float:left;"> </div>
-<div id="heart-rate-fitbit" style="width: 71.1%; height: auto;  float:left; overflow-x: scroll;"> </div>
+  <div id="fitbit-title" style="width: 100%; height: auto;"></div>
+  <div id="fitbit-legend" style="height:auto; float:left;"> </div>
+  <div id="heart-rate-fitbit" style="width: 71.1%; height: auto;  float:left; overflow-x: scroll;"> </div>
 </div>
 
 <script>
   console.log("Loading data...");
- 
-  url = "{{ request.path }}.json";
+  //url = "{{ request.path }}.json";
   console.log("succed to loading public data");
 
   // Fitbit
   //url =  "https://quantifiedflu.org/report/list/member/49855651.json"
-
   /*
 Apple Watch and Oura temperature
-*/  
-//url = "https://quantifiedflu.org/report/list/member/79502270.json";
+*/
+url = "https://quantifiedflu.org/report/list/member/79502270.json";
 
  //url = "https://quantifiedflu.org/report/list/member/25102556.json"
  //url = "https://quantifiedflu.org/report/list/member/57494882.json"
@@ -214,23 +223,6 @@ Apple Watch and Oura temperature
 </script>
 <script src="{% static 'js/heart_rate.js' %}">
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <table class="table">
   <thead>
