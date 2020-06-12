@@ -234,6 +234,11 @@ function getAppleDatafromFile(data) {
         monthapp[cnt] = formatdatemonth(parseTime(element.timestamp));
         cnt++;
     });
+    appledata.reverse();
+        appleday.reverse();
+        appleyear.reverse();
+        dayapp.reverse();
+        monthapp.reverse();
 }
 
 function getTemperatureDatafromFile(data) {
