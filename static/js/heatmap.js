@@ -81,13 +81,12 @@ function createheatmap(url) {
     reportday = timestamp.map(d => formatdateday(parseTime(d)))
     month = timestamp.map(d => formatdatemonth(parseTime(d)))
     days = controlDay(file_days, reportday, month);
-    namesmonths = determinenamemonth(days);
     
     moreday = getNoReportValues(data);
     moredayDataSource = getNoReportDataSource(data);
   
     completedDays = addDaynoReport(moreday, moredayDataSource, data);
-    
+    namesmonths = determinenamemonth(completedDays);
    // console.log( moredayDataSource);
 
     symptom_data = loadDataSymptom(data);

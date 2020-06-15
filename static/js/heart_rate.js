@@ -32,8 +32,8 @@ function getWearableData() {
          month3 = data.symptom_report.map(d => formatdatemonth(parseTime(d.timestamp)))
          days3 = controlDay(file_days3, days23, month3);
        */
-       
-       
+
+
         if (data.oura_sleep_summary == undefined) {
             showbuttonNoConnection("button-no-oura_sleep_summary", "message-no-oura_sleep_summary", "/import_data/authorize-oura/", "Connect Oura account")
         }
@@ -75,7 +75,7 @@ function showbuttonNoConnection(idbutton, idmessage, hrefbutton, buttonmessage) 
 /* Main fonction of wearable data */
 function main_fitbit_summary_heartrate(data) {
     heightGraph = determineHeigth() / 2;
-    fitbitAxis = ["50", "60", "70", "80", "90", "100", "110", "120"];
+   // fitbitAxis2 = ["50", "60", "70", "80", "90", "100", "110", "120"];
     fitbitdata = [], fitbitdate = [], fitbitday = [], fitbitmonth = [], fitbityear = [];
     symptomData_fitbit = [];
 
@@ -87,15 +87,17 @@ function main_fitbit_summary_heartrate(data) {
 
     /* Get the difference between the day */
     comparedate_fitbit = compareDateReport(noMissingDay_fitbit);
-    fitbit_date = completedLastDay( comparedate_fitbit, noMissingDay_fitbit);
+    fitbit_date = completedLastDay(comparedate_fitbit, noMissingDay_fitbit);
     dayAxis_fitbit = getDayonAxis(fitbit_date);
     monthOnAxis_fitbit = determinenamemonth(fitbit_date);
-    
-    
+
+
     /* Udpate the data with the missing day / repeat day */
     finaldata_fitbit = dataControl(fitbitdata, fitbitday, fitbitday, fitbitmonth, comparedate_fitbit);
     symptomData_fitbit = getSymptomDatafromFile(0);
-    
+
+    fitbitAxis = getAxisLegend(finaldata_fitbit, 'dizaine');
+   
     /* Graphic element */
     createSvg('heart-rate-fitbit', (fitbit_date.length * gridSize), 'fitbit-legend', (heightGraph), 'fitbit-title', (margin.top));
     createChartePoint(maingroupapple, finaldata_fitbit, fitbitAxis, "circle-fitbit")
@@ -107,18 +109,18 @@ function main_fitbit_summary_heartrate(data) {
 
     /* Display the data when mouse on it */
     tooltip("circle-fitbit", fitbit_date, "bmp");
-    
+
     var winScroll = document.getElementById("heatmap").scrollLeft;
     document.getElementById("heart-rate-fitbit").scroll((winScroll), 0);
-   
-     document.getElementById("heart-rate-fitbit").onscroll = function () {
+
+    document.getElementById("heart-rate-fitbit").onscroll = function () {
         var winScroll = document.getElementById("heart-rate-fitbit").scrollLeft;
         document.getElementById("heatmap").scroll((winScroll), 0);
-     }
+    }
 }
 
 function mainTemperature_oura_sleep_summary(data) {
-    tempAxis = ["-1", "-0.5", "0", "0.5", "1", "1.5", "2", "2.5"];
+    //tempAxis = ["-1", "-0.5", "0", "0.5", "1", "1.5", "2", "2.5"];
     tempdata = [], tempday = [], tempyear = [], tempdayAxis = [], tempdate = [], repeat = [], noRepeatData = [];
     day = [];
     monthtemp = [];
@@ -132,7 +134,7 @@ function mainTemperature_oura_sleep_summary(data) {
 
     /*Find the day */
     controldayTemp = controlDay(tempday, day, monthtemp);
-    noMissingDayTemp = addorRemoveday(controldayTemp,getDays(),data);
+    noMissingDayTemp = addorRemoveday(controldayTemp, getDays(), data);
     comparedate = compareDateReport(noMissingDayTemp);
     oura_date = completedLastDay(comparedate, noMissingDayTemp);
 
@@ -140,33 +142,33 @@ function mainTemperature_oura_sleep_summary(data) {
     month = determinenamemonth(oura_date);
 
     finaldataOuraTemperature = dataControl(tempdata, tempday, day, monthtemp, comparedate);
-   
+    
+    axisTemperature_oura = getAxisLegend(finaldataOuraTemperature, 'decimal');
     /* Trouver les jours ou il y ades reports :) */
     symptomData = getSymptomDatafromFile(0);
 
     /* Element graphique */
     createSvg('temperature-oura_sleep_summary', ((oura_date.length) * gridSize), 'oura_sleep_summary-legend', (heightGraph), 'oura_sleep_summary-title', (margin.top));
-    createChartePoint(maingroupapple, finaldataOuraTemperature, tempAxis, "circle-temperature")
+    createChartePoint(maingroupapple, finaldataOuraTemperature, axisTemperature_oura, "circle-temperature")
     getreportedSickIncident(maingroupapple, symptomData)
     createTitle(titleapple, "Temperature evolution");
-    createLegendAxeY(legendapple, tempAxis, "BODY TEMPERATURE");
+    createLegendAxeY(legendapple, axisTemperature_oura, "BODY TEMPERATURE");
     createLegendAxeX(maingroupapple, tempdayAxis);
     showMonthsAxis(maingroupapple, month, (heightGraph - 5));
 
     /* Afficher les données */
     tooltip("circle-temperature", oura_date, "");
-    
+
     var winScroll = document.getElementById("heatmap").scrollLeft;
     document.getElementById("temperature-oura_sleep_summary").scroll((winScroll), 0);
 
-     document.getElementById("temperature-oura_sleep_summary").onscroll = function () {
+    document.getElementById("temperature-oura_sleep_summary").onscroll = function () {
         var winScroll = document.getElementById("temperature-oura_sleep_summary").scrollLeft;
         document.getElementById("heatmap").scroll((winScroll), 0);
-     }
+    }
 }
 
 function mainAppleWatch(data) {
-    heartrateAxis = ["50", "60", "70", "80", "90", "100", "110", "120"];
     dayapp = [], monthapp = [], appledata = [], appleday = [], appleyear = [], symptomData = [];
     cnt = 0, appledate = [], repeat = [], noRepeatDataApple = [];
     heightGraph = determineHeigth() / 2;
@@ -182,7 +184,9 @@ function mainAppleWatch(data) {
 
     appledayAxis = getDayonAxis(apple_date);
     applemonth = determinenamemonth(apple_date);
-    finaldataAppleWatch = dataControl(appledata, appleday, dayapp, monthapp,comparedateApple);
+    finaldataAppleWatch = dataControl(appledata, appleday, dayapp, monthapp, comparedateApple);
+
+    heartrateAxis = getAxisLegend(finaldataAppleWatch, 'dizaine');
     /* Trouver les jours ou il y ades reports :) */
     symptomData = getSymptomDatafromFile(0);
 
@@ -200,12 +204,12 @@ function mainAppleWatch(data) {
     tooltip("circle-apple-watch", apple_date, "bmp");
     /* Controler le scroll  */
     var winScroll = document.getElementById("heatmap").scrollLeft;
-    document.getElementById("heartrate-apple").scroll(( winScroll), 0);
+    document.getElementById("heartrate-apple").scroll((winScroll), 0);
 
-      document.getElementById("heartrate-apple").onscroll = function () {
-         var winScroll = document.getElementById("heartrate-apple").scrollLeft;
-         document.getElementById("heatmap").scroll((winScroll), 0);
-      }
+    document.getElementById("heartrate-apple").onscroll = function () {
+        var winScroll = document.getElementById("heartrate-apple").scrollLeft;
+        document.getElementById("heatmap").scroll((winScroll), 0);
+    }
 }
 
 /* GET THE DATA FROM FILE .JSON */
@@ -412,9 +416,27 @@ function createChartePoint(maingroupapple, data, axe, id) {
             return ((gridSize * 0.5)) + (i * gridSize);
         })
         .attr("cy", function (d) {
+            var gap = {
+                bottom:  heightGraph - (margin.bottom * 1.25) - 5,
+                top :  (margin.top/2.5) + 8, 
+                betweenTopAndBottom: axe[axe.length - 1] - axe[0],
+                betweenValues: d - axe[0],
+                test: ((heightGraph - margin.bottom * 1.25 - 5) - ((axe.length - 1) * ((heightGraph - margin.bottom * 1.25)  / (axe.length)))),
+                test2: ((heightGraph - margin.bottom * 1.25 - 5) - ((1) * ((heightGraph - margin.bottom * 1.25)  / (axe.length)))),
+            };
+            var graphLenght = heightGraph - (margin.bottom * 1.25) - gap.top;
+            console.log(gap);
+            console.log('Taille: ' + graphLenght);
+           
             if (d == "NO DATA" || d == "-" || d == "" || d == undefined) return (heightGraph - margin.bottom)
-            else
-                return (heightGraph - margin.bottom) - ((d - axe[0]) * ((heightGraph - margin.bottom - 1) / (axe[axe.length - 1] - axe[0] + 1)));
+            else if (axe[0] < 0)
+            {   
+                var y = (gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom ));
+             return y;//(gap.bottom) - ((d - axe[0]) * ((heightGraph - (margin.bottom * 1.25))/ (axe[axe.length - 1] - axe[0] + 1)));
+            } else {
+                var y = (gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom ));
+            return y;//(gap.bottom) - ((d - axe[0]) * ((heightGraph - (margin.bottom * 1.25))/ (axe[axe.length - 1] - axe[0] + 1)));
+            } 
         })
         .attr("r", gridSize / 10)
         .attr("fill", function (d) {
@@ -424,7 +446,8 @@ function createChartePoint(maingroupapple, data, axe, id) {
         .style("stroke", function (d) {
             if (d == "NO DATA" || d == "-" || d == "" || d == undefined) return 'white'
             else
-            return "#015483"})
+                return "#015483"
+        })
         .style("stroke-width", "0.5");
 
     maingroupapple.append("line")
@@ -453,19 +476,25 @@ function createLegendAxeY(legendapple, heartrateAxis, title) {
     legendapple.append("line")
         .attr('id', 'tickSize')
         .attr("x1", 100 + "%")
-        .attr("y1", margin.top / 2.5)
+        .attr("y1", (margin.top / 2.5))
         .attr("x2", 100 + "%")
         .attr("y2", heightGraph - margin.bottom)
         .style("stroke", "#778899")
         .style("stroke-width", "1");
-
+   
     legendapple.selectAll(".daysLabel")
         .data(heartrateAxis)
         .enter().append("text")
         .text(function (d) { return d; })
         .style("fill", "#212529")
         .attr("x", 95 + "%")
-        .attr("y", function (d, i) { return (heightGraph - margin.bottom - 1) - (i * ((heightGraph - margin.bottom) / (heartrateAxis.length))) })
+        .attr("y", function (d, i) { 
+            //var min = heartrateAxis[0];
+            if (this.min < 0 )
+            return (heightGraph - margin.bottom * 1.25) - (i * 4 * ((heightGraph - margin.bottom * 1.25) / (heartrateAxis.length * 4))) 
+            else 
+            return (heightGraph - margin.bottom * 1.25) - (i * 4 * ((heightGraph - margin.bottom * 1.25) / (heartrateAxis.length * 4))) 
+        })
         .style("text-anchor", "end")
         .attr("font-size", 0.7 + "rem");
 
@@ -475,7 +504,7 @@ function createLegendAxeY(legendapple, heartrateAxis, title) {
         .attr("transform", "rotate(-90)")
         .style("fill", "#212529")
         .attr("x", -(heightGraph - margin.bottom) / 2)
-        .attr("y", 5 + "%")
+        .attr("y", 25 + "%")
         .style("text-anchor", "middle")
         .style("font-weight", "300")
         .attr("font-size", 0.7 + "rem")
@@ -485,11 +514,13 @@ function createLegendAxeY(legendapple, heartrateAxis, title) {
         .data(heartrateAxis)
         .enter().append("line")
         .attr("x1", 95 + "%")
-        .attr("y1", function (d, i) { return (heightGraph - margin.bottom - 5) - (i * ((heightGraph - margin.bottom) / 8)) })
+        .attr("y1", function (d, i) { return (heightGraph - margin.bottom * 1.25 - 5) - (i * ((heightGraph - margin.bottom * 1.25)  / (heartrateAxis.length))) })
         .attr("x2", 100 + "%")
-        .attr("y2", function (d, i) { return (heightGraph - margin.bottom - 5) - (i * ((heightGraph - margin.bottom) / 8)) })
+        .attr("y2", function (d, i) { return (heightGraph - margin.bottom * 1.25 - 5) - (i * ((heightGraph - margin.bottom * 1.25)  / (heartrateAxis.length))) })
         .style("stroke", "#212529")
         .style("stroke-width", "0.5");
+
+    
 }
 
 function createLegendAxeX(legendapple, axisdays) {
@@ -679,7 +710,7 @@ function dataControl(data, tempdate, day, monthtemp, rapport) {
 function addorRemoveday(date, days, data) {
     var length = data.symptom_report.length - 1;
     test = formatdate(parseTime(data.symptom_report[length].timestamp));
-   
+
     datedif = test.split('/')[0] - date[date.length - 1].split('/')[0];
     var cnt = datedif;
     var newListeDate = [];
@@ -707,15 +738,60 @@ function completedLastDay(rapport, date) {
         for (let i = 0; i < cnt; i++) {
             newdate[i] = completedDays[i]
         }
-    } else 
-    cnt = 0;
-        for (let i = cnt; i < date.length + cnt; i++) {
-            newdate[i] = date[i - cnt]
-        }
-    
+    } else
+        cnt = 0;
+    for (let i = cnt; i < date.length + cnt; i++) {
+        newdate[i] = date[i - cnt]
+    }
+
     return newdate;
 }
 
+function getAxisLegend(symptomdata, dizaine) {
+    var min = 200;
+    var max = 0;
+    var legende = [];
+    for (let i = 0; i < symptomdata.length; i++) {
+        if (symptomdata[i] < min && symptomdata[i] != '-' && symptomdata[i] != '')
+            min = symptomdata[i];
+        if (symptomdata[i] > max && symptomdata[i] != '-' && symptomdata[i] != '')
+            max = symptomdata[i];
+    }
+    if ( min == 200 && max == 0) {
+        min = 0; 
+        max = 0; 
+    } else if ( min != 200 && max != 0 && dizaine == 'dizaine'){
+        min = (10 * Math.floor(min/10));
+        max = (10 * Math.floor(max/10) + 10);
+        var test =  ((max - min) / 5);
+            for (let i = 0; i < test + 1; i++) {
+                legende[i] =  min + ( 5 * i); 
+            }
+    }  
+    else if ( min != 200 && max != 0 && dizaine == 'decimal'){
+        console.log('min: ' + (min) + ' max: ' + max);
+        min = (Math.floor(10 * min)/10);
+        max = (Math.floor(10 * max)/10) + (1/10);
+       
+        if (this.min < 0)
+        var test =  ((max + min) / 0.25);
+        else 
+        var test =  ((max - min)/ 0.25);
+        console.log('min: ' + (min) + ' max: ' + max + 'test: ' + test);
+            for (let i = 0; i < test + 1; i++) {
+                legende[i] = precise( min + ( 0.25 * i)); 
+            }
+    }          
+    console.log('min: ' + (min) + ' max: ' + max);
+    console.log('Legende: ' +  legende);
+    
+    return legende;
+}
+
+function precise(x) {
+    return Number.parseFloat(x).toPrecision(2);
+  }
+  
 parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S.%f%Z");
 parseTimeTemp = d3.timeParse("%Y-%m-%d");
 formatyear = d3.timeFormat("%y");
