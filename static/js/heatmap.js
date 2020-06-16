@@ -108,9 +108,10 @@ function createheatmap(url) {
     document.getElementById("heatmap").onscroll = function () {
       progressScrollBar();
       var winScroll = document.getElementById("heatmap").scrollLeft;
-      document.getElementById("heartrate-apple").scroll(winScroll, 0);
-      document.getElementById("heart-rate-fitbit").scroll(winScroll, 0);
-      document.getElementById("temperature-oura_sleep_summary").scroll(winScroll, 0);
+      //document.getElementById("heartrate-apple").scroll(winScroll, 0);
+      //document.getElementById("heart-rate-fitbit").scroll(winScroll, 0);
+      //document.getElementById("temperature-oura_sleep_summary").scroll(winScroll, 0);
+      document.getElementById("wearable-graph").scroll(winScroll, 0);
     };
   })
 }
