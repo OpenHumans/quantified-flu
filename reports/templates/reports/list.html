@@ -18,12 +18,18 @@
     visibility: hidden;
   }
 
+  .oura {
+    color: #222;
+     background: #555;
+     background: linear-gradient( #777, #333);
+  }
+
   @media screen and (min-width: 200px) and (max-width: 799px) {
-    #legend, #wearable-choice {
+    #legend, #wearable-choice, #temperature-choice, #second-legend-display {
       width: 0%;
       visibility: hidden;
     }
-
+    
     #legend-phone {
       width: 100%;
       height: auto;
@@ -33,11 +39,11 @@
     #symptom,
     #apple-legend,
     #oura_sleep_summary-legend,
-    #fitbit-legend,#wearable-legend {
+    #fitbit-legend,#wearable-legend, #temperature-legend {
       width: 25%;
     }
 
-    #heatmap {
+    #heatmap, #wearable-graph, #temperature-graph {
       width: 71.1%;
     }
 
@@ -59,14 +65,27 @@
 
   @media screen and (min-width: 800px) {
 
-    #legend, #wearable-choice {
+    #legend{
       width: 18.9%;
       height: auto;
       float: left;
       visibility: visible;
     }
+    #wearable-choice, #temperature-choice {
+      width: 12.9%;
+      height: auto;
+      float: left;
+      visibility: visible;
+    }
 
-    #heatmap {
+    #second-legend-display {
+      width: 5%;
+      height: auto;
+      float: left;
+      visibility: visible;
+    }
+
+    #heatmap, #wearable-graph {
       width: 71.1%;
     }
 
@@ -79,7 +98,7 @@
     #symptom,
     #apple-legend,
     #oura_sleep_summary-legend,
-    #fitbit-legend,#wearable-legend {
+    #fitbit-legend,#wearable-legend, #temperature-legend {
       width: 10%;
     }
 
@@ -171,12 +190,21 @@
 
 <div id="wearable-container" style=" width: 100%; height: auto; display: inline-block;">
   <div id="wearable-title" style="width: 100%; height: auto;"></div>
-  <div id="wearable-legend" style="height:auto; float:left;"> </div>
-  <div id="wearable-graph" style="width: 71.1%; height: auto; float:left; overflow-x: scroll;"> </div>
-  <div id="wearable-choice"> </div>
+  <div id="wearable-legend" style="height:auto; float:left;"></div>
+  <div id="wearable-graph" style="height: auto; float:left; overflow-x: scroll;"></div>
+  <div id="second-legend-display"></div>
+  <div id="wearable-choice"></div>
 </div>
 
-<!-- <div id="apple-watch-container" style=" width: 100%; height: auto; display: inline-block;">
+<!-- <div id="temperature-container" style=" width: 100%; height: auto; display: inline-block;">
+  <div id="temperature-title" style="width: 100%; height: auto;"></div>
+  <div id="temperature-legend" style="height:auto; float:left;"> </div>
+  <div id="temperature-graph" style="width: 71.1%; height: auto; float:left; overflow-x: scroll;"> </div>
+  <div id="second-legend-display-temperature" style="width: 5%; height:auto; float:left;"></div>
+  <div id="temperature-choice"> </div>
+</div>
+
+<div id="apple-watch-container" style=" width: 100%; height: auto; display: inline-block;">
   <h2>Apple Health Resting Heartrate </h2>
   <div id="message-no-apple" style="width: 75%; height: auto; float:left;"></div>
   <div id="button-no-apple" style="width: 25%; height: auto; float:left;"></div>
@@ -220,8 +248,8 @@
  //url = "https://quantifiedflu.org/report/list/member/25102556.json"
  //url = "https://quantifiedflu.org/report/list/member/57494882.json"
   //url = "https://quantifiedflu.org/report/list/member/43462825.json"
- //goturl ="https://quantifiedflu.org/report/list/member/02631468.json"
-  //url = "https://quantifiedflu.org/report/list/member/25102556.json"
+ //url ="https://quantifiedflu.org/report/list/member/02631468.json"
+ // url = "https://quantifiedflu.org/report/list/member/25102556.json"
 </script>
 
 {% load static %}

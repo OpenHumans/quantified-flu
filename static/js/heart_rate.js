@@ -5,97 +5,75 @@ comparedate = 0;
 comparedate_fitbit = 0;
 finaldataAppleWatch = [];
 finaldataOuraTemperature = [];
+finaldataOura = [];
 finaldata_fitbit = [];
 comparateDayReportWearable = [];
 symptom_data_heatmap = [];
 
-function getdataFromSymptomReport(data) {
-    heatmapdata = [], heatmapdate = [], heatmapday = [], heatmapmonth = [], heatmapyear = [];
-    this.file = data.symptom_report.map(d => d);
-    this.file.forEach(element => {
-        //heatmapdata[cnt] = element.data.heart_rate;
-        heatmapdate[cnt] = formatdate(parseTime(element.timestamp));
-        heatmapday[cnt] = formatdateday(parseTime(element.timestamp));
-        heatmapmonth[cnt] = formatdatemonth(parseTime(element.timestamp));
-        heatmapyear[cnt] = formatyear(parseTime(element.timestamp));
-        cnt++;
-    });
-
-    comparateDayReportWearable = controlDay(heatmapdate, heatmapday, heatmapmonth);
-    symptom_data_heatmap = loadDataSymptom(data);
-}
-
 $.getJSON(url, function (data) {
-    main_wearable_data(data)
+    heightGraph = determineHeigth() * 0.5;
+    main_wearable_data(data);
 })
 
-function getWearableData() {
-    $.getJSON(url, function (data) {
-        //timestamp3 = data.symptom_report.map(d => d.timestamp);
-        /* file_days3 =  data.symptom_report.map(d => formatdate(parseTime(d.timestamp)));
-         days23 = data.symptom_report.map(d => formatdateday(parseTime(d.timestamp)))
-         month3 = data.symptom_report.map(d => formatdatemonth(parseTime(d.timestamp)))
-         days3 = controlDay(file_days3, days23, month3);
-       */
-
-        if (data.oura_sleep_summary == undefined) {
-            showbuttonNoConnection("button-no-oura_sleep_summary", "message-no-oura_sleep_summary", "/import_data/authorize-oura/", "Connect Oura account")
-        }
-        else if (data.oura_sleep_summary != undefined)
-            mainTemperature_oura_sleep_summary(data);
-
-        if (data.apple_health_summary == undefined) {
-            showbuttonNoConnection("button-no-apple", "message-no-apple", "https://apps.apple.com/us/app/oh-data-port/id1512384252", "Connect Apple Watch")
-        }
-        else if (data.apple_health_summary != undefined)
-            mainAppleWatch(data);
-
-        if (data.fitbit_summary == undefined) {
-            showbuttonNoConnection("button-no-fitbit", "message-no-fitbit", "https://www.fitbit.com/oauth2/authorize?response_type=code&amp;client_id=&amp;scope=activity%20nutrition%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight", "Connect Fitbit account")
-        }
-        else if (data.fitbit_summary != undefined)
-            main_fitbit_summary_heartrate(data);
-    })
-}
-
-/* Button no loading wearable data */
-function showbuttonNoConnection(idbutton, idmessage, hrefbutton, buttonmessage) {
-    let dct = document.getElementById(idbutton);
-    let htmlContent = "<a class= 'btn btn-primary btn-lg' href=" + hrefbutton + ">"
-        + buttonmessage +
-        "</a>";
-    dct.insertAdjacentHTML('afterend', htmlContent);
-
-    var para = document.createElement("p");
-    var node = document.createTextNode("Notes : You have not  connect these data sources to correlate them with reported illness. Please click on the button to change this setting. Thank you for sharing! 💖");
-    para.appendChild(node);
-    var element = document.getElementById(idmessage);
-    element.appendChild(para);
-
-
-    /*document.getElementById("myBar").style.width = scrolled + "%";*/
+function setrevert() {
+    var revert = [0, 0, 0, 0];
+    if (fitbit == true)
+        revert[2] = 1;
+    if (apple == true)
+        revert[1] = 1;
+    if (ouraHR == true)
+        revert[3] = 1;
+    if (fitbit != true && apple != true && ouraHR != true && oura == true)
+        revert[0] = 1;
+    return revert;
 }
 
 function main_wearable_data(data) {
-    heightGraph = determineHeigth() / 2;
-    symptom_report = getSymptomDatafromFile(0);
-    month = determinenamemonth(this.completedDays);
-    var revert = 0;
-    createSvgContainer('wearable-graph', ((this.completedDays.length) * gridSize), 'wearable-legend', (heightGraph), 'wearable-title', (margin.top));
-    createLegendAxeX(maingroup, this.days_axis);
-    createLegendAxeY(legendgroup, "null", "");
-    getreportedSickIncident(maingroup, symptom_report);
-    createButtonAddTo(makeAchoice, data);
-    showMonthsAxis(maingroup, month, (heightGraph - 5));
-    tooltipChoice(data, revert);
-    var winScroll = document.getElementById("heatmap").scrollLeft;
-    document.getElementById("wearable-graph").scroll((winScroll), 0);
+    fitbit = controlWearableDatafromfile(data, 'fitbit');
+    apple = controlWearableDatafromfile(data, 'apple');
+    oura = controlWearableDatafromfile(data, 'oura');
+    ouraHR = controlWearableDatafromfile(data, 'ouraHR');
 
-    document.getElementById("wearable-graph").onscroll = function () {
-        var winScroll = document.getElementById("wearable-graph").scrollLeft;
-        document.getElementById("heatmap").scroll((winScroll), 0);
+    //var revert = setrevert ();
+
+    revert = [0, 0, 0, 0];
+    maxHr = 0;;
+    if (apple == true) {
+        revert[1] = 1;
+        maxHr++;
     }
+    if (fitbit == true) {
+        revert[2] = 1;
+        maxHr++;
+    }
+    if (ouraHR == true) {
+        revert[3] = 1;
+        maxHr++;
+    }
+    if (fitbit != true && apple != true && ouraHR != true && oura == true)
+        revert[0] = 1;
+
+    cntbttHr = maxHr;
+    if (fitbit == true || apple == true || oura == true || ouraHR == true) {
+        symptom_report = getSymptomDatafromFile(0);
+        month = determinenamemonth(this.completedDays);
+        createWearableDataSvg('wearable-graph', ((this.completedDays.length) * gridSize), 'wearable-legend', (heightGraph), 'wearable-title', (margin.top), 'wearable-choice');
+        createLegendAxeX(maingroup, this.days_axis);
+        createLegendAxeY(legendgroup, "null", "");
+        getreportedSickIncident(maingroup, symptom_report);
+        getButtonChoice(makeAchoice, data);
+        showMonthsAxis(maingroup, month, (heightGraph - 5));
+        tooltipChoice(data);
+        var winScroll = document.getElementById("heatmap").scrollLeft;
+        document.getElementById("wearable-graph").scroll((winScroll), 0);
+
+        document.getElementById("wearable-graph").onscroll = function () {
+            var winScroll = document.getElementById("wearable-graph").scrollLeft;
+            document.getElementById("heatmap").scroll((winScroll), 0);
+        }
+    } else d3.select('#wearable-container').remove();
 }
+
 /* Get all the variable data needed */
 function controlDatafromFitbit(data) {
     getHeartRateDatafromFitbit(data);
@@ -156,95 +134,23 @@ function controlDatafromAppleWatch(data) {
     symptomData = getSymptomDatafromFile(0);
 }
 
-/* Main fonction of wearable data */
-function main_fitbit_summary_heartrate(data) {
-    heightGraph = determineHeigth() / 2;
-    // fitbitAxis2 = ["50", "60", "70", "80", "90", "100", "110", "120"];
-    fitbitdata = [], fitbitdate = [], fitbitday = [], fitbitmonth = [], fitbityear = [];
-    symptomData_fitbit = [];
+function controlDatafromOuraSleep(data) {
+    /* Recupérer les données dans le fichier*/
+    getHeartRatefromFileOura(data);
 
-    getHeartRateDatafromFitbit(data);
+    /*Find the day */
+    controlday = controlDay(ouradate, ouraday, ouramonth);
+    noMissingDay = addorRemoveday(controlday, getDays(), data);
+    ouracomparedate = compareDateReport(noMissingDay);
+    oura_date = completedLastDay(ouracomparedate, noMissingDay);
 
-    controlDatafromFitbit(data);
+    ouradayAxis = getDayonAxis(oura_date);
+    ouramonth = determinenamemonth(oura_date);
+    finaldataOura = dataControl(ouradata, ouradate, ouraday, ouramonth, ouracomparedate);
 
-    /* Graphic element */
-    createSvg('heart-rate-fitbit', (fitbit_date.length * gridSize), 'fitbit-legend', (heightGraph), 'fitbit-title', (margin.top));
-    createChartePoint(maingroupapple, finaldata_fitbit, fitbitAxis, "circle-fitbit", "#67FFFF");
-    getreportedSickIncident(maingroupapple, symptomData_fitbit);
-    createTitle(titleapple, "Heart Rate evolution", 'fitbit-title');
-    createLegendAxeY(legendapple, fitbitAxis, "HEART RATE [BMP]", 'fitbit-axisY');
-    createLegendAxeX(maingroupapple, dayAxis_fitbit);
-    showMonthsAxis(maingroupapple, monthOnAxis_fitbit, (heightGraph - 5));
-
-    /* Display the data when mouse on it */
-    tooltip("circle-fitbit", fitbit_date, "bmp");
-
-    var winScroll = document.getElementById("heatmap").scrollLeft;
-    document.getElementById("heart-rate-fitbit").scroll((winScroll), 0);
-
-    document.getElementById("heart-rate-fitbit").onscroll = function () {
-        var winScroll = document.getElementById("heart-rate-fitbit").scrollLeft;
-        document.getElementById("heatmap").scroll((winScroll), 0);
-    }
-}
-
-function mainTemperature_oura_sleep_summary(data) {
-    //tempAxis = ["-1", "-0.5", "0", "0.5", "1", "1.5", "2", "2.5"];
-    tempdata = [], tempday = [], tempyear = [], tempdayAxis = [], tempdate = [], repeat = [], noRepeatData = [];
-    day = [];
-    monthtemp = [];
-    heightGraph = determineHeigth() / 2;
-    symptomData = [];
-
-    controlDatafromOura(data);
-
-    /* Element graphique */
-    createSvg('temperature-oura_sleep_summary', ((oura_date.length) * gridSize), 'oura_sleep_summary-legend', (heightGraph), 'oura_sleep_summary-title', (margin.top));
-    createChartePoint(maingroupapple, finaldataOuraTemperature, axisTemperature_oura, "circle-temperature", "#67FFFF");
-    getreportedSickIncident(maingroupapple, symptomData);
-    createTitle(titleapple, "Temperature evolution", 'oura-title');
-    createLegendAxeY(legendapple, axisTemperature_oura, "BODY TEMPERATURE", 'oura-axisY');
-    createLegendAxeX(maingroupapple, tempdayAxis);
-    showMonthsAxis(maingroupapple, month, (heightGraph - 5));
-
-    /* Afficher les données */
-    tooltip("circle-temperature", oura_date, "");
-
-    var winScroll = document.getElementById("heatmap").scrollLeft;
-    document.getElementById("temperature-oura_sleep_summary").scroll((winScroll), 0);
-
-    document.getElementById("temperature-oura_sleep_summary").onscroll = function () {
-        var winScroll = document.getElementById("temperature-oura_sleep_summary").scrollLeft;
-        document.getElementById("heatmap").scroll((winScroll), 0);
-    }
-}
-
-function mainAppleWatch(data) {
-    dayapp = [], monthapp = [], appledata = [], appleday = [], appleyear = [], symptomData = [];
-    cnt = 0, appledate = [], repeat = [], noRepeatDataApple = [];
-    heightGraph = determineHeigth() / 2;
-
-    controlDatafromAppleWatch(data);
-
-    /* Element graphique */
-    createSvg('heartrate-apple', ((this.apple_date.length) * gridSize), 'apple-legend', (heightGraph), 'apple-title', (margin.top));
-    createChartePoint(maingroupapple, finaldataAppleWatch, heartrateAxis, "circle-apple-watch", "#67FFFF")
-    getreportedSickIncident(maingroupapple, symptomData)
-    createTitle(titleapple, "Heart rate evolution", 'apple-title');
-    createLegendAxeY(legendapple, heartrateAxis, "HEART RATE [BPM]", 'apple-axisY');
-    createLegendAxeX(maingroupapple, axisdays);
-    showMonthsAxis(maingroupapple, applemonth, (heightGraph - 5));
-
-    /* Afficher les données */
-    tooltip("circle-apple-watch", apple_date, "bmp");
-    /* Controler le scroll  */
-    var winScroll = document.getElementById("heatmap").scrollLeft;
-    document.getElementById("heartrate-apple").scroll((winScroll), 0);
-
-    document.getElementById("heartrate-apple").onscroll = function () {
-        var winScroll = document.getElementById("heartrate-apple").scrollLeft;
-        document.getElementById("heatmap").scroll((winScroll), 0);
-    }
+    ouraAxis = getAxisLegend(finaldataOura, 'dizaine');
+    /* Trouver les jours ou il y ades reports :) */
+    symptomData = getSymptomDatafromFile(0);
 }
 
 /* Function display for the main container */
@@ -252,33 +158,63 @@ function mainContainer_temperature_oura_sleep_summary(data, maingroupapple, lege
     tempdata = [], tempday = [], tempyear = [], tempdayAxis = [], tempdate = [], repeat = [], noRepeatData = [];
     day = [];
     monthtemp = [];
+    console.log(revert);
     heightGraph = determineHeigth() / 2;
-    if (revert == 1) {
+    if (revert[0] == 1) {
+        //if (revert[1] == 1)
+        //removeDataSource('circle-apple-watch-ctn', 'apple-axisY-ctn', 'apple-title-ctn', 'oura-axisY-cnt-2', 'apple-axisY-ctn-2', 'apple-axisY-ctn'); 
+        removeDataSource('circle-temperature-ctn', 'oura-axisY-cnt', 'oura-title-ctn', 'apple-axisY-ctn-2', 'oura-axisY-cnt-2', 'oura-axisY-cnt');
         controlDatafromOura(data);
-        createChartePoint(maingroupapple, finaldataOuraTemperature, axisTemperature_oura, "circle-temperature-ctn", "#9BFF1C", (gridSize/10));
-        createTitle(titleapple, "Temperature evolution", 'oura-title-ctn');
-        createLegendAxeY(legendapple, axisTemperature_oura, "BODY TEMPERATURE", 'oura-axisY-cnt');
+        createChartePoint(maingroupapple, finaldataOuraTemperature, axisTemperature_oura, "circle-temperature-ctn", "#9BFF1C", (gridSize / 10));
+        createTitle(titleapple, "Temperature evolution", 'oura-title-ctn', '50%');
+        if (legendapple == sndLegendgroup)
+            createSecondLegendAxeY(legendapple, axisTemperature_oura, "BODY TEMPERATURE", 'oura-axisY-cnt-2');
+        else
+            createLegendAxeY(legendapple, axisTemperature_oura, "BODY TEMPERATURE", 'oura-axisY-cnt');
         /* Afficher les données */
         tooltip("circle-temperature-ctn", oura_date, "");
     } else {
-        removeDataSource('circle-temperature-ctn', 'oura-axisY-cnt', 'oura-title-ctn');
+        removeDataSource('circle-temperature-ctn', 'oura-axisY-cnt', 'oura-title-ctn', 'apple-axisY-ctn-2', 'oura-axisY-cnt-2', 'oura-axisY-cnt');
     }
+}
+
+function mainContainer_heart_rate_oura_sleep(data, maingroupapple, legendapple, titleapple, revert) {
+    ouradata = [], ouraday = [], ourayear = [], ouradayAxis = [], ouradate = [], repeat = [], noRepeatData = [];
+    ouraday = [];
+    ouramonth = [];
+    heightGraph = determineHeigth() / 2;
+    if (revert[3] == 1) {
+        controlDatafromOuraSleep(data);
+        createChartePoint(maingroupapple, finaldataOura, ouraAxis, "circle-oura-heart-rate-ctn", "#09CEFE", (gridSize / 10));
+        if ((revert[2] == 0 && revert[1] == 0)) {
+            createTitle(titleapple, "Heart Rate evolution", 'oura-heart-rate-title-ctn', '50%');
+            createLegendAxeY(legendapple, ouraAxis, "HEART RATE [bmp]", 'oura-heart-rate-axisY-cnt');
+        }
+        /* Afficher les données */
+        tooltip("circle-oura-heart-rate-ctn", oura_date, "BMP");
+    } else
+        removeDataSource('circle-oura-heart-rate-ctn', 'oura-heart-rate-title-ctn', 'oura-heart-rate-axisY-cnt');
 }
 
 function mainContainer_HeartRate_Apple_Watch(data, maingroupapple, legendapple, titleapple, revert) {
     dayapp = [], monthapp = [], appledata = [], appleday = [], appleyear = [], symptomData = [];
     cnt = 0, appledate = [], repeat = [], noRepeatDataApple = [];
     heightGraph = determineHeigth() / 2;
-    if (revert == 1) {
+    if (revert[1] == 1) {
+        //if (revert[0] == 1)
+        // removeDataSource('circle-temperature-ctn', 'oura-axisY-cnt', 'oura-title-ctn', 'apple-axisY-ctn-2', 'oura-axisY-cnt-2', 'oura-axisY-cnt');
+        removeDataSource('circle-apple-watch-ctn', 'apple-axisY-ctn', 'apple-title-ctn', 'oura-axisY-cnt-2', 'apple-axisY-ctn-2', '-heart-rate-axisY-ctn');
         controlDatafromAppleWatch(data);
         /* Element graphique */
-        createChartePoint(maingroupapple, finaldataAppleWatch, heartrateAxis, "circle-apple-watch-ctn", "#0041EA", (gridSize/10))
-        createTitle(titleapple, "Heart rate evolution", 'apple-title-ctn');
-        createLegendAxeY(legendapple, heartrateAxis, "HEART RATE [BPM]", 'apple-axisY-ctn');
+        createChartePoint(maingroupapple, finaldataAppleWatch, heartrateAxis, "circle-apple-watch-ctn", "#0041EA", (gridSize / 10))
+        if ((revert[1] == 1)) { //&& revert[3] == 0)) {
+            createTitle(titleapple, "Heart rate evolution", 'apple-title-ctn', '50%');
+            createLegendAxeY(legendapple, heartrateAxis, "HEART RATE [BPM]", 'apple-axisY-ctn');
+        }
         /* Afficher les données */
         tooltip("circle-apple-watch-ctn", apple_date, "bmp");
     } else {
-        removeDataSource('circle-apple-watch-ctn', 'apple-axisY-ctn', 'apple-title-ctn');
+        removeDataSource('circle-apple-watch-ctn', 'apple-axisY-ctn', 'apple-title-ctn', 'oura-axisY-cnt-2', 'apple-axisY-ctn-2', 'apple-axisY-ctn');
     }
 }
 
@@ -286,12 +222,12 @@ function mainContainer_fitbit_summary_heartrate(data, maingroupapple, legendappl
     heightGraph = determineHeigth() / 2;
     fitbitdata = [], fitbitdate = [], fitbitday = [], fitbitmonth = [], fitbityear = [];
     symptomData_fitbit = [];
-    if (revert == 1) {
+    if (revert[2] == 1) {
         controlDatafromFitbit(data);
-        /* Element graphique */
-        createChartePoint(maingroupapple, finaldata_fitbit, fitbitAxis, "circle-fitbit-cnt", "#FF8484", (gridSize/10));
-        createTitle(titleapple, "Heart Rate evolution", 'fitbit-title-cnt');
+        createTitle(titleapple, "Heart Rate evolution", 'fitbit-title-cnt', '50%');
         createLegendAxeY(legendapple, fitbitAxis, "HEART RATE [BMP]", 'fitbit-axisY-cnt');
+        /* Element graphique */
+        createChartePoint(maingroupapple, finaldata_fitbit, fitbitAxis, "circle-fitbit-cnt", "#FF8484", (gridSize / 10));
         /* Afficher les données */
         tooltip("circle-fitbit-cnt", fitbit_date, "bmp");
     } else {
@@ -299,13 +235,15 @@ function mainContainer_fitbit_summary_heartrate(data, maingroupapple, legendappl
     }
 }
 
-function removeDataSource(iddata, idtitle, idaxis) {
+function removeDataSource(iddata, idtitle, idaxis, idaxis2, idaxis3, idaxis4) {
     d3.selectAll("#" + iddata).remove();
     d3.selectAll("#" + idtitle).remove();
     d3.selectAll("#" + idaxis).remove();
+    //d3.selectAll("#" + idaxis2).remove();
+    //d3.selectAll("#" + idaxis3).remove();
+    //d3.selectAll("#" + idaxis4).remove();
 }
 /* GET THE DATA FROM FILE .JSON */
-
 function getHeartRateDatafromFitbit(data) {
     cnt = 0;
     this.file = data.fitbit_summary.map(d => d);
@@ -345,17 +283,17 @@ function getTemperatureDatafromFile(data) {
     });
 }
 
-function repeatdata(appleday, appledata, noRepeatDataApple) {
-    data1 = appleday;
-    var cnt = 0;
-    for (let i = 0; i < appleday.length - 1; i++) {
-        let calcul = data1[i + 1].split('/')[0] - data1[i].split('/')[0];
-        if (calcul != 0) {
-            noRepeatDataApple[cnt] = appledata[i];
-            cnt++;
-        }
-    }
-    noRepeatDataApple.push(appledata[appledata.length - 1]);
+function getHeartRatefromFileOura(data) {
+    cnt = 0;
+    this.file = data.oura_sleep_5min.map(d => d);
+    this.file.forEach(element => {
+        ouradata[cnt] = element.data.heart_rate;
+        ouradate[cnt] = formatdate(parseTimeOuraSleep(element.timestamp));
+        ouraday[cnt] = formatdateday(parseTimeOuraSleep(element.timestamp));
+        ouramonth[cnt] = formatdatemonth(parseTimeOuraSleep(element.timestamp));
+        ourayear[cnt] = formatyear(parseTimeOuraSleep(element.timestamp));
+        cnt++;
+    });
 }
 
 function compare(x, y) {
@@ -449,7 +387,6 @@ function tooltip(circleid, data, msg) {
             d3.select(this)
                 .attr("r", gridSize / 5)
                 .attr('stroke-width', 1)
-                .attr("fill", "#015483");
             tooltip
                 .style("visibility", "visible")
                 .text(formatdateshow(data[coordXY], coordXY) + " " + d + " " + msg);
@@ -463,12 +400,6 @@ function tooltip(circleid, data, msg) {
 
         .on("mouseout", function () {
             d3.select(this).attr("r", gridSize / 10)
-                .attr("fill", function (d) {
-                    if (d == "NO DATA" || d == '-')
-                        return '#EAEDED'
-                    else
-                        return "#A5DAEC"
-                })
                 .style("stroke", "#015483")
                 .style("stroke-width", "0.5");
 
@@ -476,58 +407,123 @@ function tooltip(circleid, data, msg) {
         });
 }
 
-function tooltipChoice(data, revert) {
+function tooltipChoice(data) {
+    let click = 1;
+    if (apple == true) {
+        mainContainer_HeartRate_Apple_Watch(data, maingroup, legendgroup, titlegroup, revert);
+    }
+    if (fitbit == true) {
+        mainContainer_fitbit_summary_heartrate(data, maingroup, legendgroup, titlegroup, revert);
+    }
+    if (ouraHR == true) {
+        mainContainer_heart_rate_oura_sleep(data, maingroup, legendgroup, titlegroup, revert);
+    }
+    selectedCategories('Temperature', revert[0], 6, 1);
+    selectedCategories('HeartRate', cntbttHr, 6, maxHr);
+    selectedButton('oura', revert[0], 4);
+    selectedButton('apple', revert[1], 4);
+    selectedButton('fitbit', revert[2], 4);
+    selectedButton('ouraHR', revert[3], 4);
 
-    d3.selectAll("#circle-choice")
+    d3.selectAll("#circle-choice-heartrate")
         .on("click", function (d) {
             let classButton = this.getAttribute('class');
-            if (revert == 1) revert = 0;
-            else revert = 1;
+            if ((classButton == 'oura' || classButton == 'Temperature') && revert[0] == 1) {
+                revert[0] = 0;
+                cntbttHr = 0;
+            }
+            else if ((classButton == 'oura' || classButton == 'Temperature') && revert[0] == 0) {
+                revert = [1, 0, 0, 0];
+                cntbttHr = 0;
+            }
+            if (classButton == 'apple' && revert[1] == 1) {
+                revert[1] = 0;
+                cntbttHr--;
+            }
+            else if (classButton == 'apple' && revert[1] == 0) {
+                revert[0] = 0;
+                revert[1] = 1;
+                cntbttHr++;
+            }
+            if (classButton == 'fitbit' && revert[2] == 1) {
+                revert[2] = 0;
+                cntbttHr--;
+            }
+            else if (classButton == 'fitbit' && revert[2] == 0) {
+                revert[0] = 0;
+                revert[2] = 1;
+                cntbttHr++;
+            }
+            if (classButton == 'ouraHR' && revert[3] == 1) {
+                revert[3] = 0;
+                cntbttHr--;
+            }
+            else if (classButton == 'ouraHR' && revert[3] == 0) {
+                revert[0] = 0;
+                revert[3] = 1;
+                cntbttHr++;
+            }
 
-            if (revert == 1)
-                d3.select(this)
-                    .attr("width", ((gridSize / 2) - 10))
-                    .attr("height", ((gridSize / 2) - 10))
-                    .attr('stroke-width', 10)
-                    .attr("stroke", "#e2e2e2");
-            else
-                d3.select(this)
-                    .attr("width", ((gridSize / 2)))
-                    .attr("height", ((gridSize / 2)))
-                    .attr('stroke-width', 1)
-                    ;
+            if (classButton == 'HeartRate' && click == 1) {
+                if (cntbttHr == maxHr) {
+                    revert = [0, 0, 0, 0];
+                    cntbttHr = 0;
+                }
+                click = 0;
+            }
+            else if (classButton == 'HeartRate' && click == 0) {
+                if (apple == true) {
+                    revert[1] = 1;
+                    cntbttHr = maxHr;
+                }
+                if (fitbit == true) {
+                    revert[2] = 1;
+                    cntbttHr = maxHr;
+                }
+                if (ouraHR == true) {
+                    revert[3] = 1;
+                    cntbttHr = maxHr;
+                }
+                click = 1;
+            }
 
-            if (classButton == 'oura')
-                mainContainer_temperature_oura_sleep_summary(data, maingroup, legendgroup, titlegroup, revert);
-            if (classButton == 'apple')
-                mainContainer_HeartRate_Apple_Watch(data, maingroup, legendgroup, titlegroup, revert);
-            if (classButton == 'fitbit')
-                mainContainer_fitbit_summary_heartrate(data, maingroup, legendgroup, titlegroup, revert);
+            mainContainer_temperature_oura_sleep_summary(data, maingroup, legendgroup, titlegroup, revert);
+            mainContainer_HeartRate_Apple_Watch(data, maingroup, legendgroup, titlegroup, revert);
+            mainContainer_fitbit_summary_heartrate(data, maingroup, legendgroup, titlegroup, revert);
+            mainContainer_heart_rate_oura_sleep(data, maingroup, legendgroup, titlegroup, revert);
+            selectedCategories('Temperature', revert[0], 6, 1);
+            selectedCategories('HeartRate', cntbttHr, 6, maxHr);
+            selectedButton('oura', revert[0], 4);
+            selectedButton('apple', revert[1], 4);
+            selectedButton('fitbit', revert[2], 4);
+            selectedButton('ouraHR', revert[3], 4);
+
+            console.log(cntbttHr);
         })
 }
 
-/* Graphic Functions */
-function createSvg(div1, widthdiv1, div2, heightdiv2, div3, heightdiv3) {
-    maingroupapple = d3.select('#' + div1)
-        .append("svg")
-        .attr("class", "svg")
-        .attr("width", widthdiv1) //(this.appledate.length + 1) * gridSize)
-        .attr("height", heightdiv2)
-
-    legendapple = d3.select('#' + div2)
-        .append("svg")
-        .attr("class", "svg")
-        .attr("width", 100 + "%")
-        .attr("height", heightdiv2)
-
-    titleapple = d3.select('#' + div3)
-        .append("svg")
-        .attr("class", "svg")
-        .attr("width", 100 + "%")
-        .attr("height", heightdiv3) //margin.top)
+function selectedButton(classname, revert, stroke) {
+    switch (revert) {
+        case 0:
+            d3.select('.' + classname).attr("width", ((gridSize / 2))).attr("height", ((gridSize / 2))).attr('stroke-width', 1);
+            break;
+        case 1:
+            d3.select('.' + classname).attr("width", ((gridSize / 2) - stroke)).attr("height", ((gridSize / 2) - stroke)).attr('stroke-width', stroke).attr("stroke", "#e2e2e2");
+            break;
+    }
 }
 
-function createSvgContainer(div1, widthdiv1, div2, heightdiv2, div3, heightdiv3) {
+function selectedCategories(classname, revert, stroke, max) {
+    if (revert < max)
+        d3.select('.' + classname).attr("width", ((gridSize / 2))).attr("height", ((gridSize / 2))).attr('stroke-width', 1);
+
+    if (revert == max)
+        d3.select('.' + classname).attr("width", ((gridSize / 2) - stroke)).attr("height", ((gridSize / 2) - stroke)).attr('stroke-width', stroke).attr("stroke", "#e2e2e2");
+
+}
+
+/* Graphic Functions */
+function createWearableDataSvg(div1, widthdiv1, div2, heightdiv2, div3, heightdiv3, divChoice) {
     maingroup = d3.select('#' + div1)
         .append("svg")
         .attr("class", "svg")
@@ -546,7 +542,13 @@ function createSvgContainer(div1, widthdiv1, div2, heightdiv2, div3, heightdiv3)
         .attr("width", 100 + "%")
         .attr("height", heightdiv3) //margin.top)
 
-    makeAchoice = d3.select('#wearable-choice')
+    sndLegendgroup = d3.select('#second-legend-display')
+        .append("svg")
+        .attr("class", "svg")
+        .attr("width", 100 + "%")
+        .attr("height", heightdiv2) //margin.top)
+
+    makeAchoice = d3.select('#' + divChoice)
         .append("svg")
         .attr("class", "svg")
         .attr("width", 100 + "%")
@@ -554,7 +556,7 @@ function createSvgContainer(div1, widthdiv1, div2, heightdiv2, div3, heightdiv3)
 }
 
 function createChartePoint(maingroupapple, data, axe, id, color, size) {
-    maingroupapple.selectAll("circle")
+    maingroupapple.selectAll("circle-test")
         .data(data)
         .enter()
         .append("circle")
@@ -606,10 +608,10 @@ function createChartePoint(maingroupapple, data, axe, id, color, size) {
         .style("stroke-width", "1");
 }
 
-function createTitle(titleapple, title, id) {
+function createTitle(titleapple, title, id, coordX) {
     titleapple.append("text")
         .attr('id', id)
-        .attr("x", 50 + "%")
+        .attr("x", coordX)
         .attr("y", 50 + "%")
         .attr("text-anchor", "middle")
         .style("fill", "#212529")
@@ -636,6 +638,7 @@ function createLegendAxeY(legendapple, heartrateAxis, title, id) {
             .attr('id', id)
             .text(function (d) { return d; })
             .style("fill", "#212529")
+            .style("font-weight", "300")
             .attr("x", 95 + "%")
             .attr("y", function (d, i) {
                 if (this.min < 0)
@@ -653,7 +656,7 @@ function createLegendAxeY(legendapple, heartrateAxis, title, id) {
         .attr("transform", "rotate(-90)")
         .style("fill", "#212529")
         .attr("x", -(heightGraph - margin.bottom) / 2)
-        .attr("y", 25 + "%")
+        .attr("y", 30 + "%")
         .style("text-anchor", "middle")
         .style("font-weight", "300")
         .attr("font-size", 0.7 + "rem")
@@ -667,6 +670,61 @@ function createLegendAxeY(legendapple, heartrateAxis, title, id) {
             .attr("x1", 95 + "%")
             .attr("y1", function (d, i) { return (heightGraph - margin.bottom * 1.25 - 5) - (i * ((heightGraph - margin.bottom * 1.25) / (heartrateAxis.length))) })
             .attr("x2", 100 + "%")
+            .attr("y2", function (d, i) { return (heightGraph - margin.bottom * 1.25 - 5) - (i * ((heightGraph - margin.bottom * 1.25) / (heartrateAxis.length))) })
+            .style("stroke", "#212529")
+            .style("stroke-width", "0.5");
+
+
+}
+
+function createSecondLegendAxeY(legendapple, heartrateAxis, title, id) {
+    legendapple.append("line")
+        .attr("x1", 0 + "%")
+        .attr("y1", (margin.top / 2.5))
+        .attr("x2", 0 + "%")
+        .attr("y2", heightGraph - margin.bottom)
+        .style("stroke", "#778899")
+        .style("stroke-width", "1");
+
+    if (heartrateAxis != 'null')
+        legendapple.selectAll(".daysLabel")
+            .data(heartrateAxis)
+            .enter().append("text")
+            .attr('id', id)
+            .text(function (d) { return d; })
+            .style("fill", "#212529")
+            .style("font-weight", "300")
+            .attr("x", 5 + "%")
+            .attr("y", function (d, i) {
+                if (this.min < 0)
+                    return (heightGraph - margin.bottom * 1.25) - (i * 4 * ((heightGraph - margin.bottom * 1.25) / (heartrateAxis.length * 4)))
+                else
+                    return (heightGraph - margin.bottom * 1.25) - (i * 4 * ((heightGraph - margin.bottom * 1.25) / (heartrateAxis.length * 4)))
+            })
+            .style("text-anchor", "start")
+            .attr("font-size", 0.7 + "rem");
+
+    legendapple.append("g")
+        .attr("class", "y axis")
+        .append("text")
+        .attr('id', id)
+        .attr("transform", "rotate(-90)")
+        .style("fill", "#212529")
+        .attr("x", -(heightGraph - margin.bottom) / 2)
+        .attr("y", 20 + "%")
+        .style("text-anchor", "middle")
+        .style("font-weight", "300")
+        .attr("font-size", 0.7 + "rem")
+        .text(title);
+
+    if (heartrateAxis != 'null')
+        legendapple.selectAll(".tickSize")
+            .data(heartrateAxis)
+            .enter().append("line")
+            .attr('id', id)
+            .attr("x1", 0 + "%")
+            .attr("y1", function (d, i) { return (heightGraph - margin.bottom * 1.25 - 5) - (i * ((heightGraph - margin.bottom * 1.25) / (heartrateAxis.length))) })
+            .attr("x2", 5 + "%")
             .attr("y2", function (d, i) { return (heightGraph - margin.bottom * 1.25 - 5) - (i * ((heightGraph - margin.bottom * 1.25) / (heartrateAxis.length))) })
             .style("stroke", "#212529")
             .style("stroke-width", "0.5");
@@ -767,7 +825,18 @@ function controlWearableDatafromfile(data, type) {
                 return false;
             var cnt = 0;
             for (let i = 0; i < data.oura_sleep_summary.length; i++) {
-                if (data.apple_health_summary[i].data.temperature_delta != "" && data.apple_health_summary[i].data.temperature_delta != "-")
+                if (data.oura_sleep_summary[i].data.temperature_delta != "" && data.oura_sleep_summary[i].data.temperature_delta != "-")
+                    cnt++;
+            }
+            if (cnt == 0)
+                return false;
+            else return true;
+        case 'ouraHR':
+            if (data.oura_sleep_5min == undefined)
+                return false;
+            var cnt = 0;
+            for (let i = 0; i < data.oura_sleep_5min.length; i++) {
+                if (data.oura_sleep_5min[i].data.heart_rate != "" && data.oura_sleep_5min[i].data.heart_rate != "-")
                     cnt++;
             }
             if (cnt == 0)
@@ -776,70 +845,122 @@ function controlWearableDatafromfile(data, type) {
     }
 }
 
-function createButtonAddTo(svgName, data) {
-    let classname = [];
-    let colorscale = [];
-    let legendname = [];
-    let cnt = 0;
-    fitbit = controlWearableDatafromfile(data, 'fitbit');
-    oura = controlWearableDatafromfile(data,'oura');
-    apple = controlWearableDatafromfile(data, 'apple');
+function getButtonChoice(svgName, data) {
+    classname = [];
+    colorscale = [];
+    legendname = [];
+    cnt = 0;
+    classnameHeartRate = [];
+    colorscaleHeartRate = [];
+    legendnameHeartRate = [];
+    cntHR = 0;
+    classnameTemperature = [];
+    colorscaleTemperature = [];
+    legendnameTemperature = [];
+    cntTP = 0;
+    setAttributButton();
+    createButton(svgName, 1, classname, legendname, "", 0, (gridSize * .2));
+    createButton(svgName, 2, classnameHeartRate, legendnameHeartRate, colorscaleHeartRate, (classname.length * gridSize * 1.5), (classname.length * gridSize * 1.55));
+    createButton(svgName, 2, classnameTemperature, legendnameTemperature, colorscaleTemperature, (gridSize * .8), (gridSize * .9));
+}
 
+function setAttributButton() {
     if (oura == true) {
-        classname[cnt] = 'oura';
+        classname[cnt] = 'Temperature';
         colorscale[cnt] = '#9BFF1C';
-        legendname[cnt] = "Temperature [Oura]";
+        legendname[cnt] = "Temperature";
+        classnameTemperature[cntTP] = 'oura';
+        colorscaleTemperature[cntTP] = '#9BFF1C';
+        legendnameTemperature[cntTP] = "[Oura]";
+        cnt++;
+        cntTP++;
+    }
+
+    if (apple == true || fitbit == true || ouraHR == true) {
+        classname[cnt] = 'HeartRate';
+        colorscale[cnt] = '#9BFF1C';
+        legendname[cnt] = "Heart Rate";
         cnt++;
     }
 
     if (apple == true) {
-        classname[cnt] = 'apple';
-        colorscale[cnt] = '#0041EA';
-        legendname[cnt] = 'Heart rate [Apple]';
-        cnt++;
+        classnameHeartRate[cntHR] = 'apple';
+        colorscaleHeartRate[cntHR] = '#0041EA';
+        legendnameHeartRate[cntHR] = 'Apple Watch';
+        cntHR++;
     }
 
-    if (fitbit== true) {
-        classname[cnt] = 'fitbit';
-        colorscale[cnt] = "#FF8484";
-        legendname[cnt] = 'Heart rate [Fitbit]';
-        cnt++;
+    if (fitbit == true) {
+        classnameHeartRate[cntHR] = 'fitbit';
+        colorscaleHeartRate[cntHR] = "#FF8484";
+        legendnameHeartRate[cntHR] = 'Fitbit';
+        cntHR++;
     }
 
-    if (fitbit == false && apple == false && oura == false)
-        d3.select('#wearable-container').remove();
+    if (ouraHR == true) {
+        classnameHeartRate[cntHR] = 'ouraHR';
+        colorscaleHeartRate[cntHR] = "#09CEFE";
+        legendnameHeartRate[cntHR] = 'Oura';
+        cntHR++;
+    }
+}
 
-    console.log('oura: ' + oura);
-    console.log('apple: ' + apple);
-    console.log('fitbit: ' + fitbit);
+function createButton(svgName, type, dataclassname, datalegend, datacolor, marginTop1, marginTop2) {
     svgName.selectAll('circle-choice')
-        .data(classname)
+        .data(dataclassname)
         .enter()
         .append("circle")
-        .attr('id', 'circle-choice')
-        .attr('class', function (d, i) { return classname[i] })
-        .attr("cx", margin.bottom * 2)
+        .attr('id', 'circle-choice-heartrate')
+        .attr('class', function (d, i) { return dataclassname[i] })
+        .attr("cx", gridSize * 0.7 * type)
         .attr("cy", function (d, i) {
-            return margin.top + (i * gridSize * 2)
+            return (margin.top / 2 + marginTop1) + (i * gridSize * (3 - type))
         })
-        .attr("r", gridSize / 2)
+        .attr("r", gridSize / (2 * type))
         .attr("stroke", "#e2e2e2")
         .style("fill", function (d, i) {
-            return colorscale[i]
+            if (type == 1 && d == 'Temperature') {
+                createLinearGradient(svgName, colorscaleTemperature, d);
+                return "url(#" + d + ")"
+            } else if (type == 1 && d == 'HeartRate') {
+                createLinearGradient(svgName, colorscaleHeartRate, d);
+                return "url(#" + d + ")"
+            }
+            else
+                return datacolor[i];
         });
 
     svgName.selectAll(".daysLabel")
-        .data(legendname)
+        .data(datalegend)
         .enter().append("text")
         .text(function (d) { return d; })
         .style("fill", "#212529")
-        .attr("x", margin.bottom * 2 + gridSize)
-        .attr("y", function (d, i) { return margin.top + (i * gridSize * 2) })
+        .attr("x", function (d) {
+            if (type == 1)
+                return (gridSize * 1.4)
+            else if (type == 2)
+                return (gridSize * 2.2)
+        })
+        .attr("y", function (d, i) {
+            return (margin.top / 2 + marginTop2) + (i * gridSize * ((2 - type) + 1.1))
+        })
         .style("text-anchor", "start")
         .style("font-weight", "300")
-        .attr("font-size", 0.7 + "rem");
-
+        .attr("font-size", (1.2 - (type / 4)) + "rem");
 }
+
+function createLinearGradient(svgName, color, id) {
+    linearGradient = svgName.append("defs")
+        .append("linearGradient")
+        .attr("id", id);
+    for (let i = 0; i < color.length; i++) {
+        linearGradient.append("stop")
+            .attr("offset", (i + .5) * (100 / (color.length)) + "%")
+            .attr("stop-color", color[i]);
+    }
+    return linearGradient;
+}
+
 /* */
 function compareDateReport(appledayAxis) {
     let compteday = 0;
@@ -851,26 +972,6 @@ function compareDateReport(appledayAxis) {
         compteday += dayinmonth[i];
     }
     return compteday += (datereport[0] - date[0]);
-}
-
-function finrepeatday(appleday, appledate, repeat) {
-    /* On vérifie que les jours sont pas en double */
-    data1 = appleday;
-    var cnt = 0;
-    var cnt2 = 0;
-    for (let i = 0; i < appleday.length - 1; i++) {
-        let calcul = data1[i + 1].split('/')[0] - data1[i].split('/')[0];
-        if (calcul == 0) {
-            repeat[cnt] = (i);
-            cnt++;
-        } else {
-            appledate[cnt2] = appleday[i];
-            cnt2++;
-        }
-    }
-    appledate.push(data1[appleday.length - 1]);
-    /* Permet de retrouver les doublons dans les valeurs de l'apple watch */
-    repeat.sort(compare);
 }
 
 function formatdateshow(data, id) {
@@ -885,20 +986,6 @@ function formatdateshow(data, id) {
 
 /* Deal with the scroll */
 
-function syncronizationScrollReportApple(comparedateApple) {
-    var winScroll = document.getElementById("heartrate-apple").scrollLeft;
-    document.getElementById("heatmap").scroll((winScroll - comparedateApple), 0);
-}
-
-function syncronizationScrollReportOura(comparedateApple) {
-    var winScroll = document.getElementById("temperature-oura_sleep_summary").scrollLeft;
-    document.getElementById("heatmap").scroll((winScroll - comparedateApple), 0);
-}
-
-function syncronizationScrollReportFitbit(comparedateApple) {
-    var winScroll = document.getElementById("heart-rate-fitbit").scrollLeft;
-    document.getElementById("heatmap").scroll((winScroll - comparedateApple), 0);
-}
 
 function dayControlGraph(data, days2, month) {
     var days_fixed = [];
@@ -1042,8 +1129,340 @@ function precise(x) {
 }
 
 parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S.%f%Z");
+parseTimeOuraSleep = d3.timeParse("%Y-%m-%dT%H:%M:%S%Z");
 parseTimeTemp = d3.timeParse("%Y-%m-%d");
 formatyear = d3.timeFormat("%y");
 formatdate = d3.timeFormat("%d/%m");
 formatdateday = d3.timeFormat("%d");
 formatdatemonth = d3.timeFormat("%m");
+
+/* Fonction pas nécessaires */
+
+
+function syncronizationScrollReportApple(comparedateApple) {
+    var winScroll = document.getElementById("heartrate-apple").scrollLeft;
+    document.getElementById("heatmap").scroll((winScroll - comparedateApple), 0);
+}
+
+function syncronizationScrollReportOura(comparedateApple) {
+    var winScroll = document.getElementById("temperature-oura_sleep_summary").scrollLeft;
+    document.getElementById("heatmap").scroll((winScroll - comparedateApple), 0);
+}
+
+function syncronizationScrollReportFitbit(comparedateApple) {
+    var winScroll = document.getElementById("heart-rate-fitbit").scrollLeft;
+    document.getElementById("heatmap").scroll((winScroll - comparedateApple), 0);
+}
+
+function finrepeatday(appleday, appledate, repeat) {
+    /* On vérifie que les jours sont pas en double */
+    data1 = appleday;
+    var cnt = 0;
+    var cnt2 = 0;
+    for (let i = 0; i < appleday.length - 1; i++) {
+        let calcul = data1[i + 1].split('/')[0] - data1[i].split('/')[0];
+        if (calcul == 0) {
+            repeat[cnt] = (i);
+            cnt++;
+        } else {
+            appledate[cnt2] = appleday[i];
+            cnt2++;
+        }
+    }
+    appledate.push(data1[appleday.length - 1]);
+    /* Permet de retrouver les doublons dans les valeurs de l'apple watch */
+    repeat.sort(compare);
+}
+
+function createSvg(div1, widthdiv1, div2, heightdiv2, div3, heightdiv3) {
+    maingroupapple = d3.select('#' + div1)
+        .append("svg")
+        .attr("class", "svg")
+        .attr("width", widthdiv1) //(this.appledate.length + 1) * gridSize)
+        .attr("height", heightdiv2)
+
+    legendapple = d3.select('#' + div2)
+        .append("svg")
+        .attr("class", "svg")
+        .attr("width", 100 + "%")
+        .attr("height", heightdiv2)
+
+    titleapple = d3.select('#' + div3)
+        .append("svg")
+        .attr("class", "svg")
+        .attr("width", 100 + "%")
+        .attr("height", heightdiv3) //margin.top)
+}
+
+function repeatdata(appleday, appledata, noRepeatDataApple) {
+    data1 = appleday;
+    var cnt = 0;
+    for (let i = 0; i < appleday.length - 1; i++) {
+        let calcul = data1[i + 1].split('/')[0] - data1[i].split('/')[0];
+        if (calcul != 0) {
+            noRepeatDataApple[cnt] = appledata[i];
+            cnt++;
+        }
+    }
+    noRepeatDataApple.push(appledata[appledata.length - 1]);
+}
+
+/* Main fonction of wearable data */
+function main_fitbit_summary_heartrate(data) {
+    heightGraph = determineHeigth() / 2;
+    fitbitdata = [], fitbitdate = [], fitbitday = [], fitbitmonth = [], fitbityear = [];
+    symptomData_fitbit = [];
+    getHeartRateDatafromFitbit(data);
+    controlDatafromFitbit(data);
+    /* Graphic element */
+    createSvg('heart-rate-fitbit', (fitbit_date.length * gridSize), 'fitbit-legend', (heightGraph), 'fitbit-title', (margin.top));
+    createChartePoint(maingroupapple, finaldata_fitbit, fitbitAxis, "circle-fitbit", "#67FFFF");
+    getreportedSickIncident(maingroupapple, symptomData_fitbit);
+    createTitle(titleapple, "Heart Rate evolution", 'fitbit-title');
+    createLegendAxeY(legendapple, fitbitAxis, "HEART RATE [BMP]", 'fitbit-axisY');
+    createLegendAxeX(maingroupapple, dayAxis_fitbit);
+    showMonthsAxis(maingroupapple, monthOnAxis_fitbit, (heightGraph - 5));
+    /* Display the data when mouse on it */
+    tooltip("circle-fitbit", fitbit_date, "bmp");
+    var winScroll = document.getElementById("heatmap").scrollLeft;
+    document.getElementById("heart-rate-fitbit").scroll((winScroll), 0);
+    document.getElementById("heart-rate-fitbit").onscroll = function () {
+        var winScroll = document.getElementById("heart-rate-fitbit").scrollLeft;
+        document.getElementById("heatmap").scroll((winScroll), 0);
+    }
+}
+
+function mainTemperature_oura_sleep_summary(data) {
+    //tempAxis = ["-1", "-0.5", "0", "0.5", "1", "1.5", "2", "2.5"];
+    tempdata = [], tempday = [], tempyear = [], tempdayAxis = [], tempdate = [], repeat = [], noRepeatData = [];
+    day = [];
+    monthtemp = [];
+    heightGraph = determineHeigth() / 2;
+    symptomData = [];
+
+    controlDatafromOura(data);
+
+    /* Element graphique */
+    createSvg('temperature-oura_sleep_summary', ((oura_date.length) * gridSize), 'oura_sleep_summary-legend', (heightGraph), 'oura_sleep_summary-title', (margin.top));
+    createChartePoint(maingroupapple, finaldataOuraTemperature, axisTemperature_oura, "circle-temperature", "#67FFFF");
+    getreportedSickIncident(maingroupapple, symptomData);
+    createTitle(titleapple, "Temperature evolution", 'oura-title');
+    createLegendAxeY(legendapple, axisTemperature_oura, "BODY TEMPERATURE", 'oura-axisY');
+    createLegendAxeX(maingroupapple, tempdayAxis);
+    showMonthsAxis(maingroupapple, month, (heightGraph - 5));
+
+    /* Afficher les données */
+    tooltip("circle-temperature", oura_date, "");
+
+    var winScroll = document.getElementById("heatmap").scrollLeft;
+    document.getElementById("temperature-oura_sleep_summary").scroll((winScroll), 0);
+
+    document.getElementById("temperature-oura_sleep_summary").onscroll = function () {
+        var winScroll = document.getElementById("temperature-oura_sleep_summary").scrollLeft;
+        document.getElementById("heatmap").scroll((winScroll), 0);
+    }
+}
+
+function mainAppleWatch(data) {
+    dayapp = [], monthapp = [], appledata = [], appleday = [], appleyear = [], symptomData = [];
+    cnt = 0, appledate = [], repeat = [], noRepeatDataApple = [];
+    heightGraph = determineHeigth() / 2;
+
+    controlDatafromAppleWatch(data);
+
+    /* Element graphique */
+    createSvg('heartrate-apple', ((this.apple_date.length) * gridSize), 'apple-legend', (heightGraph), 'apple-title', (margin.top));
+    createChartePoint(maingroupapple, finaldataAppleWatch, heartrateAxis, "circle-apple-watch", "#67FFFF")
+    getreportedSickIncident(maingroupapple, symptomData)
+    createTitle(titleapple, "Heart rate evolution", 'apple-title');
+    createLegendAxeY(legendapple, heartrateAxis, "HEART RATE [BPM]", 'apple-axisY');
+    createLegendAxeX(maingroupapple, axisdays);
+    showMonthsAxis(maingroupapple, applemonth, (heightGraph - 5));
+
+    /* Afficher les données */
+    tooltip("circle-apple-watch", apple_date, "bmp");
+    /* Controler le scroll  */
+    var winScroll = document.getElementById("heatmap").scrollLeft;
+    document.getElementById("heartrate-apple").scroll((winScroll), 0);
+
+    document.getElementById("heartrate-apple").onscroll = function () {
+        var winScroll = document.getElementById("heartrate-apple").scrollLeft;
+        document.getElementById("heatmap").scroll((winScroll), 0);
+    }
+}
+
+function getdataFromSymptomReport(data) {
+    heatmapdata = [], heatmapdate = [], heatmapday = [], heatmapmonth = [], heatmapyear = [];
+    this.file = data.symptom_report.map(d => d);
+    this.file.forEach(element => {
+        //heatmapdata[cnt] = element.data.heart_rate;
+        heatmapdate[cnt] = formatdate(parseTime(element.timestamp));
+        heatmapday[cnt] = formatdateday(parseTime(element.timestamp));
+        heatmapmonth[cnt] = formatdatemonth(parseTime(element.timestamp));
+        heatmapyear[cnt] = formatyear(parseTime(element.timestamp));
+        cnt++;
+    });
+
+    comparateDayReportWearable = controlDay(heatmapdate, heatmapday, heatmapmonth);
+    symptom_data_heatmap = loadDataSymptom(data);
+}
+
+function getWearableData() {
+    $.getJSON(url, function (data) {
+        //timestamp3 = data.symptom_report.map(d => d.timestamp);
+        file_days3 = data.symptom_report.map(d => formatdate(parseTime(d.timestamp)));
+        days23 = data.symptom_report.map(d => formatdateday(parseTime(d.timestamp)))
+        month3 = data.symptom_report.map(d => formatdatemonth(parseTime(d.timestamp)))
+        days3 = controlDay(file_days3, days23, month3);
+
+
+        if (data.oura_sleep_summary == undefined) {
+            showbuttonNoConnection("button-no-oura_sleep_summary", "message-no-oura_sleep_summary", "/import_data/authorize-oura/", "Connect Oura account")
+        }
+        else if (data.oura_sleep_summary != undefined)
+            mainTemperature_oura_sleep_summary(data);
+
+        if (data.apple_health_summary == undefined) {
+            showbuttonNoConnection("button-no-apple", "message-no-apple", "https://apps.apple.com/us/app/oh-data-port/id1512384252", "Connect Apple Watch")
+        }
+        else if (data.apple_health_summary != undefined)
+            mainAppleWatch(data);
+
+        if (data.fitbit_summary == undefined) {
+            showbuttonNoConnection("button-no-fitbit", "message-no-fitbit", "https://www.fitbit.com/oauth2/authorize?response_type=code&amp;client_id=&amp;scope=activity%20nutrition%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight", "Connect Fitbit account")
+        }
+        else if (data.fitbit_summary != undefined)
+            main_fitbit_summary_heartrate(data);
+    })
+}
+
+/* Button no loading wearable data */
+function showbuttonNoConnection(idbutton, idmessage, hrefbutton, buttonmessage) {
+    let dct = document.getElementById(idbutton);
+    let htmlContent = "<a class= 'btn btn-primary btn-lg' href=" + hrefbutton + ">"
+        + buttonmessage +
+        "</a>";
+    dct.insertAdjacentHTML('afterend', htmlContent);
+    var para = document.createElement("p");
+    var node = document.createTextNode("Notes : You have not  connect these data sources to correlate them with reported illness. Please click on the button to change this setting. Thank you for sharing! 💖");
+    para.appendChild(node);
+    var element = document.getElementById(idmessage);
+    element.appendChild(para);
+    document.getElementById("myBar").style.width = scrolled + "%";
+}
+
+function createTemperatureButtonAddTo(svgName, data) {
+    let classname = [];
+    let colorscale = [];
+    let legendname = [];
+    let cnt = 0;
+
+    if (oura == true) {
+        classname[cnt] = 'oura';
+        colorscale[cnt] = '#9BFF1C';
+        legendname[cnt] = "Temperature [Oura]";
+        cnt++;
+    }
+    console.log('oura: ' + oura);
+    svgName.selectAll('circle-choice')
+        .data(classname)
+        .enter()
+        .append("circle")
+        .attr('id', 'circle-choice-temperature')
+        .attr('class', function (d, i) { return classname[i] })
+        .attr("cx", gridSize * 0.7)
+        .attr("cy", function (d, i) {
+            return margin.top + (i * gridSize * 2)
+        })
+        .attr("r", gridSize / 2)
+        .attr("stroke", "#e2e2e2")
+        .style("fill", function (d, i) {
+            return colorscale[i]
+        });
+
+    svgName.selectAll(".daysLabel")
+        .data(legendname)
+        .enter().append("text")
+        .text(function (d) { return d; })
+        .style("fill", "#212529")
+        .attr("x", gridSize * 1.5)
+        .attr("y", function (d, i) { return margin.top + (i * gridSize * 2) })
+        .style("text-anchor", "start")
+        .style("font-weight", "300")
+        .attr("font-size", 0.7 + "rem");
+
+}
+
+function main_temperature_data(data) {
+    oura = controlWearableDatafromfile(data, 'oura');
+    if (oura == true) {
+        heightGraph = determineHeigth() / 2;
+        symptom_report = getSymptomDatafromFile(0);
+        month = determinenamemonth(this.completedDays);
+        var revert = [1, 0, 0];
+        createSvgTemperature('temperature-graph', ((this.completedDays.length) * gridSize), 'temperature-legend', (heightGraph), 'temperature-title', (margin.top), 'temperature-choice');
+        createLegendAxeX(maingroupTemp, this.days_axis);
+        createLegendAxeY(legendgroupTemp, "null", "");
+        getreportedSickIncident(maingroupTemp, symptom_report);
+        createTemperatureButtonAddTo(makeAchoiceTemp, data);
+        showMonthsAxis(maingroupTemp, month, (heightGraph - 5));
+        tooltipChoiceTemperature(data, revert);
+        var winScroll = document.getElementById("heatmap").scrollLeft;
+        document.getElementById("temperature-graph").scroll((winScroll), 0);
+        document.getElementById("temperature-graph").onscroll = function () {
+            var winScroll = document.getElementById("temperature-graph").scrollLeft;
+            document.getElementById("heatmap").scroll((winScroll), 0);
+        }
+    } else
+        d3.select('#temperature-container').remove();
+}
+
+function createSvgTemperature(div1, widthdiv1, div2, heightdiv2, div3, heightdiv3, divChoice) {
+    maingroupTemp = d3.select('#' + div1)
+        .append("svg")
+        .attr("class", "svg")
+        .attr("width", widthdiv1) //(this.appledate.length + 1) * gridSize)
+        .attr("height", heightdiv2)
+
+    legendgroupTemp = d3.select('#' + div2)
+        .append("svg")
+        .attr("class", "svg")
+        .attr("width", 100 + "%")
+        .attr("height", heightdiv2)
+
+    titlegroupTemp = d3.select('#' + div3)
+        .append("svg")
+        .attr("class", "svg")
+        .attr("width", 100 + "%")
+        .attr("height", heightdiv3) //margin.top)
+
+    sndLegendgroup = d3.select('#second-legend-display-temperature')
+        .append("svg")
+        .attr("class", "svg")
+        .attr("width", 100 + "%")
+        .attr("height", heightdiv2) //margin.top)
+
+    makeAchoiceTemp = d3.select('#' + divChoice)
+        .append("svg")
+        .attr("class", "svg")
+        .attr("width", 100 + "%")
+        .attr("height", heightdiv2) //margin.top)
+}
+
+function tooltipChoiceTemperature(data, revert) {
+    mainContainer_temperature_oura_sleep_summary(data, maingroupTemp, legendgroupTemp, titlegroupTemp, revert[0]);
+    d3.selectAll("#circle-choice-temperature")
+        .on("click", function (d) {
+            let classButton = this.getAttribute('class');
+            if (classButton == 'oura' && revert[0] == 1) {
+                revert[0] = 0;
+                d3.select(this).attr("width", ((gridSize / 2) - 10)).attr("height", ((gridSize / 2) - 10)).attr('stroke-width', 10).attr("stroke", "#e2e2e2");
+            }
+            else if (classButton == 'oura' && revert[0] == 0) {
+                revert[0] = 1;
+                d3.select(this).attr("width", ((gridSize / 2))).attr("height", ((gridSize / 2))).attr('stroke-width', 1);
+            }
+            if (classButton == 'oura')
+                mainContainer_temperature_oura_sleep_summary(data, maingroupTemp, legendgroupTemp, titlegroupTemp, revert[0]);
+        })
+}
