@@ -75,8 +75,14 @@ function createheatmap(url) {
   $.get(url, function (data) {
     height = determineHeigth();
     innerwidth = determineInnerwidth();  
-    
-    timestamp = data.symptom_report.map(d => d.timestamp);
+    heightGraph = (height/2);
+    main_heatmap (data);
+    main_wearable_data(data);
+  })
+}
+
+function main_heatmap (data) {
+  timestamp = data.symptom_report.map(d => d.timestamp);
     file_days = timestamp.map(d => formatdate(parseTime(d)));
     reportday = timestamp.map(d => formatdateday(parseTime(d)))
     month = timestamp.map(d => formatdatemonth(parseTime(d)))
@@ -84,7 +90,6 @@ function createheatmap(url) {
     
     moreday = getNoReportValues(data);
     moredayDataSource = getNoReportDataSource(data);
-  
     completedDays = addDaynoReport(moreday, moredayDataSource, data);
     namesmonths = determinenamemonth(completedDays);
    // console.log( moredayDataSource);
@@ -108,9 +113,10 @@ function createheatmap(url) {
     document.getElementById("heatmap").onscroll = function () {
       progressScrollBar();
       var winScroll = document.getElementById("heatmap").scrollLeft;
+      if (moredayDataSource != 'n') {
       document.getElementById("wearable-graph").scroll(winScroll, 0);
+      }
     };
-  })
 }
 
 function tooltip_heatmap() {
@@ -496,15 +502,17 @@ function showAppendTitle(data, i, y) {
       + " \n Symptom : " + $names[y]
       + " \n Values: " + data + "/4";
 
-    if (finaldataAppleWatch[i - (-comparedateApple)] != undefined && finaldataAppleWatch[i - (-comparedateApple)] != '-' && finaldataAppleWatch[i - (-comparedateApple)] != 'NO DATA')
-      msg += " \n Heart Rate (Apple Watch) : " + finaldataAppleWatch[i - (-comparedateApple)] + " bmp";
+    if (finaldataAppleWatch[i] != undefined && finaldataAppleWatch[i] != '-' && finaldataAppleWatch[i] != 'NO DATA')
+      msg += " \n Heart Rate (Apple Watch) : " + finaldataAppleWatch[i] + " bmp";
 
-    if (finaldata_fitbit[i - (-comparedate_fitbit)] != undefined && finaldata_fitbit[i - (-comparedate_fitbit)] != '-' && finaldata_fitbit[i - (-comparedate_fitbit)] != 'NO DATA')
-      msg += " \n Heart Rate (Fitbit) : " + finaldata_fitbit[i - (-comparedate_fitbit)] + " bmp";
+    if (finaldata_fitbit[i] != undefined && finaldata_fitbit[i] != '-' && finaldata_fitbit[i] != 'NO DATA')
+      msg += " \n Heart Rate (Fitbit) : " + finaldata_fitbit[i] + " bmp";
 
-    if (finaldataOuraTemperature[i - (-comparedate)] != undefined && finaldataOuraTemperature[i - (-comparedate)] != '-' && finaldataOuraTemperature[i - (-comparedate)] != 'NO DATA')
-      msg += " \n Body Temp. (Oura) : " + finaldataOuraTemperature[i - (-comparedate)];
-
+    if (finaldataOuraTemperature[i] != undefined && finaldataOuraTemperature[i] != '-' && finaldataOuraTemperature[i] != 'NO DATA')
+      msg += " \n Body Temp. (Oura) : " + finaldataOuraTemperature[i];
+    
+    if (finaldataOura[i] != undefined && finaldataOura[i] != '-' && finaldataOura[i] != 'NO DATA')
+      msg += " \n Heart Rate (Oura) : " + finaldataOura[i] + " bmp";
     return msg;
   }
   if (data == 5) {
@@ -838,9 +846,13 @@ function getNoReportValues(data) {
     firstDay_oura = formatdate(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
   else 
     firstDay_oura = firstDay_report;
-  
+  if (data.oura_sleep_5min != undefined)
+    firstDay_oura_hr = formatdate(parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp));
+  else 
+    firstDay_oura_hr = firstDay_report;
+    
     test = 0;
-  test2 = "";
+    test2 = "";
 
   if ((firstDay_report.split('/')[0] - firstDay_apple.split('/')[0]) > test && firstDay_apple != undefined) {
     test = (firstDay_report.split('/')[0] - firstDay_apple.split('/')[0]) ;
@@ -853,6 +865,10 @@ function getNoReportValues(data) {
   if ((firstDay_report.split('/')[0] - firstDay_fitbit.split('/')[0]) > test && firstDay_fitbit != undefined) {
     test = (firstDay_report.split('/')[0] - firstDay_fitbit.split('/')[0]) ;
     test2 = '/fitbit';
+  }
+  if ((firstDay_report.split('/')[0] - firstDay_oura_hr.split('/')[0]) > test && firstDay_oura_hr != undefined) {
+    test = (firstDay_report.split('/')[0] - firstDay_oura_hr.split('/')[0]) ;
+    test2 = '/ouraHR';
   }
   return (test);
 }
@@ -872,6 +888,10 @@ function getNoReportDataSource(data) {
     firstDay_oura = formatdate(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
   else 
     firstDay_oura = firstDay_report;
+  if (data.oura_sleep_5min != undefined)
+    firstDay_oura_hr = formatdate(parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp));
+  else 
+    firstDay_oura_hr = firstDay_report;
 
   test = 0; 
   test2 = "n";
@@ -887,6 +907,10 @@ function getNoReportDataSource(data) {
   if ((firstDay_report.split('/')[0] - firstDay_fitbit.split('/')[0]) > test) {
     test = (firstDay_report.split('/')[0] - firstDay_fitbit.split('/')[0]) ;
     test2 = 'fitbit';
+  }
+  if ((firstDay_report.split('/')[0] - firstDay_oura_hr.split('/')[0]) > test) {
+    test = (firstDay_report.split('/')[0] - firstDay_oura_hr.split('/')[0]) ;
+    test2 = '/ouraHR';
   }
   return test2;
 }
@@ -904,17 +928,21 @@ function addDaynoReport(numberdays, datasource, data) {
         daystoadd[i] = formatdate(parseTimeTemp(data.fitbit_summary[i].timestamp));
       }
   } 
-  
  else if (datasource == 'apple' && data.apple_health_summary != undefined) {
       for (let i = 0; i < numberdays; i ++) {
         daystoadd[i] = formatdate(parseTime(data.apple_health_summary[i].timestamp));
       }
-  } else numberdays = 0; 
+  } 
+  else if (datasource == 'ouraHR' && data.oura_sleep_5min != undefined) {
+    for (let i = 0; i < numberdays; i ++) {
+      daystoadd[i] = formatdate(parseTimeOuraSleep(data.oura_sleep_5min[i].timestamp));
+    }
+} 
+  else numberdays = 0; 
 
   for (let i = numberdays; i < days.length + numberdays; i++) {
     daystoadd[i] = days[i-numberdays];
   }
-
   return daystoadd;
 }
 function getDays(){
@@ -925,6 +953,7 @@ parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S.%f+00:00");
 formatdate = d3.timeFormat("%d/%m");
 formatdateday = d3.timeFormat("%d");
 formatdatemonth = d3.timeFormat("%m");
+parseTimeOuraSleep = d3.timeParse("%Y-%m-%dT%H:%M:%S%Z");
 
 /* fonctions : */
 /*function createheatmapPhone(url) {
