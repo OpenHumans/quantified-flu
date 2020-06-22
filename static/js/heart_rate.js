@@ -26,7 +26,7 @@ function main_wearable_data(data) {
     apple = controlWearableDatafromfile(data, 'apple');
     oura = controlWearableDatafromfile(data, 'oura');
     ouraHR = controlWearableDatafromfile(data, 'ouraHR');
-
+    Garmin = controlWearableDatafromfile(data, 'garmin');
     axis = [];
     //revert = setrevert ();
     maxHr = 0;
@@ -147,66 +147,65 @@ function mainContainer_temperature_oura_sleep_summary(data, maingroupapple, lege
     monthtemp = [];
     console.log(revert);
     if (revert[0] == 1) {
-        //if (revert[1] == 1)
-        //removeDataSource('circle-apple-watch-ctn', 'apple-axisY-ctn', 'apple-title-ctn', 'oura-axisY-cnt-2', 'apple-axisY-ctn-2', 'apple-axisY-ctn'); 
-        removeDataSource('circle-temperature-ctn', 'oura-axisY-cnt', 'oura-title-ctn', 'apple-axisY-ctn-2', 'oura-axisY-cnt-2', 'oura-axisY-cnt');
+        removeDataSource('circle-temperature-ctn', 'oura-axisY-cnt', 'oura-title-ctn', 'oura-sum', 'oura-axisY-cnt-2', 'oura-axisY-cnt');
         controlDatafromOura(data);
+        showSumdata(maingroupapple, prob, axisTemperature_oura, 'oura-sum');
         createChartePoint(maingroupapple, finaldataOuraTemperature, axisTemperature_oura, "circle-temperature-ctn", "#9BFF1C", (gridSize / 10));
         createTitle(titleapple, "Temperature evolution", 'oura-title-ctn', '50%');
         createLegendAxeY(legendapple, axisTemperature_oura, "BODY TEMPERATURE", 'oura-axisY-cnt');
         /* Afficher les données */
         tooltip("circle-temperature-ctn", oura_date, "");
     } else {
-        removeDataSource('circle-temperature-ctn', 'oura-axisY-cnt', 'oura-title-ctn', 'apple-axisY-ctn-2', 'oura-axisY-cnt-2', 'oura-axisY-cnt');
+        removeDataSource('circle-temperature-ctn', 'oura-axisY-cnt', 'oura-title-ctn', 'oura-sum', 'oura-axisY-cnt-2', 'oura-axisY-cnt');
     }
 }
 
-function loadDatafromOura (data) {
+function loadDatafromOura(data) {
     ouradata = [], ouraday = [], ourayear = [], ouradayAxis = [], ouradate = [], repeat = [], noRepeatData = [];
     ouraday = [];
     ouramonth = [];
     controlDatafromOuraSleep(data);
 }
-function mainContainer_heart_rate_oura_sleep(dataAxis, maingroupapple, legendapple, titleapple, revert) {
-    /*ouradata = [], ouraday = [], ourayear = [], ouradayAxis = [], ouradate = [], repeat = [], noRepeatData = [];
-    ouraday = [];
-    ouramonth = [];*/
+function mainContainer_heart_rate_oura_sleep(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
     if (revert[3] == 1) {
-        removeDataSource('circle-oura-heart-rate-ctn', 'oura-heart-rate-title-ctn', 'oura-heart-rate-axisY-cnt');
-       //controlDatafromOuraSleep(data);
+        removeDataSource('circle-oura-heart-rate-ctn', 'oura-heart-rate-title-ctn', 'oura-heart-rate-axisY-cnt', 'oura-heart-rate-sum');
+        showSumdata(maingroupapple, prob, dataAxis, 'oura-heart-rate-sum');
         createChartePoint(maingroupapple, finaldataOura, dataAxis, "circle-oura-heart-rate-ctn", "#09CEFE", (gridSize / 10));
         if ((revert[2] == 0 && revert[1] == 0)) {
             createTitle(titleapple, "Heart rate evolution", 'oura-heart-rate-title-ctn', '50%');
             createLegendAxeY(legendapple, dataAxis, "HEART RATE [bmp]", 'oura-heart-rate-axisY-cnt');
+            // mainContainer_heart_rate_oura_sleep(axis, maingroup, legendgroup, titlegroup, revert, prob);
         }
         /* Afficher les données */
         tooltip("circle-oura-heart-rate-ctn", oura_date, "BMP");
     } else
-        removeDataSource('circle-oura-heart-rate-ctn', 'oura-heart-rate-title-ctn', 'oura-heart-rate-axisY-cnt');
+        removeDataSource('circle-oura-heart-rate-ctn', 'oura-heart-rate-title-ctn', 'oura-heart-rate-axisY-cnt', 'oura-heart-rate-sum');
 }
 
-function loadDatafromAppleWatch (data) {
+function loadDatafromAppleWatch(data) {
     dayapp = [], monthapp = [], appledata = [], appleday = [], appleyear = [], symptomData = [];
     cnt = 0, appledate = [], repeat = [], noRepeatDataApple = [];
     controlDatafromAppleWatch(data);
 }
-function mainContainer_HeartRate_Apple_Watch(dataAxis, maingroupapple, legendapple, titleapple, revert) {
+function mainContainer_HeartRate_Apple_Watch(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
     /*dayapp = [], monthapp = [], appledata = [], appleday = [], appleyear = [], symptomData = [];
     cnt = 0, appledate = [], repeat = [], noRepeatDataApple = [];*/
     if (revert[1] == 1) {
         //if (revert[0] == 1)
         // removeDataSource('circle-temperature-ctn', 'oura-axisY-cnt', 'oura-title-ctn', 'apple-axisY-ctn-2', 'oura-axisY-cnt-2', 'oura-axisY-cnt');
-        removeDataSource('circle-apple-watch-ctn', 'apple-axisY-ctn', 'apple-title-ctn', 'oura-axisY-cnt-2', 'apple-axisY-ctn-2', '-heart-rate-axisY-ctn');
-       // controlDatafromAppleWatch(data);
+        removeDataSource('circle-apple-watch-ctn', 'apple-axisY-ctn', 'apple-title-ctn', 'apple-sum', 'apple-axisY-ctn-2', 'apple-axisY-ctn');
+        // controlDatafromAppleWatch(data);
         /* Element graphique */
+        // showSumdata(maingroupapple, prob, dataAxis);
+        showSumdata(maingroupapple, prob, dataAxis, 'apple-sum');
         createChartePoint(maingroupapple, finaldataAppleWatch, dataAxis, "circle-apple-watch-ctn", "#0041EA", (gridSize / 10))
         createTitle(titleapple, "Heart rate evolution", 'apple-title-ctn', '50%');
         createLegendAxeY(legendapple, dataAxis, "HEART RATE [BPM]", 'apple-axisY-ctn');
-    
+
         /* Afficher les données */
         tooltip("circle-apple-watch-ctn", apple_date, "bmp");
     } else {
-        removeDataSource('circle-apple-watch-ctn', 'apple-axisY-ctn', 'apple-title-ctn', 'oura-axisY-cnt-2', 'apple-axisY-ctn-2', 'apple-axisY-ctn');
+        removeDataSource('circle-apple-watch-ctn', 'apple-axisY-ctn', 'apple-title-ctn', 'apple-sum', 'apple-axisY-ctn-2', 'apple-axisY-ctn');
     }
 }
 
@@ -215,27 +214,67 @@ function loadDatafromFitbit(data) {
     symptomData_fitbit = [];
     controlDatafromFitbit(data);
 }
-function mainContainer_fitbit_summary_heartrate(dataAxis, maingroupapple, legendapple, titleapple, revert) {
-    //fitbitdata = [], fitbitdate = [], fitbitday = [], fitbitmonth = [], fitbityear = [];
-   // symptomData_fitbit = [];
+function mainContainer_fitbit_summary_heartrate(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
     if (revert[2] == 1) {
-        removeDataSource('circle-fitbit-cnt', 'fitbit-axisY-cnt', 'fitbit-title-cnt');
+        removeDataSource('circle-fitbit-cnt', 'fitbit-axisY-cnt', 'fitbit-title-cnt', 'fitbit-sum');
         createTitle(titleapple, "Heart Rate evolution", 'fitbit-title-cnt', '50%');
         createLegendAxeY(legendapple, dataAxis, "HEART RATE [BMP]", 'fitbit-axisY-cnt');
         /* Element graphique */
+        showSumdata(maingroupapple, prob, dataAxis, 'fitbit-sum');
         createChartePoint(maingroupapple, finaldata_fitbit, dataAxis, "circle-fitbit-cnt", "#FF8484", (gridSize / 10));
+
         /* Afficher les données */
         tooltip("circle-fitbit-cnt", fitbit_date, "bmp");
     } else {
-        removeDataSource('circle-fitbit-cnt', 'fitbit-axisY-cnt', 'fitbit-title-cnt');
+        removeDataSource('circle-fitbit-cnt', 'fitbit-axisY-cnt', 'fitbit-title-cnt', 'fitbit-sum');
     }
 }
 
+function calculatSum(data) {
+    var sum = 0;
+    var N = 0;
+    var variance = 0;
+    var stddeviation = 0;
+
+    for (let i = 0; i < data.length; i++) {
+        if (data[i] != '-' && data[i] != undefined && data[i] != "NO DATA" && data[i] != "") {
+            sum += data[i];
+            N++;
+        }
+    }
+    if (sum > 1)
+        sum = Math.round(sum / N);
+    else
+        sum = (sum / N);
+
+    for (let i = 0; i < data.length; i++) {
+        if (data[i] != '-' && data[i] != undefined && data[i] != "NO DATA" && data[i] != "") {
+            variance += (1 / N) * ((data[i] - sum) * (data[i] - sum));
+        }
+    }
+    stddeviation = Math.sqrt(variance);
+
+    var prop = [];
+    if (sum > stddeviation)
+        prop[0] = Math.round(sum - stddeviation);
+    else
+        prop[0] = (sum - stddeviation);
+    if (sum > 1)
+        prop[1] = Math.round(sum);
+    else
+        prop[1] = (sum);
+    if (sum > stddeviation)
+        prop[2] = Math.round(sum + stddeviation);
+    else
+        prop[2] = (sum + stddeviation);
+
+    return (prop);
+}
 function removeDataSource(iddata, idtitle, idaxis, idaxis2, idaxis3, idaxis4) {
     d3.selectAll("#" + iddata).remove();
     d3.selectAll("#" + idtitle).remove();
     d3.selectAll("#" + idaxis).remove();
-    //d3.selectAll("#" + idaxis2).remove();
+    d3.selectAll("#" + idaxis2).remove();
     //d3.selectAll("#" + idaxis3).remove();
     //d3.selectAll("#" + idaxis4).remove();
 }
@@ -363,29 +402,66 @@ function getDayonAxis(data) {
     return axisdays;
 }
 
-function getCombineAxisY (revert) {
+function getCombineAxisY(revert) {
     var test = [];
     var cnt1 = 0;
     var cnt2 = 0;
-     if (revert[1] == 1) {
-         for (let i = 0; i < heartrateAxis.length; i ++) {
-        test[i] = heartrateAxis[i];
-        cnt1++;
-        cnt2++;
+    if (revert[1] == 1) {
+        for (let i = 0; i < heartrateAxis.length; i++) {
+            test[i] = heartrateAxis[i];
+            cnt1++;
+            cnt2++;
+        }
     }
-}
-   if (revert[2] == 1) { 
-        for (let i = 0; i < fitbitAxis.length; i ++) {
-        test[i + cnt1] = fitbitAxis[i];
-        cnt2++;
-    }   
-}
+    if (revert[2] == 1) {
+        for (let i = 0; i < fitbitAxis.length; i++) {
+            test[i + cnt1] = fitbitAxis[i];
+            cnt2++;
+        }
+    }
     if (revert[3] == 1) {
-        for (let i = 0; i <  ouraAxis.length; i ++) {
-            test[i + cnt2] =  ouraAxis[i];
-        }   
+        for (let i = 0; i < ouraAxis.length; i++) {
+            test[i + cnt2] = ouraAxis[i];
+        }
     }
-    return Array.from (new Set (test));
+    return Array.from(new Set(test));
+}
+
+function getSum(revert) {
+    var data = [];
+    var cnt1 = 0;
+    var cnt2 = 0;
+    var prop = [0, 0, 0];
+
+    if (revert[0] == 1 && revert[1] == 0 && revert[2] == 0 && revert[3] == 0) {
+        for (let i = 0; i < finaldataOuraTemperature.length; i++) {
+            data[i] = finaldataOuraTemperature[i];
+        }
+    }
+    if (revert[1] == 1 && revert[0] == 0) {
+        for (let i = 0; i < finaldataAppleWatch.length; i++) {
+            data[i] = finaldataAppleWatch[i];
+            cnt1++;
+            cnt2++;
+        }
+    }
+    if (revert[2] == 1 && revert[0] == 0) {
+        for (let i = 0; i < finaldata_fitbit.length; i++) {
+            data[i + cnt1] = finaldata_fitbit[i];
+            cnt2++;
+        }
+    }
+    if (revert[3] == 1 && revert[0] == 0) {
+        for (let i = 0; i < finaldataOura.length; i++) {
+            data[i + cnt2] = finaldataOura[i];
+        }
+    }
+
+    if (revert[0] == 0 && revert[1] == 0 && revert[2] == 0 && revert[3] == 0)
+        prop = [0, 0, 0];
+    else
+        prop = calculatSum(data);
+    return prop;
 }
 
 function getreportedSickIncident(maingroupapple, data) {
@@ -431,9 +507,9 @@ function tooltip(circleid, data, msg) {
 
 function tooltipChoice(data) {
     click = 1;
-    
+
     if (apple == true) {
-        loadDatafromAppleWatch (data);
+        loadDatafromAppleWatch(data);
     }
     if (fitbit == true) {
         loadDatafromFitbit(data);
@@ -442,21 +518,25 @@ function tooltipChoice(data) {
         loadDatafromOura(data);
     }
     selectedGroupButton();
-    axis = getCombineAxisY (revert);
+    axis = getCombineAxisY(revert);
+    prob = getSum(revert);
+    console.log(prob);
     mainContainer_temperature_oura_sleep_summary(data, maingroup, legendgroup, titlegroup, revert);
-    mainContainer_HeartRate_Apple_Watch(axis, maingroup, legendgroup, titlegroup, revert);
-    mainContainer_fitbit_summary_heartrate(axis, maingroup, legendgroup, titlegroup, revert);
-    mainContainer_heart_rate_oura_sleep(axis, maingroup, legendgroup, titlegroup, revert);
+    mainContainer_HeartRate_Apple_Watch(axis, maingroup, legendgroup, titlegroup, revert, prob);
+    mainContainer_fitbit_summary_heartrate(axis, maingroup, legendgroup, titlegroup, revert, prob);
+    mainContainer_heart_rate_oura_sleep(axis, maingroup, legendgroup, titlegroup, revert, prob);
 
     d3.selectAll("#circle-choice-heartrate")
         .on("click", function (d) {
             classButton = this.getAttribute('class');
-            controlGestionclick ();
-            axis = getCombineAxisY (revert);
+            controlGestionclick();
+            prob = getSum(revert);
+            console.log(prob);
+            axis = getCombineAxisY(revert);
             mainContainer_temperature_oura_sleep_summary(data, maingroup, legendgroup, titlegroup, revert);
-            mainContainer_HeartRate_Apple_Watch(axis, maingroup, legendgroup, titlegroup, revert);
-            mainContainer_fitbit_summary_heartrate(axis, maingroup, legendgroup, titlegroup, revert);
-            mainContainer_heart_rate_oura_sleep(axis, maingroup, legendgroup, titlegroup, revert);
+            mainContainer_HeartRate_Apple_Watch(axis, maingroup, legendgroup, titlegroup, revert, prob);
+            mainContainer_fitbit_summary_heartrate(axis, maingroup, legendgroup, titlegroup, revert, prob);
+            mainContainer_heart_rate_oura_sleep(axis, maingroup, legendgroup, titlegroup, revert, prob);
             selectedGroupButton();
         })
 }
@@ -490,7 +570,7 @@ function selectedGroupButton() {
     selectedButton('ouraHR', revert[3], 4);
 }
 
-function controlGestionclick () {
+function controlGestionclick() {
     if ((classButton == 'oura' || classButton == 'Temperature') && revert[0] == 1) {
         revert[0] = 0;
         cntbttHr = 0;
@@ -511,9 +591,9 @@ function controlGestionclick () {
         revert[1] = 1;
         cntbttHr++;
         if (cntbttHr == maxHr)
-        click = 1;
-        else 
-        click = 0;
+            click = 1;
+        else
+            click = 0;
     }
     if (classButton == 'fitbit' && revert[2] == 1) {
         revert[2] = 0;
@@ -525,9 +605,9 @@ function controlGestionclick () {
         revert[2] = 1;
         cntbttHr++;
         if (cntbttHr == maxHr)
-        click = 1;
-        else 
-        click = 0;
+            click = 1;
+        else
+            click = 0;
     }
     if (classButton == 'ouraHR' && revert[3] == 1) {
         revert[3] = 0;
@@ -539,9 +619,9 @@ function controlGestionclick () {
         revert[3] = 1;
         cntbttHr++;
         if (cntbttHr == maxHr)
-        click = 1;
-        else 
-        click = 0;
+            click = 1;
+        else
+            click = 0;
     }
     if (classButton == 'HeartRate' && click == 1) {
         if (cntbttHr == maxHr) {
@@ -592,8 +672,8 @@ function createWearableDataSvg(div1, widthdiv1, div2, heightdiv2, div3, heightdi
         .append("svg")
         .attr("class", "svg")
         .attr("width", 100 + "%")
-        .attr("height", heightdiv2) 
-    
+        .attr("height", heightdiv2)
+
     legendgroupphone = d3.select('#wearable-legend-phone')
         .append("svg")
         .attr("class", "svg")
@@ -841,6 +921,43 @@ function showreportedSickIncident(svgName, coord) {
         .style("stroke-dasharray", 5)
         .style("stroke-width", "1");
 }
+
+function showSumdata(svgName, data, axe, id) {
+    var gap = {
+        bottom: heightGraph - (margin.bottom * 1.25) - 5,
+        top: (margin.top / 2.5) + 8,
+        betweenTopAndBottom: axe[axe.length - 1] - axe[0],
+        betweenValues: data[1] - axe[0],
+        test2: ((heightGraph - margin.bottom * 1.25 - 5) - ((1) * ((heightGraph - margin.bottom * 1.25) / (axe.length)))),
+    };
+    svgName.append("rect")
+        .attr('id', id)
+        .attr("x", 0)
+        .attr("y", ((gap.bottom) - ((data[2] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) - gridSize / 8)
+        .attr("width", completedDays.length * gridSize)
+        .attr("height", (((gap.bottom) - ((data[0] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) - ((gap.bottom) - ((data[2] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom)))) + gridSize / 4)
+        .style("fill", "#F3FFEC");
+
+    /* svgName.append("rect")
+         .attr('id', id)
+         .attr("x", 0)
+         .attr("y", (gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom)) - gridSize/8)
+         .attr("width", completedDays.length * gridSize)
+         .attr("height", gridSize/4)
+         .style("fill", "white");*/
+
+    svgName.append("line")
+        .attr('id', id)
+        .attr("x1", 0)
+        .attr("y1", ((gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom))))
+        .attr("x2", completedDays.length * gridSize)
+        .attr("y2", ((gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom))))
+        .style("stroke", "#68FF00")
+        .style("stroke-dasharray", 5)
+        .style("stroke-width", "1");
+
+    d3.select('#' + id).lower();
+}
 /* END of Graphics Functions */
 
 function controlWearableDatafromfile(data, type) {
@@ -889,6 +1006,17 @@ function controlWearableDatafromfile(data, type) {
             if (cnt == 0)
                 return false;
             else return true;
+        case 'garmin':
+            if (data.garmin_heartrate == undefined)
+                return false;
+            var cnt = 0;
+            for (let i = 0; i < data.garmin_heartrate.length; i++) {
+                if (data.garmin_heartrate[i].data.heart_rate != "" && data.garmin_heartrate[i].data.heart_rate != "-")
+                    cnt++;
+            }
+            if (cnt == 0)
+                return false;
+            else return true;
     }
 }
 
@@ -909,11 +1037,19 @@ function getButtonChoice(svgName, svgPhone) {
     createButton(svgName, 1, classname, legendname, "", 0, (gridSize * .2));
     createButton(svgName, 2, classnameHeartRate, legendnameHeartRate, colorscaleHeartRate, (classname.length * gridSize * 1.5), (classname.length * gridSize * 1.55));
     createButton(svgName, 2, classnameTemperature, legendnameTemperature, colorscaleTemperature, (gridSize * .8), (gridSize * .9));
-   
+
     createButtonPhone(svgPhone, 1, classname, legendname, "", 0, (gridSize * .2));
-    createButtonPhone(svgPhone, 2, classnameHeartRate, legendnameHeartRate, colorscaleHeartRate, (classname.length * gridSize * 1.5), (classname.length  * 25));
+    createButtonPhone(svgPhone, 2, classnameHeartRate, legendnameHeartRate, colorscaleHeartRate, (classname.length * gridSize * 1.5), (classname.length * 25));
     createButtonPhone(svgPhone, 2, classnameTemperature, legendnameTemperature, colorscaleTemperature, (gridSize * .8), (0));
 
+    svgName.append("line")
+        .attr('id', 'tickSize')
+        .attr("x1", 0 + "%")
+        .attr("y1", margin.top / 2)
+        .attr("x2", 0 + "%")
+        .attr("y2", heightGraph - margin.bottom)
+        .style("stroke", "#778899")
+        .style("stroke-width", "1");
 }
 
 function setAttributButton() {
@@ -1008,17 +1144,17 @@ function createButtonPhone(svgName, type, dataclassname, datalegend, datacolor, 
         .append("circle")
         .attr('id', 'circle-choice-heartrate')
         .attr('class', function (d, i) { return dataclassname[i] })
-        .attr("cx", function (d, i) { 
+        .attr("cx", function (d, i) {
             if (type == 1)
                 return (25 + (i * 50) + '%')
             else if (type == 2)
-                return 25 + marginTop2 + 5 + '%' 
+                return 25 + marginTop2 + 5 + '%'
         })
         .attr("cy", function (d, i) {
             if (type == 1)
-            return (margin.top / 2 + marginTop1)
+                return (margin.top / 2 + marginTop1)
             else if (type == 2)
-                return (33) + ((i + 1) * 20) +  '%' 
+                return (33) + ((i + 1) * 20) + '%'
         })
         .attr("r", gridSize / (2 * type))
         .attr("stroke", "#e2e2e2")
@@ -1039,21 +1175,21 @@ function createButtonPhone(svgName, type, dataclassname, datalegend, datacolor, 
         .enter().append("text")
         .text(function (d) { return d; })
         .style("fill", "#212529")
-        .attr("x", function (d,i) {
+        .attr("x", function (d, i) {
             if (type == 1)
-            return (21 + (i * 50) + '%')
+                return (21 + (i * 50) + '%')
             else if (type == 2)
-                return 25 + marginTop2 + '%' 
+                return 25 + marginTop2 + '%'
         })
         .attr("y", function (d, i) {
             if (type == 1)
-            return (margin.top / 2 + marginTop1 + gridSize/3)
+                return (margin.top / 2 + marginTop1 + gridSize / 3)
             else if (type == 2)
-            return (33) + ((i + 1) * 23) +  '%' 
-         })
+                return (33) + ((i + 1) * 23) + '%'
+        })
         .style("text-anchor", "start")
         .style("font-weight", "300")
-        .attr("transform", "translate(" + gridSize /.9 + "," + 0 + ")")
+        .attr("transform", "translate(" + gridSize / .9 + "," + 0 + ")")
         .attr("font-size", (1 - (type / 4)) + "rem");
 }
 function createLinearGradient(svgName, color, id) {
@@ -1159,7 +1295,7 @@ function dataControlOura(data, tempdate, day, monthtemp, rapport) {
             data2[i] = "";
         }
         for (var i = count; i < dayscontrol.length + count; i++) {
-            data2[i + cnt] = data[i-count];
+            data2[i + cnt] = data[i - count];
             if (dayscontrol[i] != -1 && dayscontrol[i] != -30 && dayscontrol[i] != -31) {
                 for (var t = 0; t < dayscontrol[i]; t++) {
                     cnt++;
@@ -1167,13 +1303,13 @@ function dataControlOura(data, tempdate, day, monthtemp, rapport) {
                 }
             }
             else if (dayscontrol[i] == -1) {
-                if (data2[i + cnt] > data[i-1]) {
+                if (data2[i + cnt] > data[i - 1]) {
                     cnt--;
                 }
-               else if (data2[i + cnt - 1] != "") {
-               cnt--;
-               data2[i + cnt] = data[i-1];
-               }
+                else if (data2[i + cnt - 1] != "") {
+                    cnt--;
+                    data2[i + cnt] = data[i - 1];
+                }
             }
         }
 
@@ -1187,7 +1323,7 @@ function dataControlOura(data, tempdate, day, monthtemp, rapport) {
                 }
             }
             else if (dayscontrol[i] == -1) {
-                if ( data2[i + cnt] > data[i-1]) {
+                if (data2[i + cnt] > data[i - 1]) {
                     cnt--;
                 }
                 else if (data2[i + cnt - 1] != "") {

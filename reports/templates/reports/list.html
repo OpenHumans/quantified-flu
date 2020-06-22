@@ -24,6 +24,14 @@
      background: linear-gradient( #777, #333);
   }
 
+#circle-apple-watch-ctn {
+  z-index: 30;
+}
+
+#oura-heart-rate-sum {
+  z-index: 3;
+}
+
   @media screen and (min-width: 200px) and (max-width: 799px) {
     #legend, #wearable-choice, #temperature-choice {
       width: 0%;
@@ -196,11 +204,14 @@
   console.log("succed to loading public data");
 
   /* Fitbit */
-  //url =  "https://quantifiedflu.org/report/list/member/49855651.json"
+ // url =  "https://quantifiedflu.org/report/list/member/49855651.json"
 
   /* Apple Watch and Oura temperature */
-  //url = "https://quantifiedflu.org/report/list/member/79502270.json";
-
+  url = "https://quantifiedflu.org/report/list/member/79502270.json";
+  
+  /* Garmin data*/
+  //url = "https://quantifiedflu.org/report/list/member/81943862.json";
+ 
  //url = "https://quantifiedflu.org/report/list/member/25102556.json"
  //url = "https://quantifiedflu.org/report/list/member/57494882.json"
   //url = "https://quantifiedflu.org/report/list/member/43462825.json"
