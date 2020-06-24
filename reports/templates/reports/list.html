@@ -18,19 +18,9 @@
     visibility: hidden;
   }
 
-  .oura {
-    color: #222;
-     background: #555;
-     background: linear-gradient( #777, #333);
+  .select-symptom {
+    border-radius: 3.5rem;
   }
-
-#circle-apple-watch-ctn {
-  z-index: 30;
-}
-
-#oura-heart-rate-sum {
-  z-index: 3;
-}
 
   @media screen and (min-width: 200px) and (max-width: 799px) {
     #legend, #wearable-choice, #temperature-choice {
@@ -204,10 +194,10 @@
   console.log("succed to loading public data");
 
   /* Fitbit */
- // url =  "https://quantifiedflu.org/report/list/member/49855651.json"
+ //url =  "https://quantifiedflu.org/report/list/member/49855651.json"
 
   /* Apple Watch and Oura temperature */
-  url = "https://quantifiedflu.org/report/list/member/79502270.json";
+  //url = "https://quantifiedflu.org/report/list/member/79502270.json";
   
   /* Garmin data*/
   //url = "https://quantifiedflu.org/report/list/member/81943862.json";
@@ -268,42 +258,3 @@
 {% endtimezone %}
 
 {% endblock main %}
-
-<!-- <div id="temperature-container" style=" width: 100%; height: auto; display: inline-block;">
-  <div id="temperature-title" style="width: 100%; height: auto;"></div>
-  <div id="temperature-legend" style="height:auto; float:left;"> </div>
-  <div id="temperature-graph" style="width: 71.1%; height: auto; float:left; overflow-x: scroll;"> </div>
-  <div id="second-legend-display-temperature" style="width: 5%; height:auto; float:left;"></div>
-  <div id="temperature-choice"> </div>
-</div>
-
-<div id="apple-watch-container" style=" width: 100%; height: auto; display: inline-block;">
-  <h2>Apple Health Resting Heartrate </h2>
-  <div id="message-no-apple" style="width: 75%; height: auto; float:left;"></div>
-  <div id="button-no-apple" style="width: 25%; height: auto; float:left;"></div>
-
-  <div id="apple-title" style="width: 100%; height: auto;"></div>
-  <div id="apple-legend" style="height:auto; float:left;"> </div>
-  <div id="heartrate-apple" style="width: 71.1%; height: auto; float:left; overflow-x: scroll;"> </div>
-</div>
-
-<div id="oura_sleep_summary-container" style=" width: 100%; height: auto; display: inline-block;">
-  <h2>Oura Temperature</h2>
-  <div id="message-no-oura_sleep_summary" style="width: 75%; height: auto; float:left;"></div>
-  <div id="button-no-oura_sleep_summary" style="width: 25%; height: auto; float:left;"></div>
-
-  <div id="oura_sleep_summary-title" style="width: 100%; height: auto;"></div>
-  <div id="oura_sleep_summary-legend" style="height:auto; float:left;"> </div>
-  <div id="temperature-oura_sleep_summary" style="width: 71.1%; height: auto;  float:left; overflow-x: scroll;"> </div>
-</div>
-
-<div id="fitbit-container" style=" width: 100%; height: auto; display: inline-block;">
-  <h2>Fitbit</h2>
-  <div id="message-no-fitbit" style="width: 75%; height: auto; float:left;"></div>
-  <div id="button-no-fitbit" style="width: 25%; height: auto; float:left;"></div>
-
-  <div id="fitbit-title" style="width: 100%; height: auto;"></div>
-  <div id="fitbit-legend" style="height:auto; float:left;"> </div>
-  <div id="heart-rate-fitbit" style="width: 71.1%; height: auto;  float:left; overflow-x: scroll;"> </div>
-</div>
--->

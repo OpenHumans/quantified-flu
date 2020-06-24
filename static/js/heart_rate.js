@@ -26,11 +26,12 @@ function main_wearable_data(data) {
     apple = controlWearableDatafromfile(data, 'apple');
     oura = controlWearableDatafromfile(data, 'oura');
     ouraHR = controlWearableDatafromfile(data, 'ouraHR');
-    Garmin = controlWearableDatafromfile(data, 'garmin');
+    garmin = controlWearableDatafromfile(data, 'garmin');
+    console.log('[garmin]: ' + garmin + ' [ouraHR]: ' + ouraHR + ' [oura]: ' + oura + ' [apple]: ' + apple + ' [fitbit]: ' + fitbit);
     axis = [];
     //revert = setrevert ();
     maxHr = 0;
-    revert = [0, 0, 0, 0];
+    revert = [0, 0, 0, 0, 0];
     if (apple == true) {
         revert[1] = 1;
         maxHr++;
@@ -43,11 +44,15 @@ function main_wearable_data(data) {
         revert[3] = 1;
         maxHr++;
     }
-    if (fitbit != true && apple != true && ouraHR != true && oura == true)
+    if (garmin == true) {
+        revert[4] = 1;
+        maxHr++;
+    }
+    if (fitbit != true && apple != true && ouraHR != true && oura == true && garmin == true)
         revert[0] = 1;
 
     cntbttHr = maxHr;
-    if (fitbit == true || apple == true || oura == true || ouraHR == true) {
+    if (fitbit == true || apple == true || oura == true || ouraHR == true || garmin == true) {
         symptom_report = getSymptomDatafromFile(0);
         month = determinenamemonth(completedDays);
         createWearableDataSvg('wearable-graph', ((completedDays.length) * gridSize), 'wearable-legend', (heightGraph), 'wearable-title', (margin.top), 'wearable-choice');
@@ -68,6 +73,25 @@ function main_wearable_data(data) {
 }
 
 /* Get all the variable data needed */
+
+function controlDatafromGarmin(data) {
+    getHeartRateDatafromGarmin(data);
+    /* Find the day */
+    controlday_garmin = controlDay(garminday, garminday, garminmonth);
+    noMissingDay_garmin = addorRemoveday(controlday_garmin, getDays(), data);
+
+    /* Get the difference between the day */
+    comparedate_garmin = compareDateReport(noMissingDay_garmin);
+    garmin_date = completedLastDay(comparedate_garmin, noMissingDay_garmin);
+    dayAxis_garmin = getDayonAxis(garmin_date);
+    monthOnAxis_garmin = determinenamemonth(garmin_date);
+
+    /* Udpate the data with the missing day / repeat day */
+    finaldata_garmin = dataControl(garmindata, garminday, garminday, garminmonth, comparedate_garmin);
+    symptomData_garmin = getSymptomDatafromFile(0);
+    garminAxis = getAxisLegend(finaldata_garmin, 'dizaine');
+}
+
 function controlDatafromFitbit(data) {
     getHeartRateDatafromFitbit(data);
     /* Find the day */
@@ -140,15 +164,17 @@ function controlDatafromOuraSleep(data) {
     symptomData = getSymptomDatafromFile(0);
 }
 
-/* Function display for the main container */
-function mainContainer_temperature_oura_sleep_summary(data, maingroupapple, legendapple, titleapple, revert) {
+function loadDataFromOura_Temperature(data) {
     tempdata = [], tempday = [], tempyear = [], tempdayAxis = [], tempdate = [], repeat = [], noRepeatData = [];
     day = [];
     monthtemp = [];
-    console.log(revert);
+    controlDatafromOura(data);
+}
+
+/* Function display for the main container */
+function mainContainer_temperature_oura_sleep_summary(data, maingroupapple, legendapple, titleapple, revert) {
     if (revert[0] == 1) {
         removeDataSource('circle-temperature-ctn', 'oura-axisY-cnt', 'oura-title-ctn', 'oura-sum', 'oura-axisY-cnt-2', 'oura-axisY-cnt');
-        controlDatafromOura(data);
         showSumdata(maingroupapple, prob, axisTemperature_oura, 'oura-sum');
         createChartePoint(maingroupapple, finaldataOuraTemperature, axisTemperature_oura, "circle-temperature-ctn", "#9BFF1C", (gridSize / 10));
         createTitle(titleapple, "Temperature evolution", 'oura-title-ctn', '50%');
@@ -188,20 +214,13 @@ function loadDatafromAppleWatch(data) {
     controlDatafromAppleWatch(data);
 }
 function mainContainer_HeartRate_Apple_Watch(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
-    /*dayapp = [], monthapp = [], appledata = [], appleday = [], appleyear = [], symptomData = [];
-    cnt = 0, appledate = [], repeat = [], noRepeatDataApple = [];*/
     if (revert[1] == 1) {
-        //if (revert[0] == 1)
-        // removeDataSource('circle-temperature-ctn', 'oura-axisY-cnt', 'oura-title-ctn', 'apple-axisY-ctn-2', 'oura-axisY-cnt-2', 'oura-axisY-cnt');
         removeDataSource('circle-apple-watch-ctn', 'apple-axisY-ctn', 'apple-title-ctn', 'apple-sum', 'apple-axisY-ctn-2', 'apple-axisY-ctn');
-        // controlDatafromAppleWatch(data);
         /* Element graphique */
-        // showSumdata(maingroupapple, prob, dataAxis);
         showSumdata(maingroupapple, prob, dataAxis, 'apple-sum');
         createChartePoint(maingroupapple, finaldataAppleWatch, dataAxis, "circle-apple-watch-ctn", "#0041EA", (gridSize / 10))
         createTitle(titleapple, "Heart rate evolution", 'apple-title-ctn', '50%');
         createLegendAxeY(legendapple, dataAxis, "HEART RATE [BPM]", 'apple-axisY-ctn');
-
         /* Afficher les données */
         tooltip("circle-apple-watch-ctn", apple_date, "bmp");
     } else {
@@ -222,11 +241,30 @@ function mainContainer_fitbit_summary_heartrate(dataAxis, maingroupapple, legend
         /* Element graphique */
         showSumdata(maingroupapple, prob, dataAxis, 'fitbit-sum');
         createChartePoint(maingroupapple, finaldata_fitbit, dataAxis, "circle-fitbit-cnt", "#FF8484", (gridSize / 10));
-
         /* Afficher les données */
         tooltip("circle-fitbit-cnt", fitbit_date, "bmp");
     } else {
         removeDataSource('circle-fitbit-cnt', 'fitbit-axisY-cnt', 'fitbit-title-cnt', 'fitbit-sum');
+    }
+}
+
+function loadDatafromGarmin(data) {
+    garmindata = [], garmindate = [], garminday = [], garminmonth = [], garminyear = [];
+    symptomData_garmin = [];
+    controlDatafromGarmin(data);
+}
+function mainContainer_garmin_heartrate(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
+    if (revert[4] == 1) {
+        removeDataSource('circle-garmin-cnt', 'garmin-axisY-cnt', 'garmin-title-cnt', 'garmin-sum');
+        createTitle(titleapple, "Heart Rate evolution", 'garmin-title-cnt', '50%');
+        createLegendAxeY(legendapple, dataAxis, "HEART RATE [BMP]", 'garmin-axisY-cnt');
+        /* Element graphique */
+        showSumdata(maingroupapple, prob, dataAxis, 'garmin-sum');
+        createChartePoint(maingroupapple, finaldata_garmin, dataAxis, "circle-garmin-cnt", "#CC9900", (gridSize / 10));
+        /* Afficher les données */
+        tooltip("circle-garmin-cnt", garmin_date, "bmp");
+    } else {
+        removeDataSource('circle-garmin-cnt', 'garmin-axisY-cnt', 'garmin-title-cnt', 'garmin-sum');
     }
 }
 
@@ -256,17 +294,25 @@ function calculatSum(data) {
 
     var prop = [];
     if (sum > stddeviation)
-        prop[0] = Math.round(sum - stddeviation);
+        prop[0] = Math.round(sum - (stddeviation * 2));
     else
-        prop[0] = (sum - stddeviation);
-    if (sum > 1)
-        prop[1] = Math.round(sum);
-    else
-        prop[1] = (sum);
+        prop[0] = (sum - (stddeviation * 2));
     if (sum > stddeviation)
-        prop[2] = Math.round(sum + stddeviation);
+        prop[1] = Math.round(sum - stddeviation);
     else
-        prop[2] = (sum + stddeviation);
+        prop[1] = (sum - stddeviation);
+    if (sum > 1)
+        prop[2] = Math.round(sum);
+    else
+        prop[2] = (sum);
+    if (sum > stddeviation)
+        prop[3] = Math.round(sum + (stddeviation));
+    else
+        prop[3] = (sum + (stddeviation));
+    if (sum > stddeviation)
+        prop[4] = Math.round(sum + (stddeviation * 2));
+    else
+        prop[4] = (sum + (stddeviation * 2));
 
     return (prop);
 }
@@ -280,6 +326,19 @@ function removeDataSource(iddata, idtitle, idaxis, idaxis2, idaxis3, idaxis4) {
 }
 
 /* GET THE DATA FROM FILE .JSON */
+function getHeartRateDatafromGarmin(data) {
+    cnt = 0;
+    this.file = data.garmin_heartrate.map(d => d);
+    this.file.forEach(element => {
+        garmindata[cnt] = element.data.heart_rate;
+        garmindate[cnt] = element.timestamp;
+        garminday[cnt] = formatdateday(parseTimeGarmin(element.timestamp));
+        garminmonth[cnt] = formatdatemonth(parseTimeGarmin(element.timestamp));
+        garminyear[cnt] = formatyear(parseTimeGarmin(element.timestamp));
+        cnt++;
+    });
+}
+
 function getHeartRateDatafromFitbit(data) {
     cnt = 0;
     this.file = data.fitbit_summary.map(d => d);
@@ -424,6 +483,11 @@ function getCombineAxisY(revert) {
             test[i + cnt2] = ouraAxis[i];
         }
     }
+    if (revert[4] == 1) {
+        for (let i = 0; i < garminAxis.length; i++) {
+            test[i + cnt2] = garminAxis[i];
+        }
+    }
     return Array.from(new Set(test));
 }
 
@@ -433,7 +497,7 @@ function getSum(revert) {
     var cnt2 = 0;
     var prop = [0, 0, 0];
 
-    if (revert[0] == 1 && revert[1] == 0 && revert[2] == 0 && revert[3] == 0) {
+    if (revert[0] == 1 && revert[1] == 0 && revert[2] == 0 && revert[3] == 0 && revert[4] == 0) {
         for (let i = 0; i < finaldataOuraTemperature.length; i++) {
             data[i] = finaldataOuraTemperature[i];
         }
@@ -457,10 +521,16 @@ function getSum(revert) {
         }
     }
 
-    if (revert[0] == 0 && revert[1] == 0 && revert[2] == 0 && revert[3] == 0)
+    if (revert[4] == 1 && revert[0] == 0) {
+        for (let i = 0; i < finaldata_garmin.length; i++) {
+            data[i + cnt2] = finaldata_garmin[i];
+        }
+    }
+    if (revert[0] == 0 && revert[1] == 0 && revert[2] == 0 && revert[3] == 0 && revert[4] == 0)
         prop = [0, 0, 0];
     else
         prop = calculatSum(data);
+    console.log('stat: ' + prop);
     return prop;
 }
 
@@ -505,9 +575,7 @@ function tooltip(circleid, data, msg) {
         });
 }
 
-function tooltipChoice(data) {
-    click = 1;
-
+function loadGroupDataSource (data) {
     if (apple == true) {
         loadDatafromAppleWatch(data);
     }
@@ -517,28 +585,38 @@ function tooltipChoice(data) {
     if (ouraHR == true) {
         loadDatafromOura(data);
     }
+    if (oura == true) {
+        loadDataFromOura_Temperature(data);
+    }
+    if (garmin == true) {
+        loadDatafromGarmin(data);
+    }
+}
+function tooltipChoice(data) {
+    click = 1;
+    loadGroupDataSource (data);
     selectedGroupButton();
     axis = getCombineAxisY(revert);
     prob = getSum(revert);
-    console.log(prob);
-    mainContainer_temperature_oura_sleep_summary(data, maingroup, legendgroup, titlegroup, revert);
-    mainContainer_HeartRate_Apple_Watch(axis, maingroup, legendgroup, titlegroup, revert, prob);
-    mainContainer_fitbit_summary_heartrate(axis, maingroup, legendgroup, titlegroup, revert, prob);
-    mainContainer_heart_rate_oura_sleep(axis, maingroup, legendgroup, titlegroup, revert, prob);
-
+    groupGraphic(data);
     d3.selectAll("#circle-choice-heartrate")
         .on("click", function (d) {
             classButton = this.getAttribute('class');
             controlGestionclick();
             prob = getSum(revert);
-            console.log(prob);
             axis = getCombineAxisY(revert);
-            mainContainer_temperature_oura_sleep_summary(data, maingroup, legendgroup, titlegroup, revert);
-            mainContainer_HeartRate_Apple_Watch(axis, maingroup, legendgroup, titlegroup, revert, prob);
-            mainContainer_fitbit_summary_heartrate(axis, maingroup, legendgroup, titlegroup, revert, prob);
-            mainContainer_heart_rate_oura_sleep(axis, maingroup, legendgroup, titlegroup, revert, prob);
+            groupGraphic();
             selectedGroupButton();
         })
+}
+
+function groupGraphic (data) {
+    mainContainer_garmin_heartrate(axis, maingroup, legendgroup, titlegroup, revert, prob);
+    mainContainer_temperature_oura_sleep_summary(data, maingroup, legendgroup, titlegroup, revert);
+    mainContainer_HeartRate_Apple_Watch(axis, maingroup, legendgroup, titlegroup, revert, prob);
+    mainContainer_fitbit_summary_heartrate(axis, maingroup, legendgroup, titlegroup, revert, prob);
+    mainContainer_heart_rate_oura_sleep(axis, maingroup, legendgroup, titlegroup, revert, prob);
+    
 }
 
 function selectedButton(classname, revert, stroke) {
@@ -558,7 +636,6 @@ function selectedCategories(classname, revert, stroke, max) {
 
     if (revert == max)
         d3.select('.' + classname).attr("width", ((gridSize / 2) - stroke)).attr("height", ((gridSize / 2) - stroke)).attr('stroke-width', stroke).attr("stroke", "#e2e2e2");
-
 }
 
 function selectedGroupButton() {
@@ -568,6 +645,7 @@ function selectedGroupButton() {
     selectedButton('apple', revert[1], 4);
     selectedButton('fitbit', revert[2], 4);
     selectedButton('ouraHR', revert[3], 4);
+    selectedButton('garmin', revert[4], 4);
 }
 
 function controlGestionclick() {
@@ -577,11 +655,11 @@ function controlGestionclick() {
         click = 0;
     }
     else if ((classButton == 'oura' || classButton == 'Temperature') && revert[0] == 0) {
-        revert = [1, 0, 0, 0];
+        revert = [1, 0, 0, 0, 0];
         cntbttHr = 0;
         click = 0;
     }
-    if (classButton == 'apple' && revert[1] == 1) {
+   if (classButton == 'apple' && revert[1] == 1) {
         revert[1] = 0;
         cntbttHr--;
         click = 0;
@@ -623,9 +701,23 @@ function controlGestionclick() {
         else
             click = 0;
     }
+    if (classButton == 'garmin' && revert[4] == 1) {
+        revert[4] = 0;
+        cntbttHr--;
+        click = 0;
+    }
+    else if (classButton == 'garmin' && revert[4] == 0) {
+        revert[0] = 0;
+        revert[4] = 1;
+        cntbttHr++;
+        if (cntbttHr == maxHr)
+            click = 1;
+        else
+            click = 0;
+    }
     if (classButton == 'HeartRate' && click == 1) {
         if (cntbttHr == maxHr) {
-            revert = [0, 0, 0, 0];
+            revert = [0, 0, 0, 0, 0];
             cntbttHr = 0;
         }
         click = 0;
@@ -642,6 +734,10 @@ function controlGestionclick() {
         }
         if (ouraHR == true) {
             revert[3] = 1;
+            cntbttHr = maxHr;
+        }
+        if (garmin == true) {
+            revert[4] = 1;
             cntbttHr = maxHr;
         }
         click = 1;
@@ -922,29 +1018,69 @@ function showreportedSickIncident(svgName, coord) {
         .style("stroke-width", "1");
 }
 
-function showSumdata(svgName, data, axe, id) {
+function showSumdata(svgName, data, axe, id) { 
     var gap = {
         bottom: heightGraph - (margin.bottom * 1.25) - 5,
         top: (margin.top / 2.5) + 8,
         betweenTopAndBottom: axe[axe.length - 1] - axe[0],
-        betweenValues: data[1] - axe[0],
+        betweenValues: data[2] - axe[0],
         test2: ((heightGraph - margin.bottom * 1.25 - 5) - ((1) * ((heightGraph - margin.bottom * 1.25) / (axe.length)))),
     };
+
     svgName.append("rect")
         .attr('id', id)
         .attr("x", 0)
-        .attr("y", ((gap.bottom) - ((data[2] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) - gridSize / 8)
+        .attr("y", ((gap.bottom) - ((data[3] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))))
         .attr("width", completedDays.length * gridSize)
-        .attr("height", (((gap.bottom) - ((data[0] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) - ((gap.bottom) - ((data[2] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom)))) + gridSize / 4)
-        .style("fill", "#F3FFEC");
+        .attr("height", (((gap.bottom) - ((data[2] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) - ((gap.bottom) - ((data[3] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom)))) - gridSize/8)
+        .style("fill", "#FFCC99")
+        .lower();
+    
+    svgName.append("rect")
+        .attr('id', id)
+        .attr("x", 0)
+        .attr("y", ((gap.bottom) - ((data[2] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) + gridSize/8)
+        .attr("width", completedDays.length * gridSize)
+        .attr("height", (((gap.bottom) - ((data[1] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) - ((gap.bottom) - ((data[2] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom)))) - gridSize/8)
+        .style("fill", "#FFCC99")
+        .lower();
 
+    svgName.append("rect")
+        .attr('id', id)
+        .attr("x", 0)
+        .attr("y", ((gap.bottom) - ((data[4] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) )
+        .attr("width", completedDays.length * gridSize)
+        .attr("height", (((gap.bottom) - ((data[3] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) - ((gap.bottom) - ((data[4] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom)))) - gridSize/8)
+        .style("fill", "#FFCC00")
+        .lower();
+    
+    svgName.append("rect")
+        .attr('id', id)
+        .attr("x", 0)
+        .attr("y", ((gap.bottom) - ((data[1] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) + gridSize/8)
+        .attr("width", completedDays.length * gridSize)
+        .attr("height", (((gap.bottom) - ((data[0] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) - ((gap.bottom) - ((data[1] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom)))) - gridSize/8)
+        .style("fill", "#FFCC00")
+        .lower();
+   
+   
     /* svgName.append("rect")
-         .attr('id', id)
-         .attr("x", 0)
-         .attr("y", (gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom)) - gridSize/8)
-         .attr("width", completedDays.length * gridSize)
-         .attr("height", gridSize/4)
-         .style("fill", "white");*/
+        .attr('id', id)
+        .attr("x", 0)
+        .attr("y", ((gap.bottom) - ((data[3] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))))
+        .attr("width", completedDays.length * gridSize)
+        .attr("height", (((gap.bottom) - ((data[1] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) - ((gap.bottom) - ((data[3] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom)))))
+        .style("fill", "#FFE4B5")
+        .lower();
+
+    svgName.append("rect")
+        .attr('id', id)
+        .attr("x", 0)
+        .attr("y", ((gap.bottom) - ((data[4] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) )
+        .attr("width", completedDays.length * gridSize)
+        .attr("height", (((gap.bottom) - ((data[0] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) - ((gap.bottom) - ((data[4] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom)))) )
+        .style("fill", "#FFEFD5")
+        .lower();*/
 
     svgName.append("line")
         .attr('id', id)
@@ -956,7 +1092,6 @@ function showSumdata(svgName, data, axe, id) {
         .style("stroke-dasharray", 5)
         .style("stroke-width", "1");
 
-    d3.select('#' + id).lower();
 }
 /* END of Graphics Functions */
 
@@ -1035,11 +1170,11 @@ function getButtonChoice(svgName, svgPhone) {
     cntTP = 0;
     setAttributButton();
     createButton(svgName, 1, classname, legendname, "", 0, (gridSize * .2));
-    createButton(svgName, 2, classnameHeartRate, legendnameHeartRate, colorscaleHeartRate, (classname.length * gridSize * 1.5), (classname.length * gridSize * 1.55));
+    createButton(svgName, 2, classnameHeartRate, legendnameHeartRate, colorscaleHeartRate, (classname.length * gridSize * 1.5), (classname.length  * gridSize * 1.55));
     createButton(svgName, 2, classnameTemperature, legendnameTemperature, colorscaleTemperature, (gridSize * .8), (gridSize * .9));
 
     createButtonPhone(svgPhone, 1, classname, legendname, "", 0, (gridSize * .2));
-    createButtonPhone(svgPhone, 2, classnameHeartRate, legendnameHeartRate, colorscaleHeartRate, (classname.length * gridSize * 1.5), (classname.length * 25));
+    createButtonPhone(svgPhone, 2, classnameHeartRate, legendnameHeartRate, colorscaleHeartRate, (classname.length * gridSize * .8), ((classname.length - 1) * 25));
     createButtonPhone(svgPhone, 2, classnameTemperature, legendnameTemperature, colorscaleTemperature, (gridSize * .8), (0));
 
     svgName.append("line")
@@ -1064,7 +1199,7 @@ function setAttributButton() {
         cntTP++;
     }
 
-    if (apple == true || fitbit == true || ouraHR == true) {
+    if (apple == true || fitbit == true || ouraHR == true || garmin == true) {
         classname[cnt] = 'HeartRate';
         colorscale[cnt] = '#9BFF1C';
         legendname[cnt] = "Heart Rate";
@@ -1089,6 +1224,13 @@ function setAttributButton() {
         classnameHeartRate[cntHR] = 'ouraHR';
         colorscaleHeartRate[cntHR] = "#09CEFE";
         legendnameHeartRate[cntHR] = 'Oura';
+        cntHR++;
+    }
+
+    if (garmin == true) {
+        classnameHeartRate[cntHR] = 'garmin';
+        colorscaleHeartRate[cntHR] = "#CC9900";
+        legendnameHeartRate[cntHR] = 'Garmin';
         cntHR++;
     }
 }
@@ -1148,7 +1290,7 @@ function createButtonPhone(svgName, type, dataclassname, datalegend, datacolor, 
             if (type == 1)
                 return (25 + (i * 50) + '%')
             else if (type == 2)
-                return 25 + marginTop2 + 5 + '%'
+                return 25 + (marginTop2 * 2) + 5 + '%'
         })
         .attr("cy", function (d, i) {
             if (type == 1)
@@ -1177,15 +1319,15 @@ function createButtonPhone(svgName, type, dataclassname, datalegend, datacolor, 
         .style("fill", "#212529")
         .attr("x", function (d, i) {
             if (type == 1)
-                return (21 + (i * 50) + '%')
+                return (22 + (i * 50) + '%')
             else if (type == 2)
-                return 25 + marginTop2 + '%'
+                return 25 + (marginTop2 * 2) + '%'
         })
         .attr("y", function (d, i) {
             if (type == 1)
                 return (margin.top / 2 + marginTop1 + gridSize / 3)
             else if (type == 2)
-                return (33) + ((i + 1) * 23) + '%'
+                return (34) + ((i + 1) * 23) + '%'
         })
         .style("text-anchor", "start")
         .style("font-weight", "300")
@@ -1423,6 +1565,7 @@ formatyear = d3.timeFormat("%y");
 formatdate = d3.timeFormat("%d/%m");
 formatdateday = d3.timeFormat("%d");
 formatdatemonth = d3.timeFormat("%m");
+parseTimeGarmin = d3.timeParse("%Y-%m-%dT%H:%M:%S");
 
 /* Fonction pas nécessaires */
 

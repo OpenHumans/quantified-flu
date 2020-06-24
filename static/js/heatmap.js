@@ -74,49 +74,47 @@ function display() {
 function createheatmap(url) {
   $.get(url, function (data) {
     height = determineHeigth();
-    innerwidth = determineInnerwidth();  
-    heightGraph = (height/2);
-    main_heatmap (data);
+    innerwidth = determineInnerwidth();
+    heightGraph = (height / 2);
+    main_heatmap(data);
     main_wearable_data(data);
   })
 }
 
-function main_heatmap (data) {
+function main_heatmap(data) {
   timestamp = data.symptom_report.map(d => d.timestamp);
-    file_days = timestamp.map(d => formatdate(parseTime(d)));
-    reportday = timestamp.map(d => formatdateday(parseTime(d)))
-    month = timestamp.map(d => formatdatemonth(parseTime(d)))
-    days = controlDay(file_days, reportday, month);
-    
-    moreday = getNoReportValues(data);
-    moredayDataSource = getNoReportDataSource(data);
-    completedDays = addDaynoReport(moreday, moredayDataSource, data);
-    namesmonths = determinenamemonth(completedDays);
-   // console.log( moredayDataSource);
+  file_days = timestamp.map(d => formatdate(parseTime(d)));
+  reportday = timestamp.map(d => formatdateday(parseTime(d)))
+  month = timestamp.map(d => formatdatemonth(parseTime(d)))
+  days = controlDay(file_days, reportday, month);
+  moreday = getNoReportValues(data);
+  moredayDataSource = getNoReportDataSource(data);
+  console.log('Data with more source: ' + moredayDataSource);
+  completedDays = addDaynoReport(moreday, moredayDataSource, data);
+  namesmonths = determinenamemonth(completedDays);
+  symptom_data = loadDataSymptom(data);
+  days_axis = showingDayOnTheMap(completedDays);
+  comments = loadComments(data, days);
 
-    symptom_data = loadDataSymptom(data);
-    days_axis = showingDayOnTheMap(completedDays);
-    comments = loadComments(data, days);
-    
-    createSvgReport("heatmap", (((completedDays.length) * gridSize) + 1), (height + margin.top + margin.bottom), "symptom", "heatmap-title", "legend", "legend-phone");
-    showMonthsAxis(maingroup, namesmonths, -6);
-    showDaysAxis(maingroup, days_axis);
-    showTitleandSubtitle(titlegroup, "Heatmap of Symptom reports");
-    showHeatmap(maingroup, symptom_data)
-    showSymptomAxis(symptomgroup);
-    showLegend(legendgroup);
-    showLegendPhone(legendgroupphone);
-    tooltip_heatmap();
-    
-    document.getElementById("heatmap").scroll(((moreday) * gridSize), 0);
-    
-    document.getElementById("heatmap").onscroll = function () {
-      progressScrollBar();
-      var winScroll = document.getElementById("heatmap").scrollLeft;
-      if (moredayDataSource != 'n') {
+  createSvgReport("heatmap", (((completedDays.length) * gridSize) + 1), (height + margin.top + margin.bottom), "symptom", "heatmap-title", "legend", "legend-phone");
+  showMonthsAxis(maingroup, namesmonths, -6);
+  showDaysAxis(maingroup, days_axis);
+  showTitleandSubtitle(titlegroup, "Heatmap of Symptom reports");
+  showHeatmap(maingroup, symptom_data)
+  showSymptomAxis(symptomgroup);
+  showLegend(legendgroup);
+  showLegendPhone(legendgroupphone);
+  tooltip_heatmap();
+
+  document.getElementById("heatmap").scroll(((moreday) * gridSize), 0);
+
+  document.getElementById("heatmap").onscroll = function () {
+    progressScrollBar();
+    var winScroll = document.getElementById("heatmap").scrollLeft;
+    if (moredayDataSource != 'n') {
       document.getElementById("wearable-graph").scroll(winScroll, 0);
-      }
-    };
+    }
+  };
 }
 
 function tooltip_heatmap() {
@@ -147,6 +145,7 @@ function tooltip_heatmap() {
       tooltip
         .style("visibility", "visible")
         .text(`${showAppendTitle(d, coordXY[0], coordXY[1])}`);
+          selectSymptomOnclick(symptomgroup, coordXY[1]);
     })
 
     .on("mousemove", function () {
@@ -162,8 +161,9 @@ function tooltip_heatmap() {
         .attr("width", gridSize)
         .attr("height", gridSize)
         .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
-
-      tooltip.style("visibility", "hidden");;
+       
+        d3.select('.select-symptom').remove();
+      tooltip.style("visibility", "hidden");
     });
 }
 
@@ -220,7 +220,7 @@ function getDatafromFile(data) {
   this.reportday = timestamp.map(d => formatdateday(parseTime(d)))
   this.month = timestamp.map(d => formatdatemonth(parseTime(d)))
   days = controlDay(file_days, reportday, month);
- 
+
   this.comments = loadComments(data, days);
   this.height = determineHeigth();
   this.innerwidth = determineInnerwidth();
@@ -414,6 +414,18 @@ function showSymptomAxis(maingroup) {
     .style("stroke-width", "0.5");
 }
 
+function selectSymptomOnclick(maingroup, num) {
+  if (num < 13)
+  maingroup.append("rect")
+    .attr('class', "select-symptom")
+    .attr("x", '25%')
+    .attr("y", num * gridSize )
+    .attr("width", '100%')
+    .attr("height", gridSize )
+    .style('fill', '#00CC99')
+    .lower();
+}
+
 function showLegendPhone(maingroup) {
 
   var countPoint = [-1, 0, 1, 2, 3, 4];
@@ -510,7 +522,7 @@ function showAppendTitle(data, i, y) {
 
     if (finaldataOuraTemperature[i] != undefined && finaldataOuraTemperature[i] != '-' && finaldataOuraTemperature[i] != 'NO DATA')
       msg += " \n Body Temp. (Oura) : " + finaldataOuraTemperature[i];
-    
+
     if (finaldataOura[i] != undefined && finaldataOura[i] != '-' && finaldataOura[i] != 'NO DATA')
       msg += " \n Heart Rate (Oura) : " + finaldataOura[i] + " bmp";
     return msg;
@@ -546,7 +558,7 @@ function loadCommentsValues(data) {
   }
 
   for (var i = moreday; i < days.length + moreday; i++) {
-   if (data2[i-moreday] == "")
+    if (data2[i - moreday] == "")
       values[i] = -2;
     else
       values[i] = 5;
@@ -573,11 +585,11 @@ function loadComments(data, days) {
   }
   const comments = [];
   for (var i = 0; i < moreday; i++) {
-      comments[i] = "";
+    comments[i] = "";
   }
   for (var i = moreday; i < data2.length + moreday; i++) {
-    comments[i] = data2[i-moreday];
-}
+    comments[i] = data2[i - moreday];
+  }
   return comments;
 }
 
@@ -660,12 +672,12 @@ function dataControlSymptom(data) {
       cnt--;
     }
   }
-  newdata = []; 
+  newdata = [];
   for (let x = 0; x < (data2.length + moreday); x++) {
     if (x < moreday)
       newdata[x] = (-1);
-    else 
-    newdata[x] = data2[x - moreday];
+    else
+      newdata[x] = data2[x - moreday];
   }
   return newdata;
 }
@@ -832,120 +844,148 @@ function chooseDisplay() {
 }
 
 function getNoReportValues(data) {
-  firstDay_report = formatdate(parseTime(data.symptom_report[0].timestamp));
-  
+  firstDay_report = parseTime(data.symptom_report[0].timestamp).getTime();
+
   if (data.fitbit_summary != undefined)
-    firstDay_fitbit = formatdate(parseTimeTemp(data.fitbit_summary[0].timestamp));
-  else 
+    firstDay_fitbit = parseTimeTemp(data.fitbit_summary[0].timestamp).getTime();
+  else
     firstDay_fitbit = firstDay_report;
   if (data.apple_health_summary != undefined)
-    firstDay_apple = formatdate(parseTime(data.apple_health_summary[0].timestamp));
-  else 
+    firstDay_apple = parseTime(data.apple_health_summary[0].timestamp).getTime();
+  else
     firstDay_apple = firstDay_report;
   if (data.oura_sleep_summary != undefined)
-    firstDay_oura = formatdate(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
-  else 
+    firstDay_oura = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
+  else
     firstDay_oura = firstDay_report;
   if (data.oura_sleep_5min != undefined)
-    firstDay_oura_hr = formatdate(parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp));
-  else 
+    firstDay_oura_hr = parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp).getTime();
+  else
     firstDay_oura_hr = firstDay_report;
-    
-    test = 0;
-    test2 = "";
+  if (data.garmin_heartrate != undefined)
+    firstDay_garmin = parseTimeGarmin(data.garmin_heartrate[0].timestamp).getTime();
+  else
+    firstDay_garmin = firstDay_report;
 
-  if ((firstDay_report.split('/')[0] - firstDay_apple.split('/')[0]) > test && firstDay_apple != undefined) {
-    test = (firstDay_report.split('/')[0] - firstDay_apple.split('/')[0]) ;
+  test = 0;
+  test2 = "";
+  date = formatdate(parseTime(data.symptom_report[0].timestamp));
+
+  if ((firstDay_report - firstDay_apple) > test && firstDay_apple != undefined) {
+    test = (firstDay_report - firstDay_apple);
     test2 = '/apple';
+    date = formatdatemonth(parseTime(data.symptom_report[0].timestamp).getTime());
   }
-  if (firstDay_report.split('/')[0] - firstDay_oura.split('/')[0] > test && firstDay_oura != undefined) {
-    test = firstDay_report.split('/')[0] - firstDay_oura.split('/')[0];
+  if (firstDay_report - firstDay_oura > test && firstDay_oura != undefined) {
+    test = firstDay_report - firstDay_oura;
     test2 = '/oura';
+    date = formatdatemonth(parseTime(data.symptom_report[0].timestamp).getTime());
   }
-  if ((firstDay_report.split('/')[0] - firstDay_fitbit.split('/')[0]) > test && firstDay_fitbit != undefined) {
-    test = (firstDay_report.split('/')[0] - firstDay_fitbit.split('/')[0]) ;
+  if ((firstDay_report - firstDay_fitbit) > test && firstDay_fitbit != undefined) {
+    test = (firstDay_report - firstDay_fitbit);
     test2 = '/fitbit';
+    date = formatdatemonth(parseTime(data.symptom_report[0].timestamp).getTime());
   }
-  if ((firstDay_report.split('/')[0] - firstDay_oura_hr.split('/')[0]) > test && firstDay_oura_hr != undefined) {
-    test = (firstDay_report.split('/')[0] - firstDay_oura_hr.split('/')[0]) ;
+  if ((firstDay_report - firstDay_oura_hr) > test && firstDay_oura_hr != undefined) {
+    test = (firstDay_report - firstDay_oura_hr);
     test2 = '/ouraHR';
+    date = formatdatemonth(parseTime(data.symptom_report[0].timestamp).getTime());
   }
-  return (test);
+  if ((firstDay_report - firstDay_garmin) > test && data.garmin_heartrate != undefined) {
+    test = (firstDay_report - firstDay_garmin);
+    test2 = '/garmin';
+  }
+  return (Math.trunc(test/(86400000)));
 }
 
 function getNoReportDataSource(data) {
-  firstDay_report = formatdate(parseTime(data.symptom_report[0].timestamp));
+
+  firstDay_report = parseTime(data.symptom_report[0].timestamp).getTime();
 
   if (data.fitbit_summary != undefined)
-    firstDay_fitbit = formatdate(parseTimeTemp(data.fitbit_summary[0].timestamp));
-  else 
+    firstDay_fitbit = parseTimeTemp(data.fitbit_summary[0].timestamp).getTime();
+  else
     firstDay_fitbit = firstDay_report;
   if (data.apple_health_summary != undefined)
-    firstDay_apple = formatdate(parseTime(data.apple_health_summary[0].timestamp));
-  else 
+    firstDay_apple = parseTime(data.apple_health_summary[0].timestamp).getTime();
+  else
     firstDay_apple = firstDay_report;
   if (data.oura_sleep_summary != undefined)
-    firstDay_oura = formatdate(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
-  else 
+    firstDay_oura = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
+  else
     firstDay_oura = firstDay_report;
   if (data.oura_sleep_5min != undefined)
-    firstDay_oura_hr = formatdate(parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp));
-  else 
+    firstDay_oura_hr = parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp).getTime();
+  else
     firstDay_oura_hr = firstDay_report;
-
-  test = 0; 
+  if (data.garmin_heartrate != undefined)
+    firstDay_garmin = parseTimeGarmin(data.garmin_heartrate[0].timestamp).getTime();
+  else
+    firstDay_garmin = firstDay_report;
+  
+  test = 0;
   test2 = "n";
 
-  if ((firstDay_report.split('/')[0] - firstDay_apple.split('/')[0]) > test) {
-    test = (firstDay_report.split('/')[0] - firstDay_apple.split('/')[0]) ;
+  if ((firstDay_report - firstDay_apple) > test) {
+    test = (firstDay_report - firstDay_apple);
     test2 = 'apple';
   }
-  if (firstDay_report.split('/')[0] - firstDay_oura.split('/')[0] > test) {
-    test = firstDay_report.split('/')[0] - firstDay_oura.split('/')[0];
+  if (firstDay_report - firstDay_oura > test) {
+    test = firstDay_report - firstDay_oura;
     test2 = 'oura';
   }
-  if ((firstDay_report.split('/')[0] - firstDay_fitbit.split('/')[0]) > test) {
-    test = (firstDay_report.split('/')[0] - firstDay_fitbit.split('/')[0]) ;
+  if ((firstDay_report - firstDay_fitbit) > test) {
+    test = (firstDay_report- firstDay_fitbit);
     test2 = 'fitbit';
   }
-  if ((firstDay_report.split('/')[0] - firstDay_oura_hr.split('/')[0]) > test) {
-    test = (firstDay_report.split('/')[0] - firstDay_oura_hr.split('/')[0]) ;
-    test2 = '/ouraHR';
+  if ((firstDay_report - firstDay_oura_hr) > test) {
+    test = (firstDay_report - firstDay_oura_hr);
+    test2 = 'ouraHR';
+  }
+  if (firstDay_report - firstDay_garmin > test) {
+    test = (firstDay_report - firstDay_garmin);
+    test2 = 'garmin';
   }
   return test2;
 }
 
 function addDaynoReport(numberdays, datasource, data) {
-  var daystoadd = []; 
- 
+  var daystoadd = [];
+
   if (datasource == 'oura' && data.oura_sleep_summary != undefined) {
-    for (let i = 0; i < numberdays; i ++) {
+    for (let i = 0; i < numberdays; i++) {
       daystoadd[i] = formatdate(parseTimeTemp(data.oura_sleep_summary[i].timestamp));
-   }
-  } 
- else if (datasource == 'fitbit' && data.fitbit_summary != undefined) {
-      for (let i = 0; i < numberdays; i ++) {
-        daystoadd[i] = formatdate(parseTimeTemp(data.fitbit_summary[i].timestamp));
-      }
-  } 
- else if (datasource == 'apple' && data.apple_health_summary != undefined) {
-      for (let i = 0; i < numberdays; i ++) {
-        daystoadd[i] = formatdate(parseTime(data.apple_health_summary[i].timestamp));
-      }
-  } 
+    }
+  }
+  else if (datasource == 'fitbit' && data.fitbit_summary != undefined) {
+    for (let i = 0; i < numberdays; i++) {
+      daystoadd[i] = formatdate(parseTimeTemp(data.fitbit_summary[i].timestamp));
+    }
+  }
+  else if (datasource == 'apple' && data.apple_health_summary != undefined) {
+    for (let i = 0; i < numberdays; i++) {
+      daystoadd[i] = formatdate(parseTime(data.apple_health_summary[i].timestamp));
+    }
+  }
   else if (datasource == 'ouraHR' && data.oura_sleep_5min != undefined) {
-    for (let i = 0; i < numberdays; i ++) {
+    for (let i = 0; i < numberdays; i++) {
       daystoadd[i] = formatdate(parseTimeOuraSleep(data.oura_sleep_5min[i].timestamp));
     }
-} 
-  else numberdays = 0; 
+  }
+  else if (datasource == 'garmin' && data.garmin_heartrate != undefined) {
+    for (let i = 0; i < numberdays; i++) {
+      daystoadd[i] = formatdate(parseTimeGarmin(data.garmin_heartrate[i].timestamp));
+    }
+  }
+  else numberdays = 0;
 
   for (let i = numberdays; i < days.length + numberdays; i++) {
-    daystoadd[i] = days[i-numberdays];
+    daystoadd[i] = days[i - numberdays];
   }
   return daystoadd;
 }
-function getDays(){
+
+function getDays() {
   return this.days;
 }
 /* Format */
@@ -954,26 +994,4 @@ formatdate = d3.timeFormat("%d/%m");
 formatdateday = d3.timeFormat("%d");
 formatdatemonth = d3.timeFormat("%m");
 parseTimeOuraSleep = d3.timeParse("%Y-%m-%dT%H:%M:%S%Z");
-
-/* fonctions : */
-/*function createheatmapPhone(url) {
-  margin = {
-    top: 0.1 * width,
-    right: -0.01 * width,
-    bottom: 0.14 * width,
-    left: 0.03 * width
-  };
-
-  $.get(url, function (data) {
-    getDatafromFile(data);
-    screen(0);
-    showDaysAxis(maingroup);
-    showTitleandSubtitle(titlegroup);
-    showHeatmap(maingroup)
-    showSymptomAxis(symptomgroup);
-    showLegendPhone(legendgroup);
-    tooltip();
-    document.getElementById("heatmap").onscroll = function () { progressScrollBar() };
-  })
-}
-*/
+parseTimeGarmin = d3.timeParse("%Y-%m-%dT%H:%M:%S");
