@@ -26,7 +26,7 @@ def oura_parser(oura_object, event_start, event_end=False):
 
     returned_hr_data = []
     returned_temp_data = []
-
+    returned_respiratory_rate_data = []
     # p is start_date!
 
     if "sleep" in oura.keys():
@@ -37,10 +37,14 @@ def oura_parser(oura_object, event_start, event_end=False):
             if sdate >= period_start and sdate <= period_end:
                 record_time = arrow.get(entry["bedtime_start"])
                 temperature_delta = entry.get("temperature_delta", 0)
+                respiratory_rate = entry.get("breath_average", 0)
                 returned_temp_data.append(
                     {
                         "timestamp": sdate.format("YYYY-MM-DD"),
-                        "data": {"temperature_delta": temperature_delta},
+                        "data": {
+                            "temperature_delta": temperature_delta,
+                            "respiratory_rate": respiratory_rate,
+                        },
                     }
                 )
                 for hr in entry["hr_5min"]:
