@@ -72,12 +72,13 @@ function display() {
 /* Variable */
 
 function createheatmap(url) {
-  $.get(url, function (data) {
+  $.getJSON(url, function (data) {
     height = determineHeigth();
     innerwidth = determineInnerwidth();
     heightGraph = (height / 2);
     main_heatmap(data);
     main_wearable_data(data);
+    console.log(data);
   })
 }
 
@@ -111,7 +112,7 @@ function main_heatmap(data) {
   document.getElementById("heatmap").onscroll = function () {
     progressScrollBar();
     var winScroll = document.getElementById("heatmap").scrollLeft;
-    if (moredayDataSource != 'n') {
+    if (moredayDataSource != 'none') {
       document.getElementById("wearable-graph").scroll(winScroll, 0);
     }
   };
@@ -866,36 +867,50 @@ function getNoReportValues(data) {
     firstDay_garmin = parseTimeGarmin(data.garmin_heartrate[0].timestamp).getTime();
   else
     firstDay_garmin = firstDay_report;
-
+  if (data.googlefit_heartrate!= undefined)
+    firstDay_google = parseTimeGarmin(data.googlefit_heartrate[0].timestamp).getTime();
+  else
+    firstDay_google = firstDay_report;
   test = 0;
   test2 = "";
-  date = formatdate(parseTime(data.symptom_report[0].timestamp));
-
   if ((firstDay_report - firstDay_apple) > test && firstDay_apple != undefined) {
     test = (firstDay_report - firstDay_apple);
     test2 = '/apple';
-    date = formatdatemonth(parseTime(data.symptom_report[0].timestamp).getTime());
   }
   if (firstDay_report - firstDay_oura > test && firstDay_oura != undefined) {
     test = firstDay_report - firstDay_oura;
     test2 = '/oura';
-    date = formatdatemonth(parseTime(data.symptom_report[0].timestamp).getTime());
   }
   if ((firstDay_report - firstDay_fitbit) > test && firstDay_fitbit != undefined) {
     test = (firstDay_report - firstDay_fitbit);
     test2 = '/fitbit';
-    date = formatdatemonth(parseTime(data.symptom_report[0].timestamp).getTime());
   }
   if ((firstDay_report - firstDay_oura_hr) > test && firstDay_oura_hr != undefined) {
     test = (firstDay_report - firstDay_oura_hr);
     test2 = '/ouraHR';
-    date = formatdatemonth(parseTime(data.symptom_report[0].timestamp).getTime());
   }
   if ((firstDay_report - firstDay_garmin) > test && data.garmin_heartrate != undefined) {
     test = (firstDay_report - firstDay_garmin);
     test2 = '/garmin';
   }
-  return (Math.trunc(test/(86400000)));
+  if ((firstDay_report - firstDay_google) > test && data.googlefit_heartrate != undefined) {
+    test = (firstDay_report - firstDay_google);
+    test2 = '/google';
+  }
+  var time = Math.round(test/(86400000)); 
+  /*file_days = timestamp.map(d => formatdate(parseTime(d)));
+  reportday = timestamp.map(d => formatdateday(parseTime(d)))
+  month = timestamp.map(d => formatdatemonth(parseTime(d)))
+  days = controlDay(file_days, reportday, month);*/
+  
+  if (test2 == '/garmin' && formatdate(parseTime(data.symptom_report[0].timestamp)) == formatdate(parseTimeGarmin(data.garmin_heartrate[time].timestamp))) {
+  return (Math.round(test/(86400000)));
+  }
+  else if (test2 == '/google' && parseTime(data.symptom_report[0].timestamp).getDate() == parseTimeGarmin(data.googlefit_heartrate[0].timestamp).getDate() + time ) {
+    return (Math.round(test/(86400000)));
+    }
+  else 
+  return (time-1);
 }
 
 function getNoReportDataSource(data) {
@@ -922,9 +937,13 @@ function getNoReportDataSource(data) {
     firstDay_garmin = parseTimeGarmin(data.garmin_heartrate[0].timestamp).getTime();
   else
     firstDay_garmin = firstDay_report;
-  
+  if (data.googlefit_heartrate!= undefined)
+    firstDay_google = parseTimeGarmin(data.googlefit_heartrate[0].timestamp).getTime();
+    else
+    firstDay_google = firstDay_report;
+
   test = 0;
-  test2 = "n";
+  test2 = "none";
 
   if ((firstDay_report - firstDay_apple) > test) {
     test = (firstDay_report - firstDay_apple);
@@ -945,6 +964,10 @@ function getNoReportDataSource(data) {
   if (firstDay_report - firstDay_garmin > test) {
     test = (firstDay_report - firstDay_garmin);
     test2 = 'garmin';
+  }
+  if ((firstDay_report - firstDay_google) > test) {
+    test = (firstDay_report - firstDay_google);
+    test2 = 'google';
   }
   return test2;
 }
@@ -977,6 +1000,11 @@ function addDaynoReport(numberdays, datasource, data) {
       daystoadd[i] = formatdate(parseTimeGarmin(data.garmin_heartrate[i].timestamp));
     }
   }
+  else if (datasource == 'google' && data.googlefit_heartrate != undefined) {
+    for (let i = 0; i < numberdays; i++) {
+     daystoadd[i] = formatdate(parseTimeGarmin(data.googlefit_heartrate[i].timestamp));
+    }
+  }
   else numberdays = 0;
 
   for (let i = numberdays; i < days.length + numberdays; i++) {
@@ -995,3 +1023,4 @@ formatdateday = d3.timeFormat("%d");
 formatdatemonth = d3.timeFormat("%m");
 parseTimeOuraSleep = d3.timeParse("%Y-%m-%dT%H:%M:%S%Z");
 parseTimeGarmin = d3.timeParse("%Y-%m-%dT%H:%M:%S");
+formatnewdate = d3.timeFormat("%Y-%m-%d%Z");

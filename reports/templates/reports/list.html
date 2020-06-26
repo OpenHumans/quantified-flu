@@ -168,6 +168,7 @@
 {% timezone timezone %}
 
 <meta name="viewport" content="initial-scale=1" />
+
 <div id="heatmap-report-symptom-container" style=" width: 100%; height: auto; display: inline-block;">
   <h2>Symptom reports </h2>
   <div id="heatmap-title" style="width: 100%; height: auto"></div>
@@ -187,12 +188,13 @@
   <div id="wearable-choice"></div>
   <div id="wearable-legend-phone"> </div>
 </div>
-
+{% load static %}
+<script src="{% static 'test.json' %}"></script>
 <script>
   console.log("Loading data...");
-  url = "{{ request.path }}.json";
+  //url = "{{ request.path }}.json";
   console.log("succed to loading public data");
-
+  url = '/static/test.json';
   /* Fitbit */
  //url =  "https://quantifiedflu.org/report/list/member/49855651.json"
 
@@ -201,12 +203,16 @@
   
   /* Garmin data*/
   //url = "https://quantifiedflu.org/report/list/member/81943862.json";
+  
+  /* Google fit */
+ // url = "https://quantifiedflu.org/report/list/member/30781654.json"; 
  
  //url = "https://quantifiedflu.org/report/list/member/25102556.json"
  //url = "https://quantifiedflu.org/report/list/member/57494882.json"
   //url = "https://quantifiedflu.org/report/list/member/43462825.json"
  //url ="https://quantifiedflu.org/report/list/member/02631468.json"
  // url = "https://quantifiedflu.org/report/list/member/25102556.json"
+ 
 </script>
 
 {% load static %}
