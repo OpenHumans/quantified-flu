@@ -1,0 +1,717 @@
+{
+    "googlefit_heartrate": [{"data": {"heart_rate": 98.34477426772277}, "timestamp": "2020-06-17T22:39:00"}, {"data": {"heart_rate": 85.65849319284364}, "timestamp": "2020-06-17T22:40:00"}, {"data": {"heart_rate": 96.27699605332677}, "timestamp": "2020-06-17T22:41:00"}, {"data": {"heart_rate": 111.83690407918861}, "timestamp": "2020-06-17T22:42:00"}, {"data": {"heart_rate": 106.330913175916}, "timestamp": "2020-06-17T22:43:00"}, {"data": {"heart_rate": 113.85098672335039}, "timestamp": "2020-06-17T22:44:00"}, {"data": {"heart_rate": 125.23265555503927}, "timestamp": "2020-06-17T22:45:00"}, {"data": {"heart_rate": 136.72099788290888}, "timestamp": "2020-06-17T22:46:00"}, {"data": {"heart_rate": 138.94343563168573}, "timestamp": "2020-06-17T22:47:00"}, {"data": {"heart_rate": 140.46307145491764}, "timestamp": "2020-06-17T22:48:00"}, {"data": {"heart_rate": 133.04714780024787}, "timestamp": "2020-06-17T22:49:00"}, {"data": {"heart_rate": 149.56894115927776}, "timestamp": "2020-06-17T22:50:00"}, {"data": {"heart_rate": 144.096778354467}, "timestamp": "2020-06-17T22:51:00"}, {"data": {"heart_rate": 131.92784471953644}, "timestamp": "2020-06-17T22:52:00"}, {"data": {"heart_rate": 126.43514379721435}, "timestamp": "2020-06-17T22:53:00"}, {"data": {"heart_rate": 127.75239266488249}, "timestamp": "2020-06-17T22:54:00"}, {"data": {"heart_rate": 138.62462579005538}, "timestamp": "2020-06-17T22:55:00"}, {"data": {"heart_rate": 146.61963792166154}, "timestamp": "2020-06-17T22:56:00"}, {"data": {"heart_rate": 132.57620562178695}, "timestamp": "2020-06-17T22:57:00"}, {"data": {"heart_rate": 139.10196451971052}, "timestamp": "2020-06-17T22:58:00"}, {"data": {"heart_rate": 142.15268025929313}, "timestamp": "2020-06-17T22:59:00"}, {"data": {"heart_rate": 130.99539709857183}, "timestamp": "2020-06-17T23:00:00"}, {"data": {"heart_rate": 135.73687760869305}, "timestamp": "2020-06-17T23:01:00"}, {"data": {"heart_rate": 119.1806281368269}, "timestamp": "2020-06-17T23:02:00"}, {"data": {"heart_rate": 100.3125}, "timestamp": "2020-06-17T23:03:00"}, {"data": {"heart_rate": 98.47532947284346}, "timestamp": "2020-06-17T23:20:00"}, {"data": {"heart_rate": 99.70250249432327}, "timestamp": "2020-06-17T23:21:00"}, {"data": {"heart_rate": 90.02279879151801}, "timestamp": "2020-06-17T23:22:00"}, {"data": {"heart_rate": 88.59041538156693}, "timestamp": "2020-06-17T23:23:00"}, {"data": {"heart_rate": 84.47612987732153}, "timestamp": "2020-06-17T23:24:00"}, {"data": {"heart_rate": 87.22792169906138}, "timestamp": "2020-06-17T23:25:00"}, {"data": {"heart_rate": 85.86030926971469}, "timestamp": "2020-06-17T23:26:00"}, {"data": {"heart_rate": 85.8580855995845}, "timestamp": "2020-06-17T23:27:00"}, {"data": {"heart_rate": 87.37041787597245}, "timestamp": "2020-06-17T23:28:00"}, {"data": {"heart_rate": 88.08267083967932}, "timestamp": "2020-06-17T23:29:00"}, {"data": {"heart_rate": 79.66673007152929}, "timestamp": "2020-06-17T23:30:00"}, {"data": {"heart_rate": 83.65038058797244}, "timestamp": "2020-06-17T23:31:00"}, {"data": {"heart_rate": 85.66948327029263}, "timestamp": "2020-06-17T23:32:00"}, {"data": {"heart_rate": 84.90580067677966}, "timestamp": "2020-06-17T23:33:00"}, {"data": {"heart_rate": 78.76488865343947}, "timestamp": "2020-06-17T23:34:00"}, {"data": {"heart_rate": 78.58691575763248}, "timestamp": "2020-06-17T23:35:00"}, {"data": {"heart_rate": 83.97175932514105}, "timestamp": "2020-06-17T23:36:00"}, {"data": {"heart_rate": 79.84238537583091}, "timestamp": "2020-06-17T23:37:00"}, {"data": {"heart_rate": 80.33874797855137}, "timestamp": "2020-06-17T23:38:00"}, {"data": {"heart_rate": 77.75574823081811}, "timestamp": "2020-06-17T23:39:00"}, {"data": {"heart_rate": 79.32445173051806}, "timestamp": "2020-06-17T23:40:00"}, {"data": {"heart_rate": 82.20905817031664}, "timestamp": "2020-06-17T23:41:00"}, {"data": {"heart_rate": 81.59530648253215}, "timestamp": "2020-06-17T23:42:00"}, {"data": {"heart_rate": 83.08737152255797}, "timestamp": "2020-06-17T23:43:00"}, {"data": {"heart_rate": 78.14286397602586}, "timestamp": "2020-06-17T23:44:00"}, {"data": {"heart_rate": 77.61951918446668}, "timestamp": "2020-06-17T23:45:00"}, {"data": {"heart_rate": 83.63486027184011}, "timestamp": "2020-06-17T23:46:00"}, {"data": {"heart_rate": 78.41615312360285}, "timestamp": "2020-06-17T23:47:00"}, {"data": {"heart_rate": 78.66489403637665}, "timestamp": "2020-06-17T23:48:00"}, {"data": {"heart_rate": 80.64905286587339}, "timestamp": "2020-06-17T23:49:00"}, {"data": {"heart_rate": 80.34680278801072}, "timestamp": "2020-06-17T23:50:00"}, {"data": {"heart_rate": 77.77639539838091}, "timestamp": "2020-06-17T23:51:00"}, {"data": {"heart_rate": 74.67900164626388}, "timestamp": "2020-06-17T23:52:00"}, {"data": {"heart_rate": 78.26808871189589}, "timestamp": "2020-06-17T23:53:00"}, {"data": {"heart_rate": 78.25918366053929}, "timestamp": "2020-06-17T23:54:00"}, {"data": {"heart_rate": 76.039214621749}, "timestamp": "2020-06-17T23:55:00"}, {"data": {"heart_rate": 77.24332435080842}, "timestamp": "2020-06-17T23:56:00"}],
+    "oura_sleep_summary": [{"data": {"temperature_delta": 0.23}, "timestamp": "2020-03-04"}, {"data": {"temperature_delta": 0.01}, "timestamp": "2020-03-05"}, {"data": {"temperature_delta": -0.07}, "timestamp": "2020-03-06"}, {"data": {"temperature_delta": -0.24}, "timestamp": "2020-03-07"}, {"data": {"temperature_delta": -0.01}, "timestamp": "2020-03-08"}, {"data": {"temperature_delta": 0.13}, "timestamp": "2020-03-09"}, {"data": {"temperature_delta": 0.08}, "timestamp": "2020-03-10"}, {"data": {"temperature_delta": -0.29}, "timestamp": "2020-03-11"}, {"data": {"temperature_delta": -0.16}, "timestamp": "2020-03-12"}, {"data": {"temperature_delta": -0.04}, "timestamp": "2020-03-13"}, {"data": {"temperature_delta": 0.05}, "timestamp": "2020-03-14"}, {"data": {"temperature_delta": -0.11}, "timestamp": "2020-03-15"}, {"data": {"temperature_delta": -0.04}, "timestamp": "2020-03-16"}, {"data": {"temperature_delta": -0.22}, "timestamp": "2020-03-17"}, {"data": {"temperature_delta": 0.02}, "timestamp": "2020-03-18"}, {"data": {"temperature_delta": 0.12}, "timestamp": "2020-03-19"}, {"data": {"temperature_delta": -0.29}, "timestamp": "2020-03-20"}, {"data": {"temperature_delta": 0.16}, "timestamp": "2020-03-21"}, {"data": {"temperature_delta": 0.15}, "timestamp": "2020-03-22"}, {"data": {"temperature_delta": -0.1}, "timestamp": "2020-03-23"}, {"data": {"temperature_delta": -0.04}, "timestamp": "2020-03-24"}, {"data": {"temperature_delta": 0.11}, "timestamp": "2020-03-25"}, {"data": {"temperature_delta": 0.24}, "timestamp": "2020-03-26"}, {"data": {"temperature_delta": 0.12}, "timestamp": "2020-03-27"}, {"data": {"temperature_delta": 0.1}, "timestamp": "2020-03-28"}, {"data": {"temperature_delta": 0.14}, "timestamp": "2020-03-29"}, {"data": {"temperature_delta": -0.04}, "timestamp": "2020-03-30"}, {"data": {"temperature_delta": 0.04}, "timestamp": "2020-03-31"}, {"data": {"temperature_delta": -0.15}, "timestamp": "2020-04-01"}, {"data": {"temperature_delta": -0.24}, "timestamp": "2020-04-02"}, {"data": {"temperature_delta": 0.07}, "timestamp": "2020-04-03"}, {"data": {"temperature_delta": -0.24}, "timestamp": "2020-04-04"}, {"data": {"temperature_delta": 0.43}, "timestamp": "2020-04-05"}, {"data": {"temperature_delta": 0.24}, "timestamp": "2020-04-06"}, {"data": {"temperature_delta": 0.13}, "timestamp": "2020-04-07"}, {"data": {"temperature_delta": 0}, "timestamp": "2020-04-08"}, {"data": {"temperature_delta": 0.08}, "timestamp": "2020-04-09"}, {"data": {"temperature_delta": 0.1}, "timestamp": "2020-04-10"}, {"data": {"temperature_delta": -0.05}, "timestamp": "2020-04-11"}, {"data": {"temperature_delta": -0.02}, "timestamp": "2020-04-12"}, {"data": {"temperature_delta": -0.06}, "timestamp": "2020-04-13"}, {"data": {"temperature_delta": 0.39}, "timestamp": "2020-04-14"}, {"data": {"temperature_delta": 0.18}, "timestamp": "2020-04-15"}, {"data": {"temperature_delta": -0.17}, "timestamp": "2020-04-16"}, {"data": {"temperature_delta": 0.36}, "timestamp": "2020-04-17"}, {"data": {"temperature_delta": 0.2}, "timestamp": "2020-04-18"}, {"data": {"temperature_delta": 0.12}, "timestamp": "2020-04-19"}, {"data": {"temperature_delta": 0.03}, "timestamp": "2020-04-20"}, {"data": {"temperature_delta": 0.04}, "timestamp": "2020-04-21"}, {"data": {"temperature_delta": -0.08}, "timestamp": "2020-04-22"}, {"data": {"temperature_delta": 0.22}, "timestamp": "2020-04-23"}, {"data": {"temperature_delta": -0.06}, "timestamp": "2020-04-25"}, {"data": {"temperature_delta": 0.08}, "timestamp": "2020-04-26"}, {"data": {"temperature_delta": 0.3}, "timestamp": "2020-04-27"}, {"data": {"temperature_delta": 0.16}, "timestamp": "2020-04-29"}, {"data": {"temperature_delta": -0.03}, "timestamp": "2020-04-30"}, {"data": {"temperature_delta": 0.18}, "timestamp": "2020-05-01"}, {"data": {"temperature_delta": -0.26}, "timestamp": "2020-05-02"}, {"data": {"temperature_delta": 0.21}, "timestamp": "2020-05-03"}, {"data": {"temperature_delta": -0.32}, "timestamp": "2020-05-04"}, {"data": {"temperature_delta": 0.07}, "timestamp": "2020-05-05"}, {"data": {"temperature_delta": 0.16}, "timestamp": "2020-05-06"}, {"data": {"temperature_delta": 0.25}, "timestamp": "2020-05-07"}, {"data": {"temperature_delta": 0.02}, "timestamp": "2020-05-08"}, {"data": {"temperature_delta": -0.01}, "timestamp": "2020-05-09"}, {"data": {"temperature_delta": -0.56}, "timestamp": "2020-05-10"}, {"data": {"temperature_delta": -0.22}, "timestamp": "2020-05-11"}, {"data": {"temperature_delta": -0.06}, "timestamp": "2020-05-12"}, {"data": {"temperature_delta": -0.13}, "timestamp": "2020-05-13"}, {"data": {"temperature_delta": 0.07}, "timestamp": "2020-05-14"}, {"data": {"temperature_delta": -0.28}, "timestamp": "2020-05-15"}, {"data": {"temperature_delta": -0.15}, "timestamp": "2020-05-16"}, {"data": {"temperature_delta": 0.02}, "timestamp": "2020-05-17"}, {"data": {"temperature_delta": -0.02}, "timestamp": "2020-05-18"}, {"data": {"temperature_delta": -0.06}, "timestamp": "2020-05-19"}, {"data": {"temperature_delta": 0.04}, "timestamp": "2020-05-20"}, {"data": {"temperature_delta": -0.13}, "timestamp": "2020-05-21"}, {"data": {"temperature_delta": 0.11}, "timestamp": "2020-05-22"}, {"data": {"temperature_delta": -0.34}, "timestamp": "2020-05-23"}, {"data": {"temperature_delta": -0.1}, "timestamp": "2020-05-24"}, {"data": {"temperature_delta": 0.18}, "timestamp": "2020-05-25"}, {"data": {"temperature_delta": -0.28}, "timestamp": "2020-05-26"}, {"data": {"temperature_delta": -0.02}, "timestamp": "2020-05-27"}, {"data": {"temperature_delta": -0.34}, "timestamp": "2020-05-28"}, {"data": {"temperature_delta": -0.33}, "timestamp": "2020-05-29"}, {"data": {"temperature_delta": 0.03}, "timestamp": "2020-05-30"}, {"data": {"temperature_delta": 0.26}, "timestamp": "2020-05-31"}, {"data": {"temperature_delta": 0.28}, "timestamp": "2020-06-01"}, {"data": {"temperature_delta": -0.06}, "timestamp": "2020-06-02"}, {"data": {"temperature_delta": 0.05}, "timestamp": "2020-06-03"}, {"data": {"temperature_delta": -0.35}, "timestamp": "2020-06-04"}, {"data": {"temperature_delta": -0.01}, "timestamp": "2020-06-05"}, {"data": {"temperature_delta": -0.19}, "timestamp": "2020-06-06"}, {"data": {"temperature_delta": -0.1}, "timestamp": "2020-06-07"}, {"data": {"temperature_delta": -0.18}, "timestamp": "2020-06-08"}, {"data": {"temperature_delta": -0.18}, "timestamp": "2020-06-09"}, {"data": {"temperature_delta": -0.01}, "timestamp": "2020-06-10"}, {"data": {"temperature_delta": -0.17}, "timestamp": "2020-06-11"}, {"data": {"temperature_delta": 0.03}, "timestamp": "2020-06-12"}, {"data": {"temperature_delta": 0.11}, "timestamp": "2020-06-13"}, {"data": {"temperature_delta": 0.12}, "timestamp": "2020-06-14"}, {"data": {"temperature_delta": 0.16}, "timestamp": "2020-06-15"}, {"data": {"temperature_delta": 0.06}, "timestamp": "2020-06-16"}, {"data": {"temperature_delta": -0.41}, "timestamp": "2020-06-17"}, {"data": {"temperature_delta": -0.26}, "timestamp": "2020-06-18"}, {"data": {"temperature_delta": -0.08}, "timestamp": "2020-06-19"}, {"data": {"temperature_delta": 0.21}, "timestamp": "2020-06-20"}, {"data": {"temperature_delta": 0}, "timestamp": "2020-06-21"}, {"data": {"temperature_delta": 0.26}, "timestamp": "2020-06-22"}, {"data": {"temperature_delta": -0.17}, "timestamp": "2020-06-23"}],
+    "apple_health_summary": [{"data": {"heart_rate": "68"}, "timestamp": "2020-03-05T00:03:27.975+0100"}, {"data": {"heart_rate": "67"}, "timestamp": "2020-03-06T00:01:17.171+0100"}, {"data": {"heart_rate": "61.99999999999999"}, "timestamp": "2020-03-07T00:03:39.195+0100"}, {"data": {"heart_rate": "61.99999999999999"}, "timestamp": "2020-03-07T00:03:39.195+0100"}, {"data": {"heart_rate": "64"}, "timestamp": "2020-03-08T08:50:33.107+0100"}, {"data": {"heart_rate": "64"}, "timestamp": "2020-03-09T00:02:51.209+0100"}, {"data": {"heart_rate": "70"}, "timestamp": "2020-03-10T00:03:34.507+0100"}, {"data": {"heart_rate": "67"}, "timestamp": "2020-03-11T00:04:51.146+0100"}, {"data": {"heart_rate": "64"}, "timestamp": "2020-03-12T00:04:20.079+0100"}, {"data": {"heart_rate": "61"}, "timestamp": "2020-03-13T00:04:18.477+0100"}, {"data": {"heart_rate": "60"}, "timestamp": "2020-03-14T00:01:59.361+0100"}, {"data": {"heart_rate": "58"}, "timestamp": "2020-03-15T00:00:00.973+0100"}, {"data": {"heart_rate": "53"}, "timestamp": "2020-03-16T00:02:39.443+0100"}, {"data": {"heart_rate": "55"}, "timestamp": "2020-03-17T00:00:45.384+0100"}, {"data": {"heart_rate": "52"}, "timestamp": "2020-03-18T00:05:55.685+0100"}, {"data": {"heart_rate": "55"}, "timestamp": "2020-03-19T00:02:59.590+0100"}, {"data": {"heart_rate": "57"}, "timestamp": "2020-03-20T00:04:07.317+0100"}, {"data": {"heart_rate": "55"}, "timestamp": "2020-03-21T00:07:05.866+0100"}, {"data": {"heart_rate": "54"}, "timestamp": "2020-03-22T00:00:03.724+0100"}, {"data": {"heart_rate": "57"}, "timestamp": "2020-03-23T00:04:49.251+0100"}, {"data": {"heart_rate": "56"}, "timestamp": "2020-03-24T00:01:45.259+0100"}, {"data": {"heart_rate": "54"}, "timestamp": "2020-03-25T00:02:38.041+0100"}, {"data": {"heart_rate": "55"}, "timestamp": "2020-03-26T00:05:23.853+0100"}, {"data": {"heart_rate": "57"}, "timestamp": "2020-03-27T00:03:42.730+0100"}, {"data": {"heart_rate": "57"}, "timestamp": "2020-03-28T00:01:24.654+0100"}, {"data": {"heart_rate": "57"}, "timestamp": "2020-03-29T00:03:15.722+0100"}, {"data": {"heart_rate": "58"}, "timestamp": "2020-03-30T00:05:31.287+0200"}, {"data": {"heart_rate": "56"}, "timestamp": "2020-03-31T00:04:32.473+0200"}, {"data": {"heart_rate": "57"}, "timestamp": "2020-04-01T00:06:05.095+0200"}, {"data": {"heart_rate": "58"}, "timestamp": "2020-04-02T00:02:23.569+0200"}, {"data": {"heart_rate": "59"}, "timestamp": "2020-04-03T00:03:18.877+0200"}, {"data": {"heart_rate": "58"}, "timestamp": "2020-04-04T00:00:07.224+0200"}, {"data": {"heart_rate": "60"}, "timestamp": "2020-04-05T00:02:53.957+0200"}, {"data": {"heart_rate": "63"}, "timestamp": "2020-04-06T00:00:08.315+0200"}, {"data": {"heart_rate": "55"}, "timestamp": "2020-04-07T00:01:20.766+0200"}, {"data": {"heart_rate": "58"}, "timestamp": "2020-04-08T00:02:26.571+0200"}, {"data": {"heart_rate": "59"}, "timestamp": "2020-04-09T00:05:52.708+0200"}, {"data": {"heart_rate": "59"}, "timestamp": "2020-04-10T00:03:21.209+0200"}, {"data": {"heart_rate": "63"}, "timestamp": "2020-04-11T00:02:03.195+0200"}, {"data": {"heart_rate": "58"}, "timestamp": "2020-04-12T00:04:38.534+0200"}, {"data": {"heart_rate": "54"}, "timestamp": "2020-04-13T00:00:21.779+0200"}, {"data": {"heart_rate": "57"}, "timestamp": "2020-04-14T00:04:27.578+0200"}, {"data": {"heart_rate": "58"}, "timestamp": "2020-04-15T00:01:12.375+0200"}, {"data": {"heart_rate": "59"}, "timestamp": "2020-04-16T00:01:28.179+0200"}, {"data": {"heart_rate": "61"}, "timestamp": "2020-04-17T00:00:46.365+0200"}, {"data": {"heart_rate": "64"}, "timestamp": "2020-04-18T00:04:12.018+0200"}, {"data": {"heart_rate": "61.99999999999999"}, "timestamp": "2020-04-19T00:03:28.852+0200"}, {"data": {"heart_rate": "67"}, "timestamp": "2020-04-20T00:02:51.175+0200"}, {"data": {"heart_rate": "60"}, "timestamp": "2020-04-21T00:01:42.391+0200"}, {"data": {"heart_rate": "60"}, "timestamp": "2020-04-21T00:01:42.391+0200"}, {"data": {"heart_rate": "60"}, "timestamp": "2020-04-22T00:04:24.040+0200"}, {"data": {"heart_rate": "58"}, "timestamp": "2020-04-23T00:02:36.113+0200"}, {"data": {"heart_rate": "59"}, "timestamp": "2020-04-24T00:05:12.775+0200"}, {"data": {"heart_rate": "60"}, "timestamp": "2020-04-25T00:03:22.276+0200"}, {"data": {"heart_rate": "59"}, "timestamp": "2020-04-26T00:01:46.482+0200"}, {"data": {"heart_rate": "57"}, "timestamp": "2020-04-27T00:00:01.715+0200"}, {"data": {"heart_rate": "59"}, "timestamp": "2020-04-28T00:02:42.724+0200"}, {"data": {"heart_rate": "59"}, "timestamp": "2020-04-28T00:02:42.724+0200"}, {"data": {"heart_rate": "61.99999999999999"}, "timestamp": "2020-04-29T00:00:45.827+0200"}, {"data": {"heart_rate": "57"}, "timestamp": "2020-04-30T00:01:37.641+0200"}, {"data": {"heart_rate": "58"}, "timestamp": "2020-05-01T00:04:10.811+0200"}, {"data": {"heart_rate": "61"}, "timestamp": "2020-05-02T00:05:10.026+0200"}, {"data": {"heart_rate": "58"}, "timestamp": "2020-05-03T00:01:17.340+0200"}, {"data": {"heart_rate": "58"}, "timestamp": "2020-05-03T00:01:17.340+0200"}, {"data": {"heart_rate": "59"}, "timestamp": "2020-05-04T00:01:53.426+0200"}, {"data": {"heart_rate": "61.99999999999999"}, "timestamp": "2020-05-05T00:00:43.787+0200"}, {"data": {"heart_rate": "61"}, "timestamp": "2020-05-06T00:00:40.980+0200"}, {"data": {"heart_rate": "60"}, "timestamp": "2020-05-07T00:02:20.958+0200"}, {"data": {"heart_rate": "63"}, "timestamp": "2020-05-08T00:05:29.453+0200"}, {"data": {"heart_rate": "60"}, "timestamp": "2020-05-09T00:00:11.102+0200"}, {"data": {"heart_rate": "57"}, "timestamp": "2020-05-10T00:00:00.498+0200"}, {"data": {"heart_rate": "58"}, "timestamp": "2020-05-11T00:01:25.724+0200"}, {"data": {"heart_rate": "59"}, "timestamp": "2020-05-12T00:05:35.413+0200"}, {"data": {"heart_rate": "59"}, "timestamp": "2020-05-12T00:05:35.413+0200"}, {"data": {"heart_rate": "60"}, "timestamp": "2020-05-13T00:07:51.019+0200"}, {"data": {"heart_rate": "58"}, "timestamp": "2020-05-14T00:00:52.625+0200"}, {"data": {"heart_rate": "60"}, "timestamp": "2020-05-15T00:02:22.351+0200"}, {"data": {"heart_rate": "63"}, "timestamp": "2020-05-16T00:04:07.930+0200"}, {"data": {"heart_rate": "63"}, "timestamp": "2020-05-17T00:06:20.139+0200"}, {"data": {"heart_rate": "56"}, "timestamp": "2020-05-18T00:04:53.917+0200"}, {"data": {"heart_rate": "56"}, "timestamp": "2020-05-18T00:04:53.917+0200"}, {"data": {"heart_rate": "61.99999999999999"}, "timestamp": "2020-05-19T00:03:01.276+0200"}, {"data": {"heart_rate": "61.99999999999999"}, "timestamp": "2020-05-19T00:03:01.276+0200"}, {"data": {"heart_rate": "59"}, "timestamp": "2020-05-20T00:00:48.031+0200"}, {"data": {"heart_rate": "58"}, "timestamp": "2020-05-21T00:01:00.493+0200"}, {"data": {"heart_rate": "57"}, "timestamp": "2020-05-22T00:00:40.886+0200"}, {"data": {"heart_rate": "59"}, "timestamp": "2020-05-23T00:01:50.413+0200"}, {"data": {"heart_rate": "57"}, "timestamp": "2020-05-24T00:03:44.968+0200"}, {"data": {"heart_rate": "56"}, "timestamp": "2020-05-25T00:03:30.047+0200"}, {"data": {"heart_rate": "60"}, "timestamp": "2020-05-26T00:00:10.241+0200"}, {"data": {"heart_rate": "64"}, "timestamp": "2020-05-27T00:03:05.020+0200"}, {"data": {"heart_rate": "67"}, "timestamp": "2020-05-28T00:00:21.531+0200"}, {"data": {"heart_rate": "61"}, "timestamp": "2020-05-29T00:00:40.603+0200"}, {"data": {"heart_rate": "58"}, "timestamp": "2020-05-30T00:00:28.294+0200"}, {"data": {"heart_rate": "58"}, "timestamp": "2020-05-30T00:00:28.294+0200"}, {"data": {"heart_rate": "57"}, "timestamp": "2020-05-31T00:03:15.853+0200"}, {"data": {"heart_rate": "61"}, "timestamp": "2020-06-01T00:04:09.731+0200"}, {"data": {"heart_rate": "57"}, "timestamp": "2020-06-02T00:02:00.196+0200"}, {"data": {"heart_rate": "67"}, "timestamp": "2020-06-03T00:02:40.441+0200"}, {"data": {"heart_rate": "56"}, "timestamp": "2020-06-04T00:00:41.237+0200"}, {"data": {"heart_rate": "56"}, "timestamp": "2020-06-04T00:00:41.237+0200"}, {"data": {"heart_rate": "61.99999999999999"}, "timestamp": "2020-06-05T00:01:51.252+0200"}, {"data": {"heart_rate": "56"}, "timestamp": "2020-06-06T00:02:25.709+0200"}, {"data": {"heart_rate": "60"}, "timestamp": "2020-06-07T00:05:28.652+0200"}, {"data": {"heart_rate": "60"}, "timestamp": "2020-06-08T00:04:21.293+0200"}, {"data": {"heart_rate": "60"}, "timestamp": "2020-06-08T00:04:21.293+0200"}, {"data": {"heart_rate": "61"}, "timestamp": "2020-06-09T00:00:02.447+0200"}, {"data": {"heart_rate": "60"}, "timestamp": "2020-06-10T00:02:00.986+0200"}, {"data": {"heart_rate": "58"}, "timestamp": "2020-06-11T00:01:09.663+0200"}, {"data": {"heart_rate": "56"}, "timestamp": "2020-06-12T00:00:18.456+0200"}],
+    "garmin_heartrate": [{"data": {"heart_rate": 45}, "timestamp": "2020-03-24T05:00:00"}, {"data": {"heart_rate": 46}, "timestamp": "2020-03-25T05:00:00"}, {"data": {"heart_rate": 46}, "timestamp": "2020-03-26T05:00:00"}, {"data": {"heart_rate": 36}, "timestamp": "2020-03-27T05:00:00"}, {"data": {"heart_rate": 38}, "timestamp": "2020-03-28T05:00:00"}, {"data": {"heart_rate": 38}, "timestamp": "2020-03-29T05:00:00"}, {"data": {"heart_rate": 43}, "timestamp": "2020-03-30T05:00:00"}, {"data": {"heart_rate": 38}, "timestamp": "2020-03-31T05:00:00"}, {"data": {"heart_rate": 46}, "timestamp": "2020-04-01T05:00:00"}, {"data": {"heart_rate": 46}, "timestamp": "2020-04-02T05:00:00"}, {"data": {"heart_rate": 42}, "timestamp": "2020-04-03T05:00:00"}, {"data": {"heart_rate": 43}, "timestamp": "2020-04-04T05:00:00"}, {"data": {"heart_rate": 47}, "timestamp": "2020-04-05T05:00:00"}, {"data": {"heart_rate": 49}, "timestamp": "2020-04-06T05:00:00"}, {"data": {"heart_rate": 50}, "timestamp": "2020-04-07T05:00:00"}, {"data": {"heart_rate": 38}, "timestamp": "2020-04-08T05:00:00"}, {"data": {"heart_rate": 39}, "timestamp": "2020-04-09T05:00:00"}, {"data": {"heart_rate": 39}, "timestamp": "2020-04-10T05:00:00"}, {"data": {"heart_rate": 38}, "timestamp": "2020-04-11T05:00:00"}, {"data": {"heart_rate": 40}, "timestamp": "2020-04-12T05:00:00"}, {"data": {"heart_rate": 47}, "timestamp": "2020-04-13T05:00:00"}, {"data": {"heart_rate": 40}, "timestamp": "2020-04-14T05:00:00"}, {"data": {"heart_rate": 38}, "timestamp": "2020-04-15T05:00:00"}, {"data": {"heart_rate": 37}, "timestamp": "2020-04-16T05:00:00"}, {"data": {"heart_rate": 41}, "timestamp": "2020-04-17T05:00:00"}, {"data": {"heart_rate": 48}, "timestamp": "2020-04-18T05:00:00"}, {"data": {"heart_rate": 48}, "timestamp": "2020-04-19T05:00:00"}, {"data": {"heart_rate": 36}, "timestamp": "2020-04-20T05:00:00"}, {"data": {"heart_rate": 42}, "timestamp": "2020-04-21T05:00:00"}, {"data": {"heart_rate": 45}, "timestamp": "2020-04-22T05:00:00"}, {"data": {"heart_rate": 43}, "timestamp": "2020-04-23T05:00:00"}, {"data": {"heart_rate": 44}, "timestamp": "2020-04-24T05:00:00"}, {"data": {"heart_rate": 38}, "timestamp": "2020-04-25T05:00:00"}, {"data": {"heart_rate": 45}, "timestamp": "2020-04-26T05:00:00"}, {"data": {"heart_rate": 43}, "timestamp": "2020-04-27T05:00:00"}, {"data": {"heart_rate": 39}, "timestamp": "2020-04-28T05:00:00"}, {"data": {"heart_rate": 40}, "timestamp": "2020-04-29T05:00:00"}, {"data": {"heart_rate": 47}, "timestamp": "2020-04-30T05:00:00"}, {"data": {"heart_rate": 36}, "timestamp": "2020-05-01T05:00:00"}, {"data": {"heart_rate": 39}, "timestamp": "2020-05-02T05:00:00"}, {"data": {"heart_rate": 47}, "timestamp": "2020-05-03T05:00:00"}, {"data": {"heart_rate": 47}, "timestamp": "2020-05-04T05:00:00"}, {"data": {"heart_rate": 41}, "timestamp": "2020-05-05T05:00:00"}, {"data": {"heart_rate": 38}, "timestamp": "2020-05-06T05:00:00"}, {"data": {"heart_rate": 36}, "timestamp": "2020-05-07T05:00:00"}, {"data": {"heart_rate": 38}, "timestamp": "2020-05-08T05:00:00"}, {"data": {"heart_rate": 47}, "timestamp": "2020-05-09T05:00:00"}, {"data": {"heart_rate": 35}, "timestamp": "2020-05-10T05:00:00"}, {"data": {"heart_rate": 46}, "timestamp": "2020-05-11T05:00:00"}, {"data": {"heart_rate": 46}, "timestamp": "2020-05-12T05:00:00"}, {"data": {"heart_rate": 39}, "timestamp": "2020-05-13T05:00:00"}, {"data": {"heart_rate": 47}, "timestamp": "2020-05-14T05:00:00"}, {"data": {"heart_rate": 49}, "timestamp": "2020-05-15T05:00:00"}, {"data": {"heart_rate": 47}, "timestamp": "2020-05-16T05:00:00"}, {"data": {"heart_rate": 36}, "timestamp": "2020-05-17T05:00:00"}, {"data": {"heart_rate": 42}, "timestamp": "2020-05-18T05:00:00"}, {"data": {"heart_rate": 36}, "timestamp": "2020-05-19T05:00:00"}, {"data": {"heart_rate": 46}, "timestamp": "2020-05-20T05:00:00"}, {"data": {"heart_rate": 47}, "timestamp": "2020-05-21T05:00:00"}, {"data": {"heart_rate": 37}, "timestamp": "2020-05-22T05:00:00"}, {"data": {"heart_rate": 37}, "timestamp": "2020-05-23T05:00:00"}, {"data": {"heart_rate": 36}, "timestamp": "2020-05-24T05:00:00"}, {"data": {"heart_rate": 35}, "timestamp": "2020-05-25T05:00:00"}, {"data": {"heart_rate": 45}, "timestamp": "2020-05-26T05:00:00"}, {"data": {"heart_rate": 42}, "timestamp": "2020-05-27T05:00:00"}, {"data": {"heart_rate": 38}, "timestamp": "2020-05-28T05:00:00"}, {"data": {"heart_rate": 47}, "timestamp": "2020-05-29T05:00:00"}, {"data": {"heart_rate": 45}, "timestamp": "2020-05-30T05:00:00"}, {"data": {"heart_rate": 37}, "timestamp": "2020-05-31T05:00:00"}, {"data": {"heart_rate": 40}, "timestamp": "2020-06-01T05:00:00"}, {"data": {"heart_rate": 39}, "timestamp": "2020-06-02T05:00:00"}, {"data": {"heart_rate": 41}, "timestamp": "2020-06-03T05:00:00"}, {"data": {"heart_rate": 48}, "timestamp": "2020-06-11T05:00:00"}, {"data": {"heart_rate": 48}, "timestamp": "2020-06-12T05:00:00"}, {"data": {"heart_rate": 45}, "timestamp": "2020-06-13T05:00:00"}, {"data": {"heart_rate": 49}, "timestamp": "2020-06-14T05:00:00"}, {"data": {"heart_rate": 41}, "timestamp": "2020-06-15T05:00:00"}, {"data": {"heart_rate": 47}, "timestamp": "2020-06-16T05:00:00"}, {"data": {"heart_rate": 47}, "timestamp": "2020-06-17T05:00:00"}, {"data": {"heart_rate": 47}, "timestamp": "2020-06-18T05:00:00"}, {"data": {"heart_rate": 47}, "timestamp": "2020-06-19T05:00:00"}, {"data": {"heart_rate": 47}, "timestamp": "2020-06-20T05:00:00"}, {"data": {"heart_rate": 44}, "timestamp": "2020-06-21T05:00:00"}, {"data": {"heart_rate": 46}, "timestamp": "2020-06-22T05:00:00"}, {"data": {"heart_rate": 47}, "timestamp": "2020-06-23T05:00:00"}, {"data": {"heart_rate": 41}, "timestamp": "2020-06-24T05:00:00"}, {"data": {"heart_rate": 50}, "timestamp": "2020-06-25T05:00:00"}],
+    "fitbit_summary": [
+        {
+            "data": {
+                "heart_rate":  58
+            },
+            "timestamp": "2020-03-05"
+        },
+        {
+            "data": {
+                "heart_rate":  60
+            },
+            "timestamp": "2020-03-06"
+        },
+        {
+            "data": {
+                "heart_rate":  61
+            },
+            "timestamp": "2020-03-07"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-03-08"
+        },
+        {
+            "data": {
+                "heart_rate":  59
+            },
+            "timestamp": "2020-03-09"
+        },
+        {
+            "data": {
+                "heart_rate":  68
+            },
+            "timestamp": "2020-03-10"
+        },
+        {
+            "data": {
+                "heart_rate":  62
+            },
+            "timestamp": "2020-03-11"
+        },
+        {
+            "data": {
+                "heart_rate":  64
+            },
+            "timestamp": "2020-03-12"
+        },
+        {
+            "data": {
+                "heart_rate":  58
+            },
+            "timestamp": "2020-03-13"
+        },
+        {
+            "data": {
+                "heart_rate":  56
+            },
+            "timestamp": "2020-03-14"
+        },
+        {
+            "data": {
+                "heart_rate":  58
+            },
+            "timestamp": "2020-03-15"
+        },
+        {
+            "data": {
+                "heart_rate":  61
+            },
+            "timestamp": "2020-03-16"
+        },
+        {
+            "data": {
+                "heart_rate": 55
+            },
+            "timestamp": "2020-03-17"
+        },
+        {
+            "data": {
+                "heart_rate":  58
+            },
+            "timestamp": "2020-03-18"
+        },
+        {
+            "data": {
+                "heart_rate":  59
+            },
+            "timestamp": "2020-03-19"
+        },
+        {
+            "data": {
+                "heart_rate": 60
+            },
+            "timestamp": "2020-03-20"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-03-21"
+        },
+        {
+            "data": {
+                "heart_rate": 54
+            },
+            "timestamp": "2020-03-22"
+        },
+        {
+            "data": {
+                "heart_rate": 59
+            },
+            "timestamp": "2020-03-23"
+        },
+        {
+            "data": {
+                "heart_rate": 61
+            },
+            "timestamp": "2020-03-24"
+        },
+        {
+            "data": {
+                "heart_rate": 62
+            },
+            "timestamp": "2020-03-25"
+        },
+        {
+            "data": {
+                "heart_rate": 61
+            },
+            "timestamp": "2020-03-26"
+        },
+        {
+            "data": {
+                "heart_rate": 61
+            },
+            "timestamp": "2020-03-27"
+        },
+        {
+            "data": {
+                "heart_rate": 61
+            },
+            "timestamp": "2020-03-28"
+        },
+        {
+            "data": {
+                "heart_rate": 61
+            },
+            "timestamp": "2020-03-29"
+        },
+        {
+            "data": {
+                "heart_rate": 61
+            },
+            "timestamp": "2020-03-30"
+        },
+        {
+            "data": {
+                "heart_rate": 60
+            },
+            "timestamp": "2020-03-31"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-04-01"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-04-02"
+        },
+        {
+            "data": {
+                "heart_rate": 59
+            },
+            "timestamp": "2020-04-03"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-04-04"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-05"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-06"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-07"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-08"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-04-09"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-04-10"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-04-11"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-04-12"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-13"
+        },
+        {
+            "data": {
+                "heart_rate": 56
+            },
+            "timestamp": "2020-04-14"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-15"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-04-16"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-04-17"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-18"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-19"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-20"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-21"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-22"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-23"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-24"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-25"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-26"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-27"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-28"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-29"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-04-30"
+        },
+        {
+            "data": {
+                "heart_rate": 56
+            },
+            "timestamp": "2020-05-01"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-05-02"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-05-03"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-05-04"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-05-05"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-05-06"
+        },
+        {
+            "data": {
+                "heart_rate": 59
+            },
+            "timestamp": "2020-05-07"
+        },
+        {
+            "data": {
+                "heart_rate": 59
+            },
+            "timestamp": "2020-05-08"
+        },
+        {
+            "data": {
+                "heart_rate": 59
+            },
+            "timestamp": "2020-05-09"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-05-10"
+        },
+        {
+            "data": {
+                "heart_rate": 60
+            },
+            "timestamp": "2020-05-11"
+        },
+        {
+            "data": {
+                "heart_rate": 60
+            },
+            "timestamp": "2020-05-12"
+        },
+        {
+            "data": {
+                "heart_rate": 60
+            },
+            "timestamp": "2020-05-13"
+        },
+        {
+            "data": {
+                "heart_rate": 60
+            },
+            "timestamp": "2020-05-14"
+        },
+        {
+            "data": {
+                "heart_rate": 59
+            },
+            "timestamp": "2020-05-15"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-05-16"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-05-17"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-05-18"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-05-19"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-05-20"
+        },
+        {
+            "data": {
+                "heart_rate": 56
+            },
+            "timestamp": "2020-05-21"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-05-22"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-05-23"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-05-24"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-05-25"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-05-26"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-05-27"
+        },
+        {
+            "data": {
+                "heart_rate": 56
+            },
+            "timestamp": "2020-05-28"
+        },
+        {
+            "data": {
+                "heart_rate": 55
+            },
+            "timestamp": "2020-05-29"
+        },
+        {
+            "data": {
+                "heart_rate": 56
+            },
+            "timestamp": "2020-05-30"
+        },
+        {
+            "data": {
+                "heart_rate": 56
+            },
+            "timestamp": "2020-05-31"
+        },
+        {
+            "data": {
+                "heart_rate": 56
+            },
+            "timestamp": "2020-06-01"
+        },
+        {
+            "data": {
+                "heart_rate": 56
+            },
+            "timestamp": "2020-06-02"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-06-03"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-06-04"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-06-05"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-06-06"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-06-07"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-06-08"
+        },
+        {
+            "data": {
+                "heart_rate": "-"
+            },
+            "timestamp": "2020-06-09"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-06-10"
+        },
+        {
+            "data": {
+                "heart_rate": 59
+            },
+            "timestamp": "2020-06-11"
+        },
+        {
+            "data": {
+                "heart_rate": 59
+            },
+            "timestamp": "2020-06-12"
+        },
+        {
+            "data": {
+                "heart_rate": 59
+            },
+            "timestamp": "2020-06-13"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-06-14"
+        },
+        {
+            "data": {
+                "heart_rate": 59
+            },
+            "timestamp": "2020-06-15"
+        },
+        {
+            "data": {
+                "heart_rate": 56
+            },
+            "timestamp": "2020-06-16"
+        },
+        {
+            "data": {
+                "heart_rate": 61
+            },
+            "timestamp": "2020-06-17"
+        },
+        {
+            "data": {
+                "heart_rate": 60
+            },
+            "timestamp": "2020-06-18"
+        },
+        {
+            "data": {
+                "heart_rate": 59
+            },
+            "timestamp": "2020-06-19"
+        },
+        {
+            "data": {
+                "heart_rate": 57
+            },
+            "timestamp": "2020-06-20"
+        },
+        {
+            "data": {
+                "heart_rate": 58
+            },
+            "timestamp": "2020-06-21"
+        },
+        {
+            "data": {
+                "heart_rate": 63
+            },
+            "timestamp": "2020-06-22"
+        },
+        {
+            "data": {
+                "heart_rate": 61
+            },
+            "timestamp": "2020-06-23"
+        },
+        {
+            "data": {
+                "heart_rate": 56
+            },
+            "timestamp": "2020-06-24"
+        },
+        {
+            "data": {
+                "heart_rate": "-"
+            },
+            "timestamp": "2020-06-25"
+        },
+        {
+            "data": {
+                "heart_rate": "-"
+            },
+            "timestamp": "2020-06-26"
+        },
+        {
+            "data": {
+                "heart_rate": "-"
+            },
+            "timestamp": "2020-06-27"
+        },
+        {
+            "data": {
+                "heart_rate": "-"
+            },
+            "timestamp": "2020-06-28"
+        },
+        {
+            "data": {
+                "heart_rate": "-"
+            },
+            "timestamp": "2020-06-29"
+        },
+        {
+            "data": {
+                "heart_rate": "-"
+            },
+            "timestamp": "2020-06-30"
+        }
+    ],
+    "oura_sleep_5min": [{"data": {"heart_rate": 89}, "timestamp": "2020-03-05T01:48:26+01:00"}, {"data": {"heart_rate": 90}, "timestamp": "2020-03-05T01:53:26+01:00"}, {"data": {"heart_rate": 91}, "timestamp": "2020-03-05T01:58:26+01:00"}, {"data": {"heart_rate": 91}, "timestamp": "2020-03-05T02:03:26+01:00"}, {"data": {"heart_rate": 90}, "timestamp": "2020-03-05T02:08:26+01:00"}, {"data": {"heart_rate": 88}, "timestamp": "2020-03-05T02:13:26+01:00"}, {"data": {"heart_rate": 88}, "timestamp": "2020-03-05T02:18:26+01:00"}, {"data": {"heart_rate": 87}, "timestamp": "2020-03-05T02:23:26+01:00"}, {"data": {"heart_rate": 85}, "timestamp": "2020-03-05T02:28:26+01:00"}, {"data": {"heart_rate": 82}, "timestamp": "2020-03-05T02:33:26+01:00"}, {"data": {"heart_rate": 79}, "timestamp": "2020-03-05T02:38:26+01:00"}, {"data": {"heart_rate": 80}, "timestamp": "2020-03-05T02:43:26+01:00"}, {"data": {"heart_rate": 79}, "timestamp": "2020-03-05T02:48:26+01:00"}, {"data": {"heart_rate": 81}, "timestamp": "2020-03-05T02:53:26+01:00"}, {"data": {"heart_rate": 78}, "timestamp": "2020-03-05T02:58:26+01:00"}, {"data": {"heart_rate": 79}, "timestamp": "2020-03-05T03:03:26+01:00"}, {"data": {"heart_rate": 81}, "timestamp": "2020-03-05T03:08:26+01:00"}, {"data": {"heart_rate": 80}, "timestamp": "2020-03-05T03:13:26+01:00"}, {"data": {"heart_rate": 76}, "timestamp": "2020-03-05T03:18:26+01:00"}, {"data": {"heart_rate": 76}, "timestamp": "2020-03-05T03:23:26+01:00"}, {"data": {"heart_rate": 67}, "timestamp": "2020-03-05T03:28:26+01:00"}, {"data": {"heart_rate": 74}, "timestamp": "2020-03-05T03:33:26+01:00"}, {"data": {"heart_rate": 76}, "timestamp": "2020-03-05T03:38:26+01:00"}, {"data": {"heart_rate": 75}, "timestamp": "2020-03-05T03:43:26+01:00"}, {"data": {"heart_rate": 73}, "timestamp": "2020-03-05T03:48:26+01:00"}, {"data": {"heart_rate": 75}, "timestamp": "2020-03-05T03:53:26+01:00"}, {"data": {"heart_rate": 75}, "timestamp": "2020-03-05T03:58:26+01:00"}, {"data": {"heart_rate": 74}, "timestamp": "2020-03-05T04:03:26+01:00"}, {"data": {"heart_rate": 75}, "timestamp": "2020-03-05T04:08:26+01:00"}, {"data": {"heart_rate": 72}, "timestamp": "2020-03-05T04:13:26+01:00"}, {"data": {"heart_rate": 71}, "timestamp": "2020-03-05T04:18:26+01:00"}, {"data": {"heart_rate": 71}, "timestamp": "2020-03-05T04:23:26+01:00"}, {"data": {"heart_rate": 68}, "timestamp": "2020-03-05T04:28:26+01:00"}, {"data": {"heart_rate": 71}, "timestamp": "2020-03-05T04:33:26+01:00"}, {"data": {"heart_rate": 73}, "timestamp": "2020-03-05T04:38:26+01:00"}, {"data": {"heart_rate": 73}, "timestamp": "2020-03-05T04:43:26+01:00"}, {"data": {"heart_rate": 74}, "timestamp": "2020-03-05T04:48:26+01:00"}, {"data": {"heart_rate": 72}, "timestamp": "2020-03-05T04:53:26+01:00"}, {"data": {"heart_rate": 74}, "timestamp": "2020-03-05T04:58:26+01:00"}, {"data": {"heart_rate": 74}, "timestamp": "2020-03-05T05:03:26+01:00"}, {"data": {"heart_rate": 71}, "timestamp": "2020-03-05T05:08:26+01:00"}, {"data": {"heart_rate": 70}, "timestamp": "2020-03-05T05:13:26+01:00"}, {"data": {"heart_rate": 68}, "timestamp": "2020-03-05T05:18:26+01:00"}, {"data": {"heart_rate": 69}, "timestamp": "2020-03-05T05:23:26+01:00"}, {"data": {"heart_rate": 70}, "timestamp": "2020-03-05T05:28:26+01:00"}, {"data": {"heart_rate": 71}, "timestamp": "2020-03-05T05:33:26+01:00"}, {"data": {"heart_rate": 70}, "timestamp": "2020-03-05T05:38:26+01:00"}, {"data": {"heart_rate": 69}, "timestamp": "2020-03-05T05:43:26+01:00"}, {"data": {"heart_rate": 69}, "timestamp": "2020-03-05T05:48:26+01:00"}, {"data": {"heart_rate": 70}, "timestamp": "2020-03-05T05:53:26+01:00"}, {"data": {"heart_rate": 68}, "timestamp": "2020-03-05T05:58:26+01:00"}, {"data": {"heart_rate": 72}, "timestamp": "2020-03-05T06:03:26+01:00"}, {"data": {"heart_rate": 71}, "timestamp": "2020-03-05T06:08:26+01:00"}, {"data": {"heart_rate": 71}, "timestamp": "2020-03-05T06:13:26+01:00"}, {"data": {"heart_rate": 70}, "timestamp": "2020-03-05T06:18:26+01:00"}, {"data": {"heart_rate": 71}, "timestamp": "2020-03-05T06:23:26+01:00"}, {"data": {"heart_rate": 64}, "timestamp": "2020-03-05T06:28:26+01:00"}, {"data": {"heart_rate": 68}, "timestamp": "2020-03-05T06:33:26+01:00"}, {"data": {"heart_rate": 64}, "timestamp": "2020-03-05T06:38:26+01:00"}, {"data": {"heart_rate": 68}, "timestamp": "2020-03-05T06:43:26+01:00"}, {"data": {"heart_rate": 63}, "timestamp": "2020-03-05T06:48:26+01:00"}, {"data": {"heart_rate": 68}, "timestamp": "2020-03-05T06:53:26+01:00"}, {"data": {"heart_rate": 66}, "timestamp": "2020-03-05T06:58:26+01:00"}, {"data": {"heart_rate": 73}, "timestamp": "2020-03-05T07:03:26+01:00"}, {"data": {"heart_rate": 70}, "timestamp": "2020-03-05T07:08:26+01:00"}, {"data": {"heart_rate": 69}, "timestamp": "2020-03-05T07:13:26+01:00"}, {"data": {"heart_rate": 68}, "timestamp": "2020-03-05T07:18:26+01:00"}, {"data": {"heart_rate": 65}, "timestamp": "2020-03-05T07:23:26+01:00"}, {"data": {"heart_rate": 67}, "timestamp": "2020-03-05T07:28:26+01:00"}, {"data": {"heart_rate": 98}, "timestamp": "2020-03-05T23:58:22+01:00"}, {"data": {"heart_rate": 98}, "timestamp": "2020-03-06T00:03:22+01:00"}, {"data": {"heart_rate": 97}, "timestamp": "2020-03-06T00:08:22+01:00"}, {"data": {"heart_rate": 97}, "timestamp": "2020-03-06T00:13:22+01:00"}, {"data": {"heart_rate": 95}, "timestamp": "2020-03-06T00:18:22+01:00"}, {"data": {"heart_rate": 93}, "timestamp": "2020-03-06T00:23:22+01:00"}, {"data": {"heart_rate": 92}, "timestamp": "2020-03-06T00:28:22+01:00"}, {"data": {"heart_rate": 90}, "timestamp": "2020-03-06T00:33:22+01:00"}, {"data": {"heart_rate": 87}, "timestamp": "2020-03-06T00:38:22+01:00"}, {"data": {"heart_rate": 85}, "timestamp": "2020-03-06T00:43:22+01:00"}, {"data": {"heart_rate": 84}, "timestamp": "2020-03-06T00:48:22+01:00"}, {"data": {"heart_rate": 84}, "timestamp": "2020-03-06T00:53:22+01:00"}, {"data": {"heart_rate": 85}, "timestamp": "2020-03-06T00:58:22+01:00"}, {"data": {"heart_rate": 84}, "timestamp": "2020-03-06T01:03:22+01:00"}, {"data": {"heart_rate": 85}, "timestamp": "2020-03-06T01:08:22+01:00"}, {"data": {"heart_rate": 83}, "timestamp": "2020-03-06T01:13:22+01:00"}, {"data": {"heart_rate": 81}, "timestamp": "2020-03-06T01:18:22+01:00"}, {"data": {"heart_rate": 83}, "timestamp": "2020-03-06T01:23:22+01:00"}, {"data": {"heart_rate": 83}, "timestamp": "2020-03-06T01:28:22+01:00"}, {"data": {"heart_rate": 82}, "timestamp": "2020-03-06T01:33:22+01:00"}, {"data": {"heart_rate": 83}, "timestamp": "2020-03-06T01:38:22+01:00"}, {"data": {"heart_rate": 82}, "timestamp": "2020-03-06T01:43:22+01:00"}, {"data": {"heart_rate": 79}, "timestamp": "2020-03-06T01:48:22+01:00"}, {"data": {"heart_rate": 79}, "timestamp": "2020-03-06T01:53:22+01:00"}, {"data": {"heart_rate": 80}, "timestamp": "2020-03-06T01:58:22+01:00"}, {"data": {"heart_rate": 79}, "timestamp": "2020-03-06T02:03:22+01:00"}, {"data": {"heart_rate": 80}, "timestamp": "2020-03-06T02:08:22+01:00"}, {"data": {"heart_rate": 79}, "timestamp": "2020-03-06T02:13:22+01:00"}],
+   "symptom_report": [{"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-03-25T17:22:07.327000+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-03-26T17:21:24.753000+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-03-27T17:43:13.989000+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-03-28T17:15:38.413851+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-03-29T16:12:07.906314+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-03-30T16:10:58.386195+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-03-31T16:33:29.723704+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-04-01T17:01:26.128103+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-04-01T21:03:51.496108+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-04-02T16:21:47.085303+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-04-03T16:27:18.384245+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-04-04T16:27:40.010883+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-04-05T16:11:30.393023+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-04-06T16:17:36.257374+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-04-07T16:14:01.454428+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-04-08T16:10:48.328094+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-04-09T17:12:03.425102+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-04-10T16:11:23.229640+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_ear_ache": 0, "symptom_fatigue": 0, "symptom_headache": 0, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_stomach_ache": 0}, "timestamp": "2020-04-11T17:24:48.015879+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-12T16:20:05.191107+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-13T16:33:40.581944+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-14T16:51:04.921092+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-15T16:32:04.433452+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-16T16:18:37.602169+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-17T16:13:21.954885+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-18T18:21:09.230749+00:00"}, {"data": {"fever": "", "fever_guess": "none", "notes": "Probably just tension headaches from sleeping weird and/or sitting weird in front of my desk.", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 1, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_fatigue": 0, "symptom_headache": 2, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_wet_cough": 0}, "timestamp": "2020-04-19T16:13:24.375891+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-20T16:43:39.865632+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-21T16:58:33.469120+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-22T16:22:24.372986+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-23T16:15:27.595086+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-24T16:11:02.738926+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-25T18:18:50.196806+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-26T16:12:37.303575+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-27T16:10:35.406929+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-28T16:13:59.951416+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-29T16:13:07.800474+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-04-30T16:14:46.972645+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-01T16:23:56.197289+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-01T18:02:47.254631+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-02T16:17:41.430278+00:00"}, {"data": {"fever": "", "fever_guess": "none", "notes": "Feels like a regular old cold is starting, including sneezing \ud83e\udd27", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 1, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_fatigue": 1, "symptom_headache": 2, "symptom_nausea": 0, "symptom_runny_nose": 1, "symptom_short_breath": 0, "symptom_sore_throat": 1, "symptom_wet_cough": 1}, "timestamp": "2020-05-03T16:19:24.738919+00:00"}, {"data": {"fever": "", "fever_guess": "none", "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_fatigue": 0, "symptom_headache": 1, "symptom_nausea": 1, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_wet_cough": 0}, "timestamp": "2020-05-04T16:14:20.273356+00:00"}, {"data": {"fever": "", "fever_guess": "none", "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 0, "symptom_diarrhea": 0, "symptom_fatigue": 1, "symptom_headache": 0, "symptom_nausea": 1, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_wet_cough": 0}, "timestamp": "2020-05-05T19:13:32.538281+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-06T16:13:38.956452+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-07T16:12:02.466210+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-08T17:17:56.841879+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-09T20:49:00.173585+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-10T16:48:51.663875+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-11T16:14:16.607611+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-12T16:58:19.989442+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-13T16:41:45.859086+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-14T16:27:18.549613+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-15T16:39:31.111980+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-16T16:16:39.560862+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-17T16:18:26.089218+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-18T16:21:36.131630+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-19T16:58:04.384211+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-20T16:15:59.610192+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-21T16:49:23.845798+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-22T16:11:44.791815+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-23T17:37:07.147687+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-24T16:12:42.598654+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-25T16:15:48.682004+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-26T16:54:22.134266+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-27T16:11:27.817315+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-28T17:14:56.583916+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": "", "symptom_anosmia": 0, "symptom_body_ache": 0, "symptom_chills": 0, "symptom_cough": 1, "symptom_diarrhea": 0, "symptom_fatigue": 1, "symptom_headache": 1, "symptom_nausea": 0, "symptom_runny_nose": 0, "symptom_short_breath": 0, "symptom_sore_throat": 0, "symptom_wet_cough": 0}, "timestamp": "2020-05-29T16:41:54.025245+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-30T16:14:39.129134+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-05-31T16:10:56.672911+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-01T16:36:06.842726+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-02T16:16:38.681681+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-03T16:16:50.559280+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-04T16:54:26.527987+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-05T16:15:06.373521+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-06T16:28:58.292528+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-07T16:16:04.947572+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-08T16:20:32.635333+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-09T17:04:06.444230+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-10T17:11:18.801393+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-11T16:59:18.677036+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-12T16:45:28.316484+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-13T16:39:26.295132+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-14T16:27:26.055425+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-15T16:44:37.995218+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-16T16:51:32.259301+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-17T16:11:40.893168+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-18T16:58:41.851879+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-19T16:22:46.755164+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-20T16:45:08.708014+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-21T16:52:38.288795+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-22T16:26:08.994073+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-23T16:23:13.529613+00:00"}, {"data": {"fever": "", "fever_guess": null, "notes": "", "other_symptoms": "", "suspected_virus": ""}, "timestamp": "2020-06-24T16:24:41.540689+00:00"}]}
