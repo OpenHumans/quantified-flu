@@ -17,6 +17,39 @@
     max-width: 50%;
     visibility: hidden;
   }
+  .svg-tooltip-information {
+    font-family: "system-ui", "BlinkMacSystemFont", "Segoe UI", Helvetica, Arial, sans-serif, "Apple   Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    border-radius: .5rem;
+    font-size: .5em;
+    background: #fff;
+    color:black;
+    display: block;
+    font-size: 12;
+    font-weight: 100;
+    padding: .2rem .4rem;
+    position: absolute;
+    text-overflow: ellipsis;
+    white-space: pre-line;
+    display: inline;
+    justify-content: flex-start;
+    z-index: 300;
+    max-width: 35%;
+    border: .01rem solid;
+    visibility: hidden;
+  }
+
+  #circle-information, #circle-information-text {
+    position: fixed;
+  }
+
+  .legend-graph-text {
+    display: block;
+    position: absolute;
+    padding: .2rem .4rem;
+    text-overflow: ellipsis;
+    display: inline;
+    justify-content: flex-start;
+  }
 
   .select-symptom {
     border-radius: 3.5rem;
@@ -194,7 +227,7 @@
   console.log("Loading data...");
   url = "{{ request.path }}.json";
   console.log("succed to loading public data");
-  url = '/static/test.json';
+  //url = '/static/test.json';
   /* Fitbit */
  //url =  "https://quantifiedflu.org/report/list/member/49855651.json"
 

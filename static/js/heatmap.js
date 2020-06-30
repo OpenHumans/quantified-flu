@@ -129,11 +129,6 @@ function tooltip_heatmap() {
   d3.selectAll("#rect-heatmap")
 
     .on("mouseover", function (d) {
-      /*d3.select(this)
-      .style("fill", "yellow");
-    })
-*/
-      // .on("click", function (d) {
       var coordXY = this.getAttribute('class').split('-');
 
       d3.select(this)
@@ -710,8 +705,6 @@ function dayControl(data) {
 }
 
 function controlDay(data, days2, month) {
-  // days2 = timestamp.map(d => formatdateday(parseTime(d)))
-  // month = timestamp.map(d => formatdatemonth(parseTime(d)))
   const days_fixed = [];
   const days2_fixed = [];
   const days3_fixed = [];
@@ -729,7 +722,7 @@ function controlDay(data, days2, month) {
     }
   }
   days4_fixed.push(0);
-  // console.log()
+
   for (let i = 0; i < days4_fixed.length; i++) {
     if (days4_fixed[i] < -1) {
       if (month[i] == 1 || month[i] == 3 || month[i] == 5 || month[i] == 7 || month[i] == 8 || month[i] == 10 || month[i] == 12) {
