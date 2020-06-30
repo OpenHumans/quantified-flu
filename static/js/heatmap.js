@@ -511,19 +511,19 @@ function showAppendTitle(data, i, y) {
       + " \n Values: " + data + "/4";
 
     if (finaldataAppleWatch[i] != undefined && finaldataAppleWatch[i] != '-' && finaldataAppleWatch[i] != 'NO DATA')
-      msg += " \n Heart Rate (Apple Watch) : " + finaldataAppleWatch[i] + " bmp";
+      msg += " \n Heart Rate (Apple Watch) : " + finaldataAppleWatch[i] + " bpm";
 
     if (finaldata_fitbit[i] != undefined && finaldata_fitbit[i] != '-' && finaldata_fitbit[i] != 'NO DATA')
-      msg += " \n Heart Rate (Fitbit) : " + finaldata_fitbit[i] + " bmp";
+      msg += " \n Heart Rate (Fitbit) : " + finaldata_fitbit[i] + " bpm";
 
     if (finaldataOura[i] != undefined && finaldataOura[i] != '-' && finaldataOura[i] != 'NO DATA')
-      msg += " \n Heart Rate (Oura) : " + finaldataOura[i] + " bmp";
+      msg += " \n Heart Rate (Oura) : " + finaldataOura[i] + " bpm";
     
     if (finaldataGoogle[i] != undefined && finaldataGoogle[i] != '-' && finaldataGoogle[i] != 'NO DATA')
-      msg += " \n Heart Rate (GoogleFit) : " + finaldataGoogle[i] + " bmp";
+      msg += " \n Heart Rate (GoogleFit) : " + finaldataGoogle[i] + " bpm";
     
     if (finaldata_garmin[i] != undefined && finaldata_garmin[i] != '-' && finaldata_garmin[i] != 'NO DATA')
-      msg += " \n Heart Rate (Garmin) : " + finaldata_garmin[i] + " bmp";
+      msg += " \n Heart Rate (Garmin) : " + finaldata_garmin[i] + " bpm";
     
     if (finaldataOuraTemperature[i] != undefined && finaldataOuraTemperature[i] != '-' && finaldataOuraTemperature[i] != 'NO DATA')
       msg += " \n Body Temp. (Oura) : " + finaldataOuraTemperature[i];
