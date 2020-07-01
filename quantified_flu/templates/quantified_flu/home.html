@@ -12,7 +12,7 @@
 <p>We have two ways you can contribute…</p>
 <h3>Report past illness</h3>
 <p>
-  Report when you got sick and share your wearable device data. <b>We'll plot your data for you!</b> Currently we support <em>Fitbit</em> & <em>Oura Ring</em>, <em> Apple Watch</em> and <em>Google Fit</em>.
+  Report when you got sick and share your wearable device data. <b>We'll plot your data for you!</b> Currently we support <em>Fitbit</em> & <em>Oura Ring</em>, <em> Apple Watch</em>, <em>Garmin</em> and <em>Google Fit</em>.
   <a href='https://docs.google.com/forms/d/e/1FAIpQLSdDjzLyL_HJ79ij4GbepqeNYAyYf4LWapXFyIDFwMRdXOBBXg/viewform'>Ask us to add support for your wearable</a>, if yours is missing so far!
 </p>
 <h3>Track symptoms going forward</h3>
@@ -37,7 +37,7 @@
 
 {% if request.user.is_authenticated %}
 
-{% if missing_sources|length == 4 %}
+{% if missing_sources|length == 5 %}
 <h2>Data Sources</h2>
 <p>
   You can connect these data sources to correlate them with reported illness.
@@ -59,10 +59,18 @@
     Connect Apple Watch
     </a>
   </div>
+    <div class="col-md">
     <a
     href="{%url 'import_data:authorize-googlefit' %}" class="btn btn-primary btn-lg">
     Connect GoogleFit account
     </a>
+    </div>
+      <div class="col-md">
+    <a
+    href="{%url 'import_data:authorize-garmin' %}" class="btn btn-primary btn-lg">
+    Connect Garmin account
+    </a>
+    </div>
 </div>
 <hr>
 {% endif %}
@@ -110,7 +118,7 @@
 If at least one data source has been connected, management of data sources is
 moved to below the "actions" (retrospective analysis & scheduling check-ins).
 {% endcomment %}
-{% if missing_sources|length < 4 %}
+{% if missing_sources|length < 5 %}
 <hr>
 <h2>Data Sources</h2>
   {% comment %}
@@ -140,6 +148,11 @@ moved to below the "actions" (retrospective analysis & scheduling check-ins).
       {% if source == 'apple_health' %}
       <a href="https://apps.apple.com/us/app/oh-data-port/id1512384252">
         <li>Connect Apple Watch / Apple Health</li>
+      </a>
+      {% endif %}
+     {% if source == 'garmin' %}
+      <a href="{% url 'import_data:authorize-garmin' %}">
+        <li>Connect Garmin account</li>
       </a>
       {% endif %}
     {% endfor %}
@@ -198,7 +211,6 @@ For each connected data source, display info on how to get files & manage connec
           www.openhumans.org/activity/quantified-flu/
         </a>
       </p>
-      <!-- TODO: implement removing Oura connection -->
       <form action="{% url 'import_data:remove-oura' %}" method='post'>
         {%csrf_token%}
         <button type='submit' class="btn btn-sm btn-danger">Remove Oura</button>
@@ -272,8 +284,28 @@ For each connected data source, display info on how to get files & manage connec
       {% endif %} {# if request.user.openhumansmember.googlefit_member #}
     </div>
   {% endif %} {# if 'googlefit' not in missing_sources #}
+    {% if 'garmin' not in missing_sources %}
+    <div class="col-md-6">
+      <h3>Manage Garmin</h3>
+      <p>
+        <b>Your data files:</b> If our data retrieval has worked, your
+        garmin data files should be
+        available in your Open Humans account here:<br>
+        <a href="https://www.openhumans.org/activity/quantified-flu/#activity-panel-data">
+          www.openhumans.org/activity/quantified-flu/
+        </a>
+      </p>
+
+      <form action="{% url 'import_data:remove-garmin' %}" method='post'>
+        {%csrf_token%}
+        <button type='submit' class="btn btn-sm btn-danger">Remove Garmin</button>
+      </form>
+
+
+    </div>
+     {% endif %}
 </div> <!-- .row -->
-{% endif %} {# if missing_sources < 4 #}
+{% endif %} {# if missing_sources < 5 #}
 {% endif %} {# if user.is_authenticated #}
 
 {% endblock main %}

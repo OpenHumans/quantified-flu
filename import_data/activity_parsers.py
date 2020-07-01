@@ -26,7 +26,7 @@ def oura_parser(oura_object, event_start, event_end=False):
 
     returned_hr_data = []
     returned_temp_data = []
-
+    returned_respiratory_rate_data = []
     # p is start_date!
 
     if "sleep" in oura.keys():
@@ -37,10 +37,14 @@ def oura_parser(oura_object, event_start, event_end=False):
             if sdate >= period_start and sdate <= period_end:
                 record_time = arrow.get(entry["bedtime_start"])
                 temperature_delta = entry.get("temperature_delta", 0)
+                respiratory_rate = entry.get("breath_average", 0)
                 returned_temp_data.append(
                     {
                         "timestamp": sdate.format("YYYY-MM-DD"),
-                        "data": {"temperature_delta": temperature_delta},
+                        "data": {
+                            "temperature_delta": temperature_delta,
+                            "respiratory_rate": respiratory_rate,
+                        },
                     }
                 )
                 for hr in entry["hr_5min"]:
@@ -104,9 +108,9 @@ def apple_health_parser(apple_health_info, event_start, event_end=None):
             sdate = arrow.get(entry[1])
             if sdate >= period_start and sdate <= period_end:
                 returned_apple_data.append(
-                    {"timestamp": entry[1], "data": {"heart_rate": entry[0]},}
+                    {"timestamp": entry[1], "data": {"heart_rate": entry[0]}}
                 )
-
+    returned_apple_data.reverse()  # invert list as CSV is newest to oldest
     return returned_apple_data
 
 
@@ -192,8 +196,6 @@ def garmin_parser(garmin_file_info, event_start, event_end=None):
     return data_in_qf_format
 
 
-
-
 def garmin_to_qf(json_data, min_date, max_date):
     res = []
     data = json_data
@@ -205,7 +207,6 @@ def garmin_to_qf(json_data, min_date, max_date):
             continue
         rec = {"timestamp": dt.isoformat(), "data": {"heart_rate": int(value)}}
         res.append(rec)
-        #print(rec)
     return res
 
 

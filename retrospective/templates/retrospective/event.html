@@ -57,7 +57,7 @@
 
   {# Explanations if analyses aren't available. #}
   {% if not object.retrospectiveeventanalysis_set.all %}
-    {% if request.user.openhumansmember|missing_sources|length == 4 %}
+    {% if request.user.openhumansmember|missing_sources|length == 5 %}
     <div class="alert alert-danger" role="alert">
       <p>
         <b>No connected data?</b> This event appears to have no associated analyses.
@@ -135,6 +135,10 @@
 
 <div class="retrospective_graph_{{ analysis.id }}"></div>
 
+{%if analysis.graph_type == 'oura_sleep_summary' %}
+<h3>Oura Respiratory Rate</h3>
+<div class="retrospective_graph_{{ analysis.id }}_rr"></div>
+{%endif%}
 {% endfor %}
 
 <script>
@@ -169,6 +173,25 @@
       y_label : 'body temperature',
       markers: markers,
       });
+      MG.data_graphic({
+        title: "Respiratory Rate",
+        description: "The nightly average respiratory rate as measured by Oura",
+        data: data,
+        chart_type: 'point',
+        width: 600,
+        height: 450,
+        top: 50,
+        left: 50,
+        right: 60,
+        full_width: true,
+        target: ".retrospective_graph_{{ analysis.id }}_rr",
+        x_accessor: "timestamp",
+        y_accessor: "respiratory_rate",
+        aggregate_rollover: true,
+        x_label : 'date',
+        y_label : 'respiratory_rate',
+        markers: markers,
+        });
     {% else %}
     MG.data_graphic({
       title: "Heart rate evolution",
