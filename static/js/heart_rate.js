@@ -1465,9 +1465,10 @@ function getButtonChoice(svgName, svgPhone) {
     createButton(svgName, 2, classnameTemperature, legendnameTemperature, colorscaleTemperature, (gridSize * .8), (gridSize * .9));
     createButton(svgName, 2, classnameRespirator, legendnameRespirator, colorscaleRespirator, (gridSize * 2.8), (gridSize * .9));
 
-    createButtonPhone(svgPhone, 1, classname, legendname, "", 0, (gridSize * .2));
-    createButtonPhone(svgPhone, 2, classnameHeartRate, legendnameHeartRate, colorscaleHeartRate, (classname.length * gridSize * .8), ((classname.length - 1) * 25));
+    createButtonPhone(svgPhone, 1, classname, legendname, colorscale, 0, (gridSize * .2));
     createButtonPhone(svgPhone, 2, classnameTemperature, legendnameTemperature, colorscaleTemperature, (gridSize * .8), (0));
+    createButtonPhone(svgPhone, 2, classnameRespirator, legendnameRespirator, colorscaleRespirator, (gridSize * 1.8), ((classname.length - 1) * 12.5));
+    createButtonPhone(svgPhone, 2, classnameHeartRate, legendnameHeartRate, colorscaleHeartRate, (classname.length * gridSize * .8), ((classname.length - 1) * 25));
 
     svgName.append("line")
         .attr('id', 'tickSize')
@@ -1598,9 +1599,9 @@ function createButtonPhone(svgName, type, dataclassname, datalegend, datacolor, 
         .attr('class', function (d, i) { return dataclassname[i] })
         .attr("cx", function (d, i) {
             if (type == 1)
-                return (25 + (i * 50) + '%')
+                return (5 + (i * 35) + '%')
             else if (type == 2)
-                return 25 + (marginTop2 * 2) + 5 + '%'
+                return 5 + (marginTop2 * 1.5) + '%'
         })
         .attr("cy", function (d, i) {
             if (type == 1)
@@ -1629,9 +1630,9 @@ function createButtonPhone(svgName, type, dataclassname, datalegend, datacolor, 
         .style("fill", "#212529")
         .attr("x", function (d, i) {
             if (type == 1)
-                return (22 + (i * 50) + '%')
+            return ( (i * 35) + 2 +  '%')
             else if (type == 2)
-                return 25 + (marginTop2 * 2) + '%'
+            return 2 + (marginTop2 * 1.5) + '%'
         })
         .attr("y", function (d, i) {
             if (type == 1)
