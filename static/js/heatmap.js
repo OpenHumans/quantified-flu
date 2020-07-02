@@ -78,44 +78,44 @@ function createheatmap(url) {
     heightGraph = (height / 2);
     main_heatmap(data);
     main_wearable_data(data);
-    console.log(data);
   })
 }
 
 function main_heatmap(data) {
-  timestamp = data.symptom_report.map(d => d.timestamp);
-  file_days = timestamp.map(d => formatdate(parseTime(d)));
-  reportday = timestamp.map(d => formatdateday(parseTime(d)))
-  month = timestamp.map(d => formatdatemonth(parseTime(d)))
-  days = controlDay(file_days, reportday, month);
-  moreday = getNoReportValues(data);
-  moredayDataSource = getNoReportDataSource(data);
-  console.log('Data with more source: ' + moredayDataSource);
-  completedDays = addDaynoReport(moreday, moredayDataSource, data);
-  namesmonths = determinenamemonth(completedDays);
-  symptom_data = loadDataSymptom(data);
-  days_axis = showingDayOnTheMap(completedDays);
-  comments = loadComments(data, days);
+  if (data.symptom_report.length > 0) {
+    timestamp = data.symptom_report.map(d => d.timestamp);
+    file_days = timestamp.map(d => formatdate(parseTime(d)));
+    reportday = timestamp.map(d => formatdateday(parseTime(d)))
+    month = timestamp.map(d => formatdatemonth(parseTime(d)))
+    days = controlDay(file_days, reportday, month);
+    moreday = getNoReportValues(data);
+    moredayDataSource = getNoReportDataSource(data);
+    completedDays = addDaynoReport(moreday, moredayDataSource, data);
+    namesmonths = determinenamemonth(completedDays);
+    symptom_data = loadDataSymptom(data);
+    days_axis = showingDayOnTheMap(completedDays);
+    comments = loadComments(data, days);
 
-  createSvgReport("heatmap", (((completedDays.length) * gridSize) + 1), (height + margin.top + margin.bottom), "symptom", "heatmap-title", "legend", "legend-phone");
-  showMonthsAxis(maingroup, namesmonths, -6);
-  showDaysAxis(maingroup, days_axis);
-  showTitleandSubtitle(titlegroup, "Heatmap of Symptom reports");
-  showHeatmap(maingroup, symptom_data)
-  showSymptomAxis(symptomgroup);
-  showLegend(legendgroup);
-  showLegendPhone(legendgroupphone);
-  tooltip_heatmap();
+    createSvgReport("heatmap", (((completedDays.length) * gridSize) + 1), (height + margin.top + margin.bottom), "symptom", "heatmap-title", "legend", "legend-phone");
+    showMonthsAxis(maingroup, namesmonths, -6);
+    showDaysAxis(maingroup, days_axis);
+    showTitleandSubtitle(titlegroup, "Heatmap of Symptom reports");
+    showHeatmap(maingroup, symptom_data)
+    showSymptomAxis(symptomgroup);
+    showLegend(legendgroup);
+    showLegendPhone(legendgroupphone);
+    tooltip_heatmap();
 
-  document.getElementById("heatmap").scroll(((moreday) * gridSize), 0);
+    document.getElementById("heatmap").scroll(((moreday) * gridSize), 0);
 
-  document.getElementById("heatmap").onscroll = function () {
-    progressScrollBar();
-    var winScroll = document.getElementById("heatmap").scrollLeft;
-    if (moredayDataSource != 'none') {
-      document.getElementById("wearable-graph").scroll(winScroll, 0);
-    }
-  };
+    document.getElementById("heatmap").onscroll = function () {
+      progressScrollBar();
+      var winScroll = document.getElementById("heatmap").scrollLeft;
+      if (moredayDataSource != 'none') {
+        document.getElementById("wearable-graph").scroll(winScroll, 0);
+      }
+    };
+  }
 }
 
 function tooltip_heatmap() {
@@ -141,7 +141,7 @@ function tooltip_heatmap() {
       tooltip
         .style("visibility", "visible")
         .text(`${showAppendTitle(d, coordXY[0], coordXY[1])}`);
-          selectSymptomOnclick(symptomgroup, coordXY[1]);
+      selectSymptomOnclick(symptomgroup, coordXY[1]);
     })
 
     .on("mousemove", function () {
@@ -157,8 +157,8 @@ function tooltip_heatmap() {
         .attr("width", gridSize)
         .attr("height", gridSize)
         .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
-       
-        d3.select('.select-symptom').remove();
+
+      d3.select('.select-symptom').remove();
       tooltip.style("visibility", "hidden");
     });
 }
@@ -412,14 +412,14 @@ function showSymptomAxis(maingroup) {
 
 function selectSymptomOnclick(maingroup, num) {
   if (num < 13)
-  maingroup.append("rect")
-    .attr('class', "select-symptom")
-    .attr("x", '25%')
-    .attr("y", num * gridSize )
-    .attr("width", '100%')
-    .attr("height", gridSize )
-    .style('fill', '#00CC99')
-    .lower();
+    maingroup.append("rect")
+      .attr('class', "select-symptom")
+      .attr("x", '25%')
+      .attr("y", num * gridSize)
+      .attr("width", '100%')
+      .attr("height", gridSize)
+      .style('fill', '#00CC99')
+      .lower();
 }
 
 function showLegendPhone(maingroup) {
@@ -518,15 +518,18 @@ function showAppendTitle(data, i, y) {
 
     if (finaldataOura[i] != undefined && finaldataOura[i] != '-' && finaldataOura[i] != 'NO DATA')
       msg += " \n Heart Rate (Oura) : " + finaldataOura[i] + " bpm";
-    
+
     if (finaldataGoogle[i] != undefined && finaldataGoogle[i] != '-' && finaldataGoogle[i] != 'NO DATA')
       msg += " \n Heart Rate (GoogleFit) : " + finaldataGoogle[i] + " bpm";
-    
+
     if (finaldata_garmin[i] != undefined && finaldata_garmin[i] != '-' && finaldata_garmin[i] != 'NO DATA')
       msg += " \n Heart Rate (Garmin) : " + finaldata_garmin[i] + " bpm";
-    
+
     if (finaldataOuraTemperature[i] != undefined && finaldataOuraTemperature[i] != '-' && finaldataOuraTemperature[i] != 'NO DATA')
       msg += " \n Body Temp. (Oura) : " + finaldataOuraTemperature[i];
+
+    if (finaldataOuraRes[i] != undefined && finaldataOuraRes[i] != '-' && finaldataOuraRes[i] != 'NO DATA')
+      msg += " \n Resp. Rate (Oura) : " + finaldataOuraRes[i];
     return msg;
   }
   if (data == 5) {
@@ -845,12 +848,12 @@ function chooseDisplay() {
 }
 
 function getNoReportValues(data) {
-  hour = fortmatHour(parseTime(data.symptom_report[0].timestamp));
-  min = fortmatminutes(parseTime(data.symptom_report[0].timestamp));
-  sec = fortmatsecondes(parseTime(data.symptom_report[0].timestamp));
-  millisecondes = (hour * 3600000) + (min* 60000) + (sec * 1000);
-  firstDay_report = parseTime(data.symptom_report[0].timestamp).getTime();
-
+    hour = fortmatHour(parseTime(data.symptom_report[0].timestamp));
+    min = fortmatminutes(parseTime(data.symptom_report[0].timestamp));
+    sec = fortmatsecondes(parseTime(data.symptom_report[0].timestamp));
+    millisecondes = (hour * 3600000) + (min * 60000) + (sec * 1000);
+    firstDay_report = parseTime(data.symptom_report[0].timestamp).getTime();
+  
   if (data.fitbit_summary != undefined)
     firstDay_fitbit = parseTimeTemp(data.fitbit_summary[0].timestamp).getTime();
   else
@@ -871,7 +874,7 @@ function getNoReportValues(data) {
     firstDay_garmin = parseTimeGarmin(data.garmin_heartrate[0].timestamp).getTime();
   else
     firstDay_garmin = firstDay_report;
-  if (data.googlefit_heartrate!= undefined)
+  if (data.googlefit_heartrate != undefined)
     firstDay_google = parseTimeGarmin(data.googlefit_heartrate[0].timestamp).getTime();
   else
     firstDay_google = firstDay_report;
@@ -903,55 +906,55 @@ function getNoReportValues(data) {
     test2 = '/google';
   }
 
-  if ( test2 == '/google') {
-    hour2 =  fortmatHour(parseTimeGarmin(data.googlefit_heartrate[0].timestamp));
-    min2 =  fortmatminutes(parseTimeGarmin(data.googlefit_heartrate[0].timestamp));
-    sec2 =  fortmatsecondes(parseTimeGarmin(data.googlefit_heartrate[0].timestamp));
+  if (test2 == '/google') {
+    hour2 = fortmatHour(parseTimeGarmin(data.googlefit_heartrate[0].timestamp));
+    min2 = fortmatminutes(parseTimeGarmin(data.googlefit_heartrate[0].timestamp));
+    sec2 = fortmatsecondes(parseTimeGarmin(data.googlefit_heartrate[0].timestamp));
     millisecondes2 = (hour2 * 3600000) + (min2 * 60000) + (sec2 * 1000);
     test = test - (millisecondes - millisecondes2);
   }
- if ( test2 == '/oura') {
-    hour2 =  fortmatHour(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
-    min2 =  fortmatminutes(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
-    sec2 =  fortmatsecondes(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
+  if (test2 == '/oura') {
+    hour2 = fortmatHour(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
+    min2 = fortmatminutes(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
+    sec2 = fortmatsecondes(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
     millisecondes2 = (hour2 * 3600000) + (min2 * 60000) + (sec2 * 1000);
     test = test - (millisecondes - millisecondes2);
   }
-  if ( test2 == '/garmin') {
-    hour2 =  fortmatHour(parseTimeGarmin(data.garmin_heartrate[0].timestamp));
-    min2 =  fortmatminutes(parseTimeGarmin(data.garmin_heartrate[0].timestamp));
-    sec2 =  fortmatsecondes(parseTimeGarmin(data.garmin_heartrate[0].timestamp));
+  if (test2 == '/garmin') {
+    hour2 = fortmatHour(parseTimeGarmin(data.garmin_heartrate[0].timestamp));
+    min2 = fortmatminutes(parseTimeGarmin(data.garmin_heartrate[0].timestamp));
+    sec2 = fortmatsecondes(parseTimeGarmin(data.garmin_heartrate[0].timestamp));
     millisecondes2 = (hour2 * 3600000) + (min2 * 60000) + (sec2 * 1000);
     test = test - (millisecondes - millisecondes2);
   }
-  if ( test2 == '/fitbit') {
-    hour2 =  fortmatHour(parseTimeTemp(data.fitbit_summary[0].timestamp));
-    min2 =  fortmatminutes(parseTimeTemp(data.fitbit_summary[0].timestamp));
-    sec2 =  fortmatsecondes(parseTimeTemp(data.fitbit_summary[0].timestamp));
+  if (test2 == '/fitbit') {
+    hour2 = fortmatHour(parseTimeTemp(data.fitbit_summary[0].timestamp));
+    min2 = fortmatminutes(parseTimeTemp(data.fitbit_summary[0].timestamp));
+    sec2 = fortmatsecondes(parseTimeTemp(data.fitbit_summary[0].timestamp));
     millisecondes2 = (hour2 * 3600000) + (min2 * 60000) + (sec2 * 1000);
     test = test - (millisecondes - millisecondes2);
   }
-  if ( test2 == '/apple') {
-    hour2 =  fortmatHour(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
-    min2 =  fortmatminutes(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
-    sec2 =  fortmatsecondes(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
+  if (test2 == '/apple') {
+    hour2 = fortmatHour(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
+    min2 = fortmatminutes(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
+    sec2 = fortmatsecondes(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
     millisecondes2 = (hour2 * 3600000) + (min2 * 60000) + (sec2 * 1000);
     test = test - (millisecondes - millisecondes2);
   }
 
-  if ( test2 == '/ouraHR') {
-    hour2 =  fortmatHour(parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp));
-    min2 =  fortmatminutes(parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp));
-    sec2 =  fortmatsecondes(parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp));
+  if (test2 == '/ouraHR') {
+    hour2 = fortmatHour(parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp));
+    min2 = fortmatminutes(parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp));
+    sec2 = fortmatsecondes(parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp));
     millisecondes2 = (hour2 * 3600000) + (min2 * 60000) + (sec2 * 1000);
     test = test - (millisecondes - millisecondes2);
   }
- return Math.round(test/(86400000)); 
+  return Math.round(test / (86400000));
 }
 
 function getNoReportDataSource(data) {
-
-  firstDay_report = parseTime(data.symptom_report[0].timestamp).getTime();
+ 
+    firstDay_report = parseTime(data.symptom_report[0].timestamp).getTime();
 
   if (data.fitbit_summary != undefined)
     firstDay_fitbit = parseTimeTemp(data.fitbit_summary[0].timestamp).getTime();
@@ -973,9 +976,9 @@ function getNoReportDataSource(data) {
     firstDay_garmin = parseTimeGarmin(data.garmin_heartrate[0].timestamp).getTime();
   else
     firstDay_garmin = firstDay_report;
-  if (data.googlefit_heartrate!= undefined)
+  if (data.googlefit_heartrate != undefined)
     firstDay_google = parseTimeGarmin(data.googlefit_heartrate[0].timestamp).getTime();
-    else
+  else
     firstDay_google = firstDay_report;
 
   test = 0;
@@ -990,7 +993,7 @@ function getNoReportDataSource(data) {
     test2 = 'oura';
   }
   if ((firstDay_report - firstDay_fitbit) > test) {
-    test = (firstDay_report- firstDay_fitbit);
+    test = (firstDay_report - firstDay_fitbit);
     test2 = 'fitbit';
   }
   if ((firstDay_report - firstDay_oura_hr) > test) {
@@ -1038,7 +1041,7 @@ function addDaynoReport(numberdays, datasource, data) {
   }
   else if (datasource == 'google' && data.googlefit_heartrate != undefined) {
     for (let i = 0; i < numberdays; i++) {
-     daystoadd[i] = formatdate(parseTimeGarmin(data.googlefit_heartrate[i].timestamp));
+      daystoadd[i] = formatdate(parseTimeGarmin(data.googlefit_heartrate[i].timestamp));
     }
   }
   else numberdays = 0;
