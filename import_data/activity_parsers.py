@@ -38,12 +38,14 @@ def oura_parser(oura_object, event_start, event_end=False):
                 record_time = arrow.get(entry["bedtime_start"])
                 temperature_delta = entry.get("temperature_delta", 0)
                 respiratory_rate = entry.get("breath_average", 0)
+                hr = entry.get("hr_lowest", 0)
                 returned_temp_data.append(
                     {
                         "timestamp": sdate.format("YYYY-MM-DD"),
                         "data": {
                             "temperature_delta": temperature_delta,
                             "respiratory_rate": respiratory_rate,
+                            "heart_rate": hr
                         },
                     }
                 )
