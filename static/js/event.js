@@ -23,10 +23,9 @@ function main(data) {
     garmin = controlWearableDatafromfile(data, 'garmin');
     google = controlWearableDatafromfile(data, 'google');
     ourares = controlWearableDatafromfile(data, 'ourares');
-    //fitbitintraday = controlWearableDatafromfile(data, 'fitbitintraday');
-
+    fitbitintraday = false;//controlWearableDatafromfile(data, 'fitbitintraday');
     console.log("fitbit: " + fitbit + " apple :" + apple + " oura: " + oura + " ouraHR: " + ouraHR + " garmin: " + garmin + " google: " + google + " ourares: " + ourares )
-    fitbitintraday = false;
+
     databasename = getDataSourceonDay(data);
     maxHr = 0;
     axiscombined = [];
@@ -49,9 +48,13 @@ function main(data) {
         revert[5] = 1;
         maxHr++;
     }
+    if (garmin == true) {
+        revert[4] = 1;
+        maxHr++;
+    }
     cntbttHr = maxHr;
     if (fitbit == true || apple == true || oura == true || ouraHR == true || garmin == true || google == true || ourares == true || fitbitintraday == true) {
-        createWearableDataSvg('wearable-graph', (36 * gridSize), 'wearable-legend', (heightGraph * 1.1), 'wearable-title', 100, 'wearable-choice');
+        createWearableDataSvg('wearable-graph', (36 * gridSize), 'wearable-legend', (heightGraph), 'wearable-title', heightGraph/4, 'wearable-choice');
         getButtonChoice(makeAchoice);
         tooltipChoice(data);
     }
@@ -115,6 +118,7 @@ function graphicsGroup() {
     mainContainerAppleWatchdata(axiscombined, maingroup, legendgroup, titlegroup, revert, "");
     mainContainerFitbitIntradaydata(axiscombined, maingroup, legendgroup, titlegroup, revert, "");
     mainContainer_heart_rate_google_fit(axiscombined, maingroup, legendgroup, titlegroup, revert, "");
+    mainContainer_garmin_heartrate(axiscombined, maingroup, legendgroup, titlegroup, revert, "");
 }
 
 function loadGroupDataSource(data) {
@@ -135,8 +139,12 @@ function loadGroupDataSource(data) {
     }
     if (fitbitintraday == true)
         loadDataFromFitbitIntraday(data);
+
     if (google == true)
         loadDatafromGoogle(data);
+    
+    if (garmin == true)
+        loadDatafromGarmin(data);
 }
 
 function loadAxisX(databasename) {
@@ -565,10 +573,50 @@ function mainContainer_heart_rate_google_fit(dataAxis, maingroup, legendgroup, t
         removeGroup('google-intraday-incident', 'google-heart-rate-axisX-cnt', 'google-heart-rate-axisY-cnt', 'circle-google-heart-rate-ctn', 'google-sum');
         createChartePoint(maingroup,  finaldataGoogle, dataAxis, "circle-google-heart-rate-ctn", "#a6d854", (gridSize / 10), googlecompare);
         createSumdata(maingroup, propcombined, dataAxis, 'google-sum');
-        showreportedSickIncident(maingroup, ( googlereportedIncident + googlecompare) + '/0', "goole-intraday-incident");
+        showreportedSickIncident(maingroup, ( googlereportedIncident + googlecompare) + '/0', "google-intraday-incident");
         tooltipdata("circle-google-heart-rate-ctn", formatdateshow2(googlecontrolday, '20' + googleyear[0]), "bpm", "#a6d854");
     } else {
         removeGroup('google-intraday-incident', 'google-heart-rate-axisX-cnt', 'google-heart-rate-axisY-cnt', 'circle-google-heart-rate-ctn', 'google-sum');
+    }
+}
+
+/* Garmin -  Heart Rate */
+function loadDatafromGarmin(data) {
+    garmindata = [], garmindate = [], garminday = [], garminmonth = [], garminyear = [];
+    symptomData_garmin = [];
+    controlDatafromGarmin(data);
+    garminsum = calculatSum(garmindata);
+    garminreportedIncident = sickness_event(data, controlday_garmin);
+}
+function controlDatafromGarmin(data) {
+    getHeartRateDatafromGarmin(data);
+    controlday_garmin = controlDay(garminday, garminday, garminmonth);
+    dayAxis_garmin = getDayonAxis(controlday_garmin);
+    finaldata_garmin = dataControl(garmindata, garminday, garminday, garminmonth, 0);
+    garminAxis = getAxisLegend(finaldata_garmin, 'dizaine');
+    garmincompare = addDayonGraphic(data, getDataSourceonDay(data), "garmin");
+}
+function getHeartRateDatafromGarmin(data) {
+    cnt = 0;
+    this.file = data.garmin_heartrate.map(d => d);
+    this.file.forEach(element => {
+        garmindata[cnt] = element.data.heart_rate;
+        garmindate[cnt] = element.timestamp;
+        garminday[cnt] = formatdateday(parseTimeGarmin(element.timestamp));
+        garminmonth[cnt] = formatdatemonth(parseTimeGarmin(element.timestamp));
+        garminyear[cnt] = formatyear(parseTimeGarmin(element.timestamp));
+        cnt++;
+    });
+}
+function mainContainer_garmin_heartrate(dataAxis, maingroup, legendgroup, titlegroup, revert, prob) {
+    if (revert[4] == 1) {
+        removeGroup('circle-garmin-heart-rate-ctn', 'garmin-axisY-cnt', 'garmin-sum', "garmin-intraday-incident");
+        createChartePoint(maingroup, finaldata_garmin, dataAxis, "circle-garmin-heart-rate-ctn", "#e78ac3", (gridSize / 10), garmincompare);
+        createSumdata(maingroup, propcombined, dataAxis, 'garmin-sum');
+        showreportedSickIncident(maingroup, (garminreportedIncident + garmincompare) + '/0', "garmin-intraday-incident");
+        tooltipdata("circle-garmin-heart-rate-ctn", formatdateshow2(controlday_garmin, '20' + garminyear[0]), "bpm", "#e78ac3");
+    } else {
+        removeGroup('circle-garmin-heart-rate-ctn', 'garmin-axisY-cnt', 'garmin-sum', "garmin-intraday-incident");
     }
 }
 
@@ -1775,6 +1823,9 @@ function addDayonGraphic(data, source, type) {
     if (datasource == source && source == 'google') {
         var daycompare = formatdateday(parseTimeGarmin(data.googlefit_heartrate[0].timestamp));
     }
+    if (datasource == source && source == 'garmin') {
+        var daycompare = formatdateday(parseTimeGarmin(data.garmin_heartrate[0].timestamp));
+    }
 
     if (type == 'oura') {
         var day = formatdateday(parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp));
@@ -1789,6 +1840,9 @@ function addDayonGraphic(data, source, type) {
         var compare = day - daycompare;
     } else if (type == 'google') {
         var day = formatdateday(parseTimeGarmin(data.googlefit_heartrate[0].timestamp));
+        var compare = day - daycompare;
+    }   else if (type == 'garmin') {
+        var day = formatdateday(parseTimeGarmin(data.garmin_heartrate[0].timestamp));
         var compare = day - daycompare;
     }
         return compare;
