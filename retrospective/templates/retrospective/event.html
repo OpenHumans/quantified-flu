@@ -141,7 +141,7 @@
 {% endfor %}
 
 {% load static %}
-<script src="{% static 'test.json' %}"></script>
+<script src="{% static 'testGraphicIncident.json' %}"></script>
 
 
 <div id="wearable-container" style=" width: 100%; height:  auto; display: inline-block;">
@@ -151,9 +151,11 @@
   <div id="wearable-choice" style="width: 100%; height: auto;"></div>
 </div>
 <script>
-  url = 'https://quantifiedflu.org/retrospective/event/1.json';
-  //url = 'https://quantifiedflu.org/retrospective/event/23.json';
- // $.getJSON(url, function(event_data) {
+//url = 'https://quantifiedflu.org/retrospective/event/1.json';
+//url = 'https://quantifiedflu.org/retrospective/event/23.json';
+url = '/static/testGraphicIncident.json';
+
+// $.getJSON(url, function(event_data) {
    // console.log('test');
     //console.log(event_data);
 
