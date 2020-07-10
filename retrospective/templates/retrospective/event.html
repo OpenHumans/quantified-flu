@@ -55,7 +55,7 @@
   </p>
   {% endif %}
 
-  {# Explanations if analyses aren't available. #}
+ {# Explanations if analyses aren't available. #}
   {% if not object.retrospectiveeventanalysis_set.all %}
     {% if request.user.openhumansmember|missing_sources|length == 5 %}
     <div class="alert alert-danger" role="alert">
@@ -78,7 +78,6 @@
   {% endif %}
 
 {% endif %}
-
 <hr>
 
 <script>
@@ -136,14 +135,32 @@
 <div class="retrospective_graph_{{ analysis.id }}"></div>
 
 {%if analysis.graph_type == 'oura_sleep_summary' %}
-<h3>Oura Respiratory Rate</h3>
+<h3>Oura Respiratory Rate 44</h3>
 <div class="retrospective_graph_{{ analysis.id }}_rr"></div>
 {%endif%}
 {% endfor %}
 
-<script>
-  $.getJSON('{% url 'retrospective:view_event_json' object.id %}', function(event_data) {
+{% load static %}
+<script src="{% static 'test.json' %}"></script>
 
+
+<div id="wearable-container" style=" width: 100%; height:  auto; display: inline-block;">
+  <div id="wearable-title" style="width: 100%; height: auto;"></div>
+  <div id="wearable-legend" style="width: 5%; height:auto; float:left;"></div>
+  <div id="wearable-graph" style="width: 95%; height: auto; float:left; overflow-x: scroll;"></div>
+  <div id="wearable-choice" style="width: 100%; height: auto;"></div>
+</div>
+<script>
+  url = 'https://quantifiedflu.org/retrospective/event/1.json';
+  //url = 'https://quantifiedflu.org/retrospective/event/23.json';
+ // $.getJSON(url, function(event_data) {
+   // console.log('test');
+    //console.log(event_data);
+
+  //})
+
+  // $.getJSON('{% url 'retrospective:view_event_json' object.id %}', function(event_data) {
+/*
     {% for analysis in object.retrospectiveeventanalysis_set.all %}
     var data = mapQFDataForMG(event_data, '{{ analysis.graph_type }}');
 
@@ -218,8 +235,11 @@
     {% endif %}
 
     {% endfor %}
-
-  })
+*/
   </script>
+
+{% load static %}
+<script src="{% static 'js/event.js' %}">
+</script>
 
 {% endblock main %}
