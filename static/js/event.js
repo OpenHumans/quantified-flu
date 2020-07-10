@@ -152,10 +152,17 @@ function loadAxisX(databasename) {
         createLegendAxeX(maingroup, formatdateshow2(dayAxis_fitbit, ""), '20' + fitbityear[0], "heart-rate-axisX-cnt");
 
     else if (databasename == 'apple')
-        createLegendAxeX(maingroup, formatdateshow2(appledayAxis, ""), '20' + appleyear[0], "apple-heart-rate-axisX-cnt");
+        createLegendAxeX(maingroup, formatdateshow2(appledayAxis, ""), '20' + appleyear[0], "heart-rate-axisX-cnt");
 
     else if (databasename == 'oura')
-        createLegendAxeX(maingroup, formatdateshow2(ouradayAxis, ""), '20' + ourayear[0], "oura-heart-rate-axisX-cnt");
+        createLegendAxeX(maingroup, formatdateshow2(ouradayAxis, ""), '20' + ourayear[0], "heart-rate-axisX-cnt");
+    
+     else if (databasename == 'garmin')
+        createLegendAxeX(maingroup, formatdateshow2(dayAxis_garmin, ""), '20' + garminyear[0], "heart-rate-axisX-cnt");
+    
+    else if (databasename == 'google')
+        createLegendAxeX(maingroup, formatdateshow2(googledayAxis, ""), '20' + googleyear[0], "heart-rate-axisX-cnt");
+
 }
 
 function selectedGroupButton() {
@@ -446,9 +453,6 @@ function getFitbitSummaryFromFile(data) {
 function mainContainerFitbitdata(dataAxis) {
     if (revert[2] == 1) {
         removeGroup('fitbit-heart-rate-axisY-cnt', 'circle-fitbit-heart-rate-ctn', 'fitbit-sum', 'fitbit-heart-rate-axisX-cnt', 'fitbit-heart-rate-title-ctn', "fitbit-incident");
-        createLegendAxeX(maingroup, formatdateshow2(dayAxis_fitbit, ""), '20' + fitbityear[0], "fitbit-heart-rate-axisX-cnt");
-        //createLegendAxeY(legendgroup, dataAxis, "HEART RATE [BPM]", 'fitbit-heart-rate-axisY-cnt');
-        //createTitle(titlegroup, "Heart rate evolution", 'fitbit-heart-rate-title-ctn', '50%');
         createChartePoint(maingroup, newdataFitbit, dataAxis, "circle-fitbit-heart-rate-ctn", "#fc8d62", (gridSize / 10), fitbitcompare);
         tooltipdata("circle-fitbit-heart-rate-ctn", formatdateshow2(newfitbitdate, '20' + fitbityear[0]), "bpm", "#fc8d62");
         createSumdata(maingroup, propcombined, dataAxis, 'fitbit-sum');
@@ -590,7 +594,7 @@ function loadDatafromGarmin(data) {
 }
 function controlDatafromGarmin(data) {
     getHeartRateDatafromGarmin(data);
-    controlday_garmin = controlDay(garminday, garminday, garminmonth);
+    controlday_garmin = controlDay(garmindate, garminday, garminmonth); console.log( controlday_garmin);
     dayAxis_garmin = getDayonAxis(controlday_garmin);
     finaldata_garmin = dataControl(garmindata, garminday, garminday, garminmonth, 0);
     garminAxis = getAxisLegend(finaldata_garmin, 'dizaine');
@@ -1639,7 +1643,8 @@ function controlDay(data, days2, month) {
         days3_fixed[ii] = days2_fixed[i];
         ii++;
     }
-    days3_fixed.push(data[data.length - 1]);
+    days3_fixed.push(days2[data.length - 1] + "/" + month[data.length - 1]);
+        //data[data.length - 1]);
     return days3_fixed;
 }
 
