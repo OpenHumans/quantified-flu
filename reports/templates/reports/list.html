@@ -17,12 +17,13 @@
     max-width: 50%;
     visibility: hidden;
   }
+
   .svg-tooltip-information {
     font-family: "system-ui", "BlinkMacSystemFont", "Segoe UI", Helvetica, Arial, sans-serif, "Apple   Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     border-radius: .5rem;
     font-size: .5em;
     background: #fff;
-    color:black;
+    color: black;
     display: block;
     font-size: 12;
     font-weight: 100;
@@ -38,7 +39,8 @@
     visibility: hidden;
   }
 
-  #circle-information, #circle-information-text {
+  #circle-information,
+  #circle-information-text {
     position: fixed;
   }
 
@@ -56,13 +58,17 @@
   }
 
   @media screen and (min-width: 200px) and (max-width: 799px) {
-    #legend, #wearable-choice, #temperature-choice {
+
+    #legend,
+    #wearable-choice,
+    #temperature-choice {
       width: 0%;
       height: 0%;
       visibility: hidden;
     }
-   
-    #legend-phone, #wearable-legend-phone {
+
+    #legend-phone,
+    #wearable-legend-phone {
       width: 100%;
       height: auto;
       visibility: visible;
@@ -71,11 +77,15 @@
     #symptom,
     #apple-legend,
     #oura_sleep_summary-legend,
-    #fitbit-legend,#wearable-legend, #temperature-legend {
+    #fitbit-legend,
+    #wearable-legend,
+    #temperature-legend {
       width: 25%;
     }
 
-    #heatmap, #wearable-graph, #temperature-graph {
+    #heatmap,
+    #wearable-graph,
+    #temperature-graph {
       width: 71.1%;
     }
 
@@ -103,18 +113,22 @@
       float: left;
       visibility: visible;
     }
-    #wearable-choice, #temperature-choice {
+
+    #wearable-choice,
+    #temperature-choice {
       width: 18.9%;
       height: auto;
       float: left;
       visibility: visible;
     }
 
-    #heatmap, #wearable-graph {
+    #heatmap,
+    #wearable-graph {
       width: 71.1%;
     }
 
-    #legend-phone, #wearable-legend-phone  {
+    #legend-phone,
+    #wearable-legend-phone {
       width: 0;
       height: 0;
       visibility: hidden;
@@ -123,7 +137,9 @@
     #symptom,
     #apple-legend,
     #oura_sleep_summary-legend,
-    #fitbit-legend,#wearable-legend, #temperature-legend {
+    #fitbit-legend,
+    #wearable-legend,
+    #temperature-legend {
       width: 10%;
     }
 
@@ -237,19 +253,19 @@
 
   /* No data in this file */
   //url = "https://quantifiedflu.org/report/list/member/12608146.json";
-  
+
   /* Garmin data*/
   //url = "https://quantifiedflu.org/report/list/member/81943862.json";
-  
+
   /* Google fit */
   //url = "https://quantifiedflu.org/report/list/member/30781654.json"; 
- 
+
   //url = "https://quantifiedflu.org/report/list/member/25102556.json"
   //url = "https://quantifiedflu.org/report/list/member/57494882.json"
   //url = "https://quantifiedflu.org/report/list/member/43462825.json"
   //url ="https://quantifiedflu.org/report/list/member/02631468.json"
   //url = "https://quantifiedflu.org/report/list/member/25102556.json"
- 
+
 </script>
 
 {% load static %}
