@@ -1505,6 +1505,7 @@ function createButton(svgName, type, dataclassname, datalegend, datacolor, margi
         margintest = .5
     } else
         margintest = 1;
+   
     svgName.selectAll('circle-choice')
         .data(dataclassname)
         .enter()
@@ -1556,13 +1557,13 @@ function createButton(svgName, type, dataclassname, datalegend, datacolor, margi
         .style("fill", "#212529")
         .attr("x", function (d, i) {
             if (type == 1)
-                return (5 + (i * 35) + '%')
+                return (7 + (i * 35) + '%')
             else if (type == 2 && i > 1 && i <= 3)
-                return (45 * margintest) + '%'
+                return (2 + 45 * margintest) + '%'
             else if (type == 2 && i > 3)
-                return (60 * margintest) + '%'
+                return (2 + 60 * margintest) + '%'
             else if (type == 2 && i >= 0 && i <= 1)
-                return (25 * margintest) + '%'
+                return (2 + 25 * margintest) + '%'
         })
         .attr("y", function (d, i) {
             if (type == 1)
@@ -1574,6 +1575,7 @@ function createButton(svgName, type, dataclassname, datalegend, datacolor, margi
             else if (type == 2 && i > 3)
                 return (18) + ((i - 3) * 15) + '%'
         })
+        .style("text-anchor", "start")
         .style("font-weight", "200")
         .attr("font-size", (.75 - (type / 8)) + "rem");
 }
