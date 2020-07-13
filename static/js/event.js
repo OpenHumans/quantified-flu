@@ -31,10 +31,7 @@ function main(data) {
     databasename = getDataSourceonDay(data);
     databasenameFirstdayname = getFirstDataSourceonDay(data);
     databasenameLastdayname = getLastDataSourceonDay(data);
-    console.log(databasenameFirstdayname);
-    console.log(databasenameLastdayname);
     numberdaysongraph = getnumberday(data, databasenameFirstdayname, databasenameLastdayname);
-    console.log (numberdaysongraph);
     if (apple == true) {
         revert[1] = 1;
         maxHr++;
