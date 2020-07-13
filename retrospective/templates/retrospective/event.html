@@ -1,5 +1,4 @@
 <style>
- 
   @media screen and (min-width: 800px) {
     .textbutton,
     .textbuttonprincipal {
@@ -208,10 +207,8 @@
 <h3>Oura Respiratory Rate 44</h3>
 <div class="retrospective_graph_{{ analysis.id }}_rr"></div>
 {%endif%}
-{% endfor %}
+{% endfor %}-->
 {% load static %}
-<script src="{% static 'testGraphicIncident.json' %}"></script>-->
-
 
 <div id="wearable-container" style=" width: 100%; height: auto; display: inline-block;">
   <div id="wearable-title" style="width: 100%; height: auto;"></div>
@@ -224,7 +221,7 @@
 //url = 'https://quantifiedflu.org/retrospective/event/1.json';
 //url = 'https://quantifiedflu.org/retrospective/event/23.json';
 //url = 'https://quantifiedflu.org/retrospective/event/65.json';
- //url = '/static/testGraphicIncident.json';
+// url = '/static/testGraphicIncident.json';
 url = '{% url 'retrospective:view_event_json' object.id %}';
   // $.getJSON('{% url 'retrospective:view_event_json' object.id %}', function(event_data) {
   /*

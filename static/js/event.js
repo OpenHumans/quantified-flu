@@ -31,8 +31,10 @@ function main(data) {
     databasename = getDataSourceonDay(data);
     databasenameFirstdayname = getFirstDataSourceonDay(data);
     databasenameLastdayname = getLastDataSourceonDay(data);
+    console.log(databasenameFirstdayname);
+    console.log(databasenameLastdayname);
     numberdaysongraph = getnumberday(data, databasenameFirstdayname, databasenameLastdayname);
-
+    console.log (numberdaysongraph);
     if (apple == true) {
         revert[1] = 1;
         maxHr++;
@@ -1992,6 +1994,8 @@ function getFirstDataSourceonDay(data) {
 }
 function getnumberday(data, sourceFirstday, sourceLastday) {
     if (sourceFirstday != 'none' && sourceLastday != 'none') {
+        firstday = 0; 
+        lastday = 0;  
         if (sourceFirstday == 'fitbit') {
             firstday = parseTimeTemp(data.fitbit_summary[0].timestamp).getTime();
         }
@@ -2007,6 +2011,14 @@ function getnumberday(data, sourceFirstday, sourceLastday) {
         if (sourceFirstday == 'apple') {
             firstday = parseTime(data.apple_health_summary[0].timestamp).getTime();
         }
+        if (sourceFirstday == 'oura') {
+            firstday = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
+        }
+        if (sourceFirstday == 'ourares') {
+            firstday = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
+        }
+
+
         if (sourceLastday == 'fitbit') {
             lastday = parseTimeTemp(data.fitbit_summary[data.fitbit_summary.length - 1].timestamp).getTime();
         }
@@ -2022,10 +2034,15 @@ function getnumberday(data, sourceFirstday, sourceLastday) {
         if (sourceLastday == 'garmin') {
             lastday = parseTimeGarmin(data.garmin_heartrate[data.garmin_heartrate.length - 1].timestamp).getTime();
         }
-        var difference = (lastday - firstday) / (86400000);
+        if (sourceLastday == 'oura') {
+            lastday = parseTimeTemp(data.oura_sleep_summary[data.oura_sleep_summary.length - 1].timestamp).getTime();
+        }
+        if (sourceLastday == 'ourares') {
+            lastday = parseTimeTemp(data.oura_sleep_summary[data.oura_sleep_summary.length - 1].timestamp).getTime();
+        }
+       var difference = Math.round((lastday - firstday) / (86400000));
     } else 
         var difference = 0;
-
         return difference;
 }
 
