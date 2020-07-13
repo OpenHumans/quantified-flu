@@ -32,6 +32,7 @@ function main(data) {
     databasenameFirstdayname = getFirstDataSourceonDay(data);
     databasenameLastdayname = getLastDataSourceonDay(data);
     numberdaysongraph = getnumberday(data, databasenameFirstdayname, databasenameLastdayname);
+
     if (apple == true) {
         revert[1] = 1;
         maxHr++;
@@ -726,19 +727,19 @@ function createWearableDataSvg(div1, widthdiv1, div2, heightdiv2, div3, heightdi
         .append("svg")
         .attr("class", "svg")
         .attr("width", 100 + "%")
-        .attr("height", heightdiv3/2)
+        .attr("height", heightdiv3 / 2)
 
     makeAchoice = d3.select('#' + divChoice)
         .append("svg")
         .attr("class", "svg")
         .attr("width", 100 + "%")
         .attr("height", heightdiv3 * 1.7);
-    
-    legendCircle =  d3.select('#wearable-legend-circle')
-       .append("svg")
-       .attr("class", "svg")
-       .attr("width", 100 + "%")
-       .attr("height", heightdiv3/2);
+
+    legendCircle = d3.select('#wearable-legend-circle')
+        .append("svg")
+        .attr("class", "svg")
+        .attr("width", 100 + "%")
+        .attr("height", heightdiv3 / 2);
 }
 
 function createTitle(titleapple, title, id, coordX) {
@@ -958,7 +959,7 @@ function createSumdata(svgName, data, axe, id) {
         .attr('id', id)
         .attr("x", 0)
         .attr("y", ((gap.bottom) - ((data[3] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))))
-        .attr("width", fitbitday.length * gridSize)
+        .attr("width", (numberdaysongraph + 1) * gridSize)
         .attr("height", (((gap.bottom) - ((data[1] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) - ((gap.bottom) - ((data[3] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom)))))
         .style("fill", "#ededed")
         .lower();
@@ -967,7 +968,7 @@ function createSumdata(svgName, data, axe, id) {
         .attr('id', id)
         .attr("x", 0)
         .attr("y", ((gap.bottom) - ((data[4] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))))
-        .attr("width", fitbitday.length * gridSize)
+        .attr("width", (numberdaysongraph + 1) * gridSize)
         .attr("height", (((gap.bottom) - ((data[0] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) - ((gap.bottom) - ((data[4] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom)))))
         .style("fill", "#f7f7f7")
         .lower();
@@ -976,7 +977,7 @@ function createSumdata(svgName, data, axe, id) {
         .attr('id', id)
         .attr("x1", 0)
         .attr("y1", ((gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom))))
-        .attr("x2", fitbitday.length * gridSize)
+        .attr("x2", (numberdaysongraph + 1) * gridSize)
         .attr("y2", ((gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom))))
         .style("stroke", "#34495e")
         .style("stroke-dasharray", 5)
@@ -1154,10 +1155,10 @@ function tooltipdata(circleid, data, msg, color) {
                 .attr("r", gridSize / 5)
                 .attr('stroke-width', 1);
 
-           /*legendCircle 
-                .style("visibility", "visible")
-                .style("font-weight", "300")
-                .text(data[coordXY] + " " + d + " " + msg);*/
+            /*legendCircle 
+                 .style("visibility", "visible")
+                 .style("font-weight", "300")
+                 .text(data[coordXY] + " " + d + " " + msg);*/
 
             legendCircle.append("circle")
                 .attr("id", "rect-legend")
@@ -1166,7 +1167,7 @@ function tooltipdata(circleid, data, msg, color) {
                 .attr("cy", 50 + "%")
                 .attr("r", gridSize / 5)
                 .attr("fill", color);
- 
+
             legendCircle.append("text")
                 .attr("id", "text-legend")
                 .attr("class", "text-legend")
@@ -1180,15 +1181,15 @@ function tooltipdata(circleid, data, msg, color) {
 
         .on("mousemove", function () {
             //legendCircle 
-              //  .style("top", 100)
-                //.style("left", 2 * gridSize);
+            //  .style("top", 100)
+            //.style("left", 2 * gridSize);
         })
 
         .on("mouseout", function () {
             d3.select(this).attr("r", gridSize / 10)
                 .style("stroke", "#015483")
                 .style("stroke-width", "0.5");
-           // tooltip.style("visibility", "hidden");
+            // tooltip.style("visibility", "hidden");
 
             d3.selectAll("#rect-legend").style("visibility", "hidden");
             d3.selectAll("#text-legend").style("visibility", "hidden");
@@ -1501,9 +1502,9 @@ function setAttributButton() {
 
 function createButton(svgName, type, dataclassname, datalegend, datacolor, marginTop1, marginTop2) {
     if (marginTop1 == 1) {
-        margintest = .5 
-    } else  
-    margintest = 1;
+        margintest = .5
+    } else
+        margintest = 1;
     svgName.selectAll('circle-choice')
         .data(dataclassname)
         .enter()
@@ -1546,9 +1547,9 @@ function createButton(svgName, type, dataclassname, datalegend, datacolor, margi
     svgName.selectAll(".daysLabel")
         .data(datalegend)
         .enter().append("text")
-        .attr("class", function (d,i) {  
-            if (type == 1) 
-            return "textbuttonprincipal"
+        .attr("class", function (d, i) {
+            if (type == 1)
+                return "textbuttonprincipal"
             else return "textbutton"
         })
         .text(function (d) { return d; })
@@ -1556,7 +1557,7 @@ function createButton(svgName, type, dataclassname, datalegend, datacolor, margi
         .attr("x", function (d, i) {
             if (type == 1)
                 return (5 + (i * 35) + '%')
-                else if (type == 2 && i > 1 && i <= 3)
+            else if (type == 2 && i > 1 && i <= 3)
                 return (45 * margintest) + '%'
             else if (type == 2 && i > 3)
                 return (60 * margintest) + '%'
@@ -1566,7 +1567,7 @@ function createButton(svgName, type, dataclassname, datalegend, datacolor, margi
         .attr("y", function (d, i) {
             if (type == 1)
                 return (13 + '%')
-                else if (type == 2 && i > 1 && i <= 3)
+            else if (type == 2 && i > 1 && i <= 3)
                 return (18) + ((i - 1) * 15) + '%'
             else if (type == 2 && i >= 0 && i <= 1)
                 return (18) + ((i + 1) * 15) + '%'
@@ -1881,7 +1882,7 @@ function getLastDataSourceonDay(data) {
     if (data.oura_sleep_summary != undefined) {
         firstDay_respiratory = parseTimeTemp(data.oura_sleep_summary[data.oura_sleep_summary.length - 1].timestamp).getTime();
     }
-    
+
 
     test = 0;
     test2 = "none";
@@ -1951,7 +1952,7 @@ function getFirstDataSourceonDay(data) {
     if (data.oura_sleep_summary != undefined) {
         firstDay_respiratory = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
     }
-    
+
 
     test = 10000000000000;
     test2 = "none";
@@ -1988,40 +1989,42 @@ function getFirstDataSourceonDay(data) {
     return test2;
 }
 function getnumberday(data, sourceFirstday, sourceLastday) {
-    if (sourceFirstday == 'fitbit') {
-        firstday = parseTimeTemp(data.fitbit_summary[0].timestamp).getTime();
-    }
-    if (sourceFirstday == 'ouraHR') {
-        firstday = parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp).getTime();
-    }
-    if (sourceFirstday == 'google') {
-        firstday = parseTimeGarmin(data.googlefit_heartrate[0].timestamp).getTime();
-    }
-    if (sourceFirstday == 'garmin') {
-        firstday= parseTimeGarmin(data.garmin_heartrate[0].timestamp).getTime();
-    }
-    if (sourceFirstday == 'apple') {
-        firstday = parseTime(data.apple_health_summary[0].timestamp).getTime();
-    }
+    if (sourceFirstday != 'none' && sourceLastday != 'none') {
+        if (sourceFirstday == 'fitbit') {
+            firstday = parseTimeTemp(data.fitbit_summary[0].timestamp).getTime();
+        }
+        if (sourceFirstday == 'ouraHR') {
+            firstday = parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp).getTime();
+        }
+        if (sourceFirstday == 'google') {
+            firstday = parseTimeGarmin(data.googlefit_heartrate[0].timestamp).getTime();
+        }
+        if (sourceFirstday == 'garmin') {
+            firstday = parseTimeGarmin(data.garmin_heartrate[0].timestamp).getTime();
+        }
+        if (sourceFirstday == 'apple') {
+            firstday = parseTime(data.apple_health_summary[0].timestamp).getTime();
+        }
+        if (sourceLastday == 'fitbit') {
+            lastday = parseTimeTemp(data.fitbit_summary[data.fitbit_summary.length - 1].timestamp).getTime();
+        }
+        if (sourceLastday == 'ouraHR') {
+            lastday = parseTimeTemp(data.oura_sleep_summary[data.oura_sleep_summary.length - 1].timestamp).getTime();
+        }
+        if (sourceLastday == 'google') {
+            lastday = parseTimeGarmin(data.googlefit_heartrate[data.googlefit_heartrate.length - 1].timestamp).getTime();
+        }
+        if (sourceLastday == 'apple') {
+            lastday = parseTime(data.apple_health_summary[data.apple_health_summary.length - 1].timestamp).getTime();
+        }
+        if (sourceLastday == 'garmin') {
+            lastday = parseTimeGarmin(data.garmin_heartrate[data.garmin_heartrate.length - 1].timestamp).getTime();
+        }
+        var difference = (lastday - firstday) / (86400000);
+    } else 
+        var difference = 0;
 
-    if (sourceLastday== 'fitbit') {
-        lastday = parseTimeTemp(data.fitbit_summary[data.fitbit_summary.length - 1].timestamp).getTime();
-    }
-
-    if (sourceLastday == 'ouraHR') {
-        lastday = parseTimeTemp(data.oura_sleep_summary[data.oura_sleep_summary.length - 1].timestamp).getTime();
-    }
-    if (sourceLastday== 'google') {
-        lastday =parseTimeGarmin(data.googlefit_heartrate[data.googlefit_heartrate.length - 1].timestamp).getTime();
-    }
-    if (sourceLastday== 'apple') {
-        lastday = parseTime(data.apple_health_summary[data.apple_health_summary.length - 1].timestamp).getTime();
-    }
-    if (sourceLastday== 'garmin') {
-        lastday = parseTimeGarmin(data.garmin_heartrate[data.garmin_heartrate.length - 1].timestamp).getTime();
-    }
-    var difference = (lastday - firstday) / (86400000);
-    return difference;
+        return difference;
 }
 
 function addDayonGraphic(data, source, type) {

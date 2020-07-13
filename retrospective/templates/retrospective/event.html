@@ -176,7 +176,7 @@
     'value_key2': value2,
     ...
   }
-  */
+  
   function mapQFDataForMG(data_in, graph_type) {
     data_in = data_in[graph_type];
     var new_data = [];
@@ -189,11 +189,10 @@
       new_data.push(entry);
     }
     return new_data;
-  }
+  }*/
 </script>
-
-{% for analysis in object.retrospectiveeventanalysis_set.all %}
 <!--
+{% for analysis in object.retrospectiveeventanalysis_set.all %}
 <h3>
   {% if analysis.graph_type == 'oura_sleep_5min' %}Oura Heart Rate
   {% elif analysis.graph_type == 'oura_sleep_summary' %}Oura Temperature
@@ -203,7 +202,6 @@
   {% elif analysis.graph_type == 'apple_health_summary' %}Apple Health Resting Heartrate
   {% elif analysis.graph_type == 'garmin_heartrate' %}Garmin Heartrate
   {% endif %}</h3>
--->
 <div class="retrospective_graph_{{ analysis.id }}"></div>
 
 {%if analysis.graph_type == 'oura_sleep_summary' %}
@@ -211,7 +209,7 @@
 <div class="retrospective_graph_{{ analysis.id }}_rr"></div>
 {%endif%}
 {% endfor %}
-
+-->
 {% load static %}
 <script src="{% static 'testGraphicIncident.json' %}"></script>
 
@@ -224,18 +222,11 @@
   <div id="wearable-choice" style="width: 100%; height: auto;"></div>
 </div>
 <script>
-url = 'https://quantifiedflu.org/retrospective/event/1.json';
+//url = 'https://quantifiedflu.org/retrospective/event/1.json';
 //url = 'https://quantifiedflu.org/retrospective/event/23.json';
-  //url = '/static/testGraphicIncident.json';
-  url = "https://quantifiedflu.org";
-  url += '{% url 'retrospective:view_event_json' object.id %}';
-  console.log(url);
-// $.getJSON(url, function(event_data) {
-   // console.log('test');
-    //console.log(event_data);
-
-  //})
-
+//url = 'https://quantifiedflu.org/retrospective/event/65.json';
+ //url = '/static/testGraphicIncident.json';
+url = '{% url 'retrospective:view_event_json' object.id %}';
   // $.getJSON('{% url 'retrospective:view_event_json' object.id %}', function(event_data) {
   /*
       {% for analysis in object.retrospectiveeventanalysis_set.all %}
