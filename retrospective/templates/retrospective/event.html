@@ -219,8 +219,14 @@
 url = 'https://quantifiedflu.org/retrospective/event/1.json';
 //url = 'https://quantifiedflu.org/retrospective/event/23.json';
 //url = 'https://quantifiedflu.org/retrospective/event/65.json';
+<<<<<<< HEAD
 //url = '/static/testGraphicIncident.json';
 //url = '{% url 'retrospective:view_event_json' object.id %}';
+=======
+// url = '/static/testGraphicIncident.json';
+
+url = '{% url 'retrospective:view_event_json' object.id %}';
+>>>>>>> 5d1c153a8a11fd6a07cb3d967e52f95039ce5f44
   // $.getJSON('{% url 'retrospective:view_event_json' object.id %}', function(event_data) {
   /*
       {% for analysis in object.retrospectiveeventanalysis_set.all %}

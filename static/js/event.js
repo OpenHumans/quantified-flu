@@ -502,7 +502,9 @@ function mainContainerFitbitIntradaydata(dataAxis) {
     }
 }
 
+
 /* OURA SUMMARRY -  Heart Rate */
+
 function loadDatafromOura(data) {
     ouradata = [], ouraday = [], ourayear = [], ouradayAxis = [], ouradate = [], repeat = [], noRepeatData = [];
     ouraday = [];
@@ -515,12 +517,15 @@ function controlDatafromOuraSleep(data) {
     getHeartRatefromFileOura(data);
     ouracontrolday = controlDay(ouradate, ouraday, ouramonth);
     ouradayAxis = getDayonAxis(ouracontrolday);
+
     finaldataOura = dataControl(ouradata, ouradate, ouraday, ouramonth, 0);
+
     ouracompare = addDayonGraphic(data, getDataSourceonDay(data), "oura");
     ouraAxis = getAxisLegend(ouradata, 'dizaine');
 }
 function getHeartRatefromFileOura(data) {
     cnt = 0;
+
     this.file = data.oura_sleep_summary.map(d => d);
     this.file.forEach(element => {
         ouradata[cnt] = element.data.heart_rate;
@@ -528,6 +533,7 @@ function getHeartRatefromFileOura(data) {
         ouraday[cnt] = formatdateday(parseTimeTemp(element.timestamp));
         ouramonth[cnt] = formatdatemonth(parseTimeTemp(element.timestamp));
         ourayear[cnt] = formatyear(parseTimeTemp(element.timestamp));
+
         cnt++;
     });
 }
@@ -1814,7 +1820,6 @@ function getDataSourceonDay(data) {
     if (data.googlefit_heartrate != undefined) {
         firstDay_google = parseTimeGarmin(data.googlefit_heartrate[0].timestamp).getTime();
     }
-
     test = 10000000000000;
     test2 = "none";
 
@@ -1838,7 +1843,6 @@ function getDataSourceonDay(data) {
         test = (firstDay_google);
         test2 = 'google';
     }
-
     return test2;
 }
 
@@ -1889,6 +1893,7 @@ function getLastDataSourceonDay(data) {
         test = (firstDay_fitbit);
         test2 = 'fitbit';
     }
+
     if (firstDay_oura_hr > test && data.oura_sleep_summary != undefined) {
         test = (firstDay_oura_hr);
         test2 = 'ouraHR';
@@ -1931,6 +1936,7 @@ function getFirstDataSourceonDay(data) {
     if (data.oura_sleep_summary != undefined) {
         firstDay_oura = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
     }
+
     if (data.oura_sleep_summary != undefined) {
         firstDay_oura_hr = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
     }
