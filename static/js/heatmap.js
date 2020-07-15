@@ -3,6 +3,7 @@ $names = ["Cough", "Wet cough", "Anosmia", "Runny nose", "Sore throat", "Short b
 symptom_data = [];
 days_axis = [];
 days = [];
+year = [];
 completedDays = [];
 
 display();
@@ -97,8 +98,8 @@ function main_heatmap(data) {
     comments = loadComments(data, days);
 
     createSvgReport("heatmap", (((completedDays.length) * gridSize) + 1), (height + margin.top + margin.bottom), "symptom", "heatmap-title", "legend", "legend-phone");
-    showMonthsAxis(maingroup, namesmonths, -6);
-    showDaysAxis(maingroup, days_axis);
+    //showMonthsAxis(maingroup, namesmonths, -6);
+    showDaysAxis(maingroup, formatdateshow2(days_axis, ""));
     showTitleandSubtitle(titlegroup, "Heatmap of Symptom reports");
     showHeatmap(maingroup, symptom_data)
     showSymptomAxis(symptomgroup);
@@ -106,7 +107,7 @@ function main_heatmap(data) {
     showLegendPhone(legendgroupphone);
     tooltip_heatmap();
 
-    document.getElementById("heatmap").scroll(((moreday) * gridSize), 0);
+    document.getElementById("heatmap").scroll(((moreday) * gridSize ), 0);
 
     document.getElementById("heatmap").onscroll = function () {
       progressScrollBar();
@@ -213,8 +214,9 @@ function createSvgReport(heatmapDiv, heatmpaSize, SVGheight, symptomDiv, titleDi
 function getDatafromFile(data) {
   this.timestamp = data.symptom_report.map(d => d.timestamp);
   this.file_days = timestamp.map(d => formatdate(parseTime(d)));
-  this.reportday = timestamp.map(d => formatdateday(parseTime(d)))
-  this.month = timestamp.map(d => formatdatemonth(parseTime(d)))
+  this.reportday = timestamp.map(d => formatdateday(parseTime(d)));
+  this.month = timestamp.map(d => formatdatemonth(parseTime(d)));
+  this.year = timestamp.map(d => formatdateyear(parseTime(d)))
   days = controlDay(file_days, reportday, month);
 
   this.comments = loadComments(data, days);
@@ -227,7 +229,6 @@ function showHeatmap(maingroup, symptom_data) {
   colorScale = scaleColor();
   y = yScale();
   let cnt = -1;
-
   var heatmap = maingroup.append("g")
     .attr('id', 'heatmape')
     .selectAll("g")
@@ -277,12 +278,12 @@ function showDaysAxis(maingroup, days_axis) {
     .enter().append("text")
     .attr('id', 'xAxis')
     .text(function (d) { return d; })
-    .attr("x", function (d, i) { return i * gridSize * 7; })
+    .attr("x", function (d, i) { return  (i * gridSize * 7); })
     .attr("y", 0)
     .attr("transform", "translate(" + (gridSize * 0.5) + ",-" + (gridSize * 0.5) + ")")
     .style("text-anchor", "middle")
-    .style("font-weight", "300")
-    .attr("font-size", 0.7 + "rem");
+    .attr("font-weight", "200")
+    .attr("font-size", ".7em");
 
   var ticksize = maingroup.selectAll(".tickSize")
     .data(days_axis)
@@ -294,7 +295,7 @@ function showDaysAxis(maingroup, days_axis) {
     .attr("x2", function (d, i) { return (i * gridSize * 7); })
     .attr("y2", 10)
     .style("stroke", "#212529")
-    .style("stroke-width", "1");
+    .style("stroke-width", ".5");
 }
 
 function showMonthsAxis(maingroup, namesmonths, y) {
@@ -328,7 +329,7 @@ function showTitleandSubtitle(maingroup, title) {
     .style("text-anchor", "middle")
     .attr("font-size", 1 + "rem")
     .style("font-weight", "300")
-    .text("Study on " + days.length + " days - start the " + formatdateshow(days[0], 0));
+    .text("Study on " + days.length + " days - start the " + formatdateshow(days[0], year[0]));
 
   var subtitle2 = maingroup.append("text")
     .attr("x", 50 + "%")
@@ -336,7 +337,7 @@ function showTitleandSubtitle(maingroup, title) {
     .style("text-anchor", "middle")
     .attr("font-size", 1 + "rem")
     .style("font-weight", "300")
-    .text("Last update - " + formatdateshow(days[days.length - 1], days.length - 1));
+    .text("Last update - " + formatdateshow(days[days.length - 1],  year[year.length - 1]));
 }
 
 function showSymptomAxis(maingroup) {
@@ -494,19 +495,19 @@ function showLegend(maingroup) {
 function showAppendTitle(data, i, y) {
   var commentScale = ["No report", "No symptom", "Low symptom", "Middle symptom", "Strong symptom", "Unbearable symptom"];
   if (data == -2)
-    return "Reports : no comments reported \n Date : " + formatdateshow(completedDays[i], i);
+    return "Reports : no comments reported \n Date : " + formatdateshow(completedDays[i], "");
 
   if (data == -1)
     return "Reports : " + commentScale[data + 1]
-      + " \n Date : " + formatdateshow(completedDays[i], i);
+      + " \n Date : " + formatdateshow(completedDays[i], "");
 
   if (data == 0)
     return "Reports : " + commentScale[data + 1]
-      + " \n Date : " + formatdateshow(completedDays[i], i);
+      + " \n Date : " + formatdateshow(completedDays[i], "");
 
   if (data == 1 || data == 2 || data == 3 || data == 4) {
     var msg = "Reports :  " + commentScale[data + 1]
-      + " \n Date : " + formatdateshow(completedDays[i], i)
+      + " \n Date : " + formatdateshow(completedDays[i], "")
       + " \n Symptom : " + $names[y]
       + " \n Values: " + data + "/4";
 
@@ -533,7 +534,7 @@ function showAppendTitle(data, i, y) {
     return msg;
   }
   if (data == 5) {
-    return "Comments : " + comments[i] + " \n Date : " + formatdateshow(completedDays[i], i);
+    return "Comments : " + comments[i] + " \n Date : " + formatdateshow(completedDays[i], "");
   }
 
 }
@@ -848,12 +849,12 @@ function chooseDisplay() {
 }
 
 function getNoReportValues(data) {
-    hour = fortmatHour(parseTime(data.symptom_report[0].timestamp));
-    min = fortmatminutes(parseTime(data.symptom_report[0].timestamp));
-    sec = fortmatsecondes(parseTime(data.symptom_report[0].timestamp));
-    millisecondes = (hour * 3600000) + (min * 60000) + (sec * 1000);
-    firstDay_report = parseTime(data.symptom_report[0].timestamp).getTime();
-  
+  hour = fortmatHour(parseTime(data.symptom_report[0].timestamp));
+  min = fortmatminutes(parseTime(data.symptom_report[0].timestamp));
+  sec = fortmatsecondes(parseTime(data.symptom_report[0].timestamp));
+  millisecondes = (hour * 3600000) + (min * 60000) + (sec * 1000);
+  firstDay_report = parseTime(data.symptom_report[0].timestamp).getTime();
+
   if (data.fitbit_summary != undefined)
     firstDay_fitbit = parseTimeTemp(data.fitbit_summary[0].timestamp).getTime();
   else
@@ -866,8 +867,8 @@ function getNoReportValues(data) {
     firstDay_oura = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
   else
     firstDay_oura = firstDay_report;
-  if (data.oura_sleep_5min != undefined)
-    firstDay_oura_hr = parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp).getTime();
+  if (data.oura_sleep_summary != undefined)
+    firstDay_oura_hr = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
   else
     firstDay_oura_hr = firstDay_report;
   if (data.garmin_heartrate != undefined)
@@ -943,9 +944,9 @@ function getNoReportValues(data) {
   }
 
   if (test2 == '/ouraHR') {
-    hour2 = fortmatHour(parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp));
-    min2 = fortmatminutes(parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp));
-    sec2 = fortmatsecondes(parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp));
+    hour2 = fortmatHour(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
+    min2 = fortmatminutes(parseTimeTemp(data.oura_sleep_summary.timestamp));
+    sec2 = fortmatsecondes(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
     millisecondes2 = (hour2 * 3600000) + (min2 * 60000) + (sec2 * 1000);
     test = test - (millisecondes - millisecondes2);
   }
@@ -953,8 +954,8 @@ function getNoReportValues(data) {
 }
 
 function getNoReportDataSource(data) {
- 
-    firstDay_report = parseTime(data.symptom_report[0].timestamp).getTime();
+
+  firstDay_report = parseTime(data.symptom_report[0].timestamp).getTime();
 
   if (data.fitbit_summary != undefined)
     firstDay_fitbit = parseTimeTemp(data.fitbit_summary[0].timestamp).getTime();
@@ -968,8 +969,8 @@ function getNoReportDataSource(data) {
     firstDay_oura = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
   else
     firstDay_oura = firstDay_report;
-  if (data.oura_sleep_5min != undefined)
-    firstDay_oura_hr = parseTimeOuraSleep(data.oura_sleep_5min[0].timestamp).getTime();
+  if (data.oura_sleep_summary != undefined)
+    firstDay_oura_hr = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
   else
     firstDay_oura_hr = firstDay_report;
   if (data.garmin_heartrate != undefined)
@@ -1029,9 +1030,9 @@ function addDaynoReport(numberdays, datasource, data) {
       daystoadd[i] = formatdate(parseTime(data.apple_health_summary[i].timestamp));
     }
   }
-  else if (datasource == 'ouraHR' && data.oura_sleep_5min != undefined) {
+  else if (datasource == 'ouraHR' && data.oura_sleep_summary != undefined) {
     for (let i = 0; i < numberdays; i++) {
-      daystoadd[i] = formatdate(parseTimeOuraSleep(data.oura_sleep_5min[i].timestamp));
+      daystoadd[i] = formatdate(parseTimeTemp(data.oura_sleep_summary[i].timestamp));
     }
   }
   else if (datasource == 'garmin' && data.garmin_heartrate != undefined) {
@@ -1051,15 +1052,47 @@ function addDaynoReport(numberdays, datasource, data) {
   }
   return daystoadd;
 }
-
 function getDays() {
   return this.days;
 }
+
 /* Format */
+function formatdateshow(data, year) {
+  let months = ["Jan", "Fev", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  for (let i = 0; i < months.length; i++) {
+    if (i <= 9 && "0" + i == data.split('/')[1] && year == "")
+      day = months[i - 1] + " " + data.split('/')[0]
+    else if (i <= 9 && "0" + i == data.split('/')[1] && year != "")
+      day = months[i - 1] + " " + data.split('/')[0] + ", " + year
+    else if (i > 9 && i == data[x].split('/')[1] && year == "")
+      day = months[i - 1] + " " + data.split('/')[0]
+    else if (i > 9 && i == data[x].split('/')[1] && year != "")
+      day = months[i - 1] + " " + data.split('/')[0] + ", " + year
+  }
+}
+function formatdateshow2(data, year) {
+  let day = [];
+  let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  for (let x = 0; x < data.length; x++) {
+    for (let i = 0; i < months.length; i++) {
+      if (i <= 9 && "0" + i == data[x].split('/')[1] && year == "")
+        day[x] = months[i - 1] + " " + data[x].split('/')[0]
+      else if (i <= 9 && "0" + i == data[x].split('/')[1] && year != "")
+        day[x] = months[i - 1] + " " + data[x].split('/')[0] + ", " + year
+      else if (i > 9 && i == data[x].split('/')[1] && year == "")
+        day[x] = months[i - 1] + " " + data[x].split('/')[0]
+      else if (i > 9 && i == data[x].split('/')[1] && year != "")
+        day[x] = months[i - 1] + " " + data[x].split('/')[0] + ", " + year
+    }
+  }
+  return day;
+}
 parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S.%f+00:00");
+parseTimeTemp = d3.timeParse("%Y-%m-%d");
 formatdate = d3.timeFormat("%d/%m");
 formatdateday = d3.timeFormat("%d");
 formatdatemonth = d3.timeFormat("%m");
+formatdateyear = d3.timeFormat("%Y");
 parseTimeOuraSleep = d3.timeParse("%Y-%m-%dT%H:%M:%S%Z");
 parseTimeGarmin = d3.timeParse("%Y-%m-%dT%H:%M:%S");
 formatnewdate = d3.timeFormat("%Y-%m-%d%Z");

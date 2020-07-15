@@ -11,19 +11,6 @@ finaldataOuraRes = [];
 comparateDayReportWearable = [];
 symptom_data_heatmap = [];
 
-function setrevert() {
-    var revert = [0, 0, 0, 0];
-    if (fitbit == true)
-        revert[2] = 1;
-    if (apple == true)
-        revert[1] = 1;
-    if (ouraHR == true)
-        revert[3] = 1;
-    if (fitbit != true && apple != true && ouraHR != true && oura == true)
-        revert[0] = 1;
-    return revert;
-}
-
 function main_wearable_data(data) {
     fitbit = controlWearableDatafromfile(data, 'fitbit');
     apple = controlWearableDatafromfile(data, 'apple');
@@ -33,7 +20,6 @@ function main_wearable_data(data) {
     google = controlWearableDatafromfile(data, 'google');
     ourares = controlWearableDatafromfile(data, 'ourares');
     axis = [];
-    //revert = setrevert ();
     maxHr = 0;
     revert = [0, 0, 0, 0, 0, 0, 0];
     if (apple == true) {
@@ -60,17 +46,16 @@ function main_wearable_data(data) {
         revert[0] = 1;
     if (fitbit != true && apple != true && ouraHR != true && oura != true && garmin != true && google != true && oura != true)
     revert[6] = 1;
-
     cntbttHr = maxHr;
     if (fitbit == true || apple == true || oura == true || ouraHR == true || garmin == true || google == true || ourares== true) {
         symptom_report = getSymptomDatafromFile(0);
-        month = determinenamemonth(completedDays);
+       // month = determinenamemonth(completedDays);
         createWearableDataSvg('wearable-graph', ((completedDays.length) * gridSize), 'wearable-legend', (heightGraph * 1.1), 'wearable-title', (margin.top * 1.5), 'wearable-choice');
-        createLegendAxeX(maingroup, this.days_axis);
+        createLegendAxeX(maingroup, formatdateshow2 (this.days_axis, ""));
         createLegendAxeY(legendgroup, "null", "");
         getreportedSickIncident(maingroup, symptom_report);
         getButtonChoice(makeAchoice, legendgroupphone);
-        showMonthsAxis(maingroup, month, (heightGraph - 5));
+       // showMonthsAxis(maingroup, month, (heightGraph - 5));
         tooltipChoice(data);
         tooltipInformation('circle-information');
         var winScroll = document.getElementById("heatmap").scrollLeft;
@@ -83,8 +68,12 @@ function main_wearable_data(data) {
     } else d3.select('#wearable-container').remove();
 }
 
-/* Get all the variable data needed */
-
+/* Garmin - Heart rate */
+function loadDatafromGarmin(data) {
+    garmindata = [], garmindate = [], garminday = [], garminmonth = [], garminyear = [];
+    symptomData_garmin = [];
+    controlDatafromGarmin(data);
+}
 function controlDatafromGarmin(data) {
     getHeartRateDatafromGarmin(data);
     /* Find the day */
@@ -102,7 +91,37 @@ function controlDatafromGarmin(data) {
     symptomData_garmin = getSymptomDatafromFile(0);
     garminAxis = getAxisLegend(finaldata_garmin, 'dizaine');
 }
+function getHeartRateDatafromGarmin(data) {
+    cnt = 0;
+    this.file = data.garmin_heartrate.map(d => d);
+    this.file.forEach(element => {
+        garmindata[cnt] = element.data.heart_rate;
+        garmindate[cnt] = element.timestamp;
+        garminday[cnt] = formatdateday(parseTimeGarmin(element.timestamp));
+        garminmonth[cnt] = formatdatemonth(parseTimeGarmin(element.timestamp));
+        garminyear[cnt] = formatyear(parseTimeGarmin(element.timestamp));
+        cnt++;
+    });
+}
+function mainContainer_garmin_heartrate(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
+    if (revert[4] == 1) {
+        removeDataSource('circle-garmin-cnt', 'garmin-axisY-cnt', 'garmin-title-cnt', 'garmin-sum');
+        /* Element graphique */
+        showSumdata(maingroupapple, prob, dataAxis, 'garmin-sum');
+        createChartePoint(maingroupapple, finaldata_garmin, dataAxis, "circle-garmin-cnt", "#e78ac3", (gridSize / 10));
+        /* Afficher les données */
+        tooltip("circle-garmin-cnt", garmin_date, "bpm");
+    } else {
+        removeDataSource('circle-garmin-cnt', 'garmin-axisY-cnt', 'garmin-title-cnt', 'garmin-sum');
+    }
+}
 
+/* FITBIT - Heart rate */
+function loadDatafromFitbit(data) {
+    fitbitdata = [], fitbitdate = [], fitbitday = [], fitbitmonth = [], fitbityear = [];
+    symptomData_fitbit = [];
+    controlDatafromFitbit(data);
+}
 function controlDatafromFitbit(data) {
     getHeartRateDatafromFitbit(data);
     /* Find the day */
@@ -120,7 +139,176 @@ function controlDatafromFitbit(data) {
     symptomData_fitbit = getSymptomDatafromFile(0);
     fitbitAxis = getAxisLegend(finaldata_fitbit, 'dizaine');
 }
+function getHeartRateDatafromFitbit(data) {
+    cnt = 0;
+    this.file = data.fitbit_summary.map(d => d);
+    this.file.forEach(element => {
+        fitbitdata[cnt] = element.data.heart_rate;
+        fitbitdate[cnt] = element.timestamp;
+        fitbitday[cnt] = formatdateday(parseTimeTemp(element.timestamp));
+        fitbitmonth[cnt] = formatdatemonth(parseTimeTemp(element.timestamp));
+        fitbityear[cnt] = formatyear(parseTimeTemp(element.timestamp));
+        cnt++;
+    });
+}
+function mainContainer_fitbit_summary_heartrate(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
+    if (revert[2] == 1) {
+        removeDataSource('circle-fitbit-cnt', 'fitbit-axisY-cnt', 'fitbit-title-cnt', 'fitbit-sum');
+        /* Element graphique */
+        showSumdata(maingroupapple, prob, dataAxis, 'fitbit-sum');
+        createChartePoint(maingroupapple, finaldata_fitbit, dataAxis, "circle-fitbit-cnt", "#fc8d62", (gridSize / 10));
+        /* Afficher les données */
+        tooltip("circle-fitbit-cnt", fitbit_date, "bpm");
+    } else {
+        removeDataSource('circle-fitbit-cnt', 'fitbit-axisY-cnt', 'fitbit-title-cnt', 'fitbit-sum');
+    }
+}
 
+/*APPLE WATCH - Heart rate */
+function loadDatafromAppleWatch(data) {
+    dayapp = [], monthapp = [], appledata = [], appleday = [], appleyear = [], symptomData = [];
+    cnt = 0, appledate = [], repeat = [], noRepeatDataApple = [];
+    controlDatafromAppleWatch(data);
+}
+function controlDatafromAppleWatch(data) {
+    /* Recupérer les données dans le fichier*/
+    getAppleDatafromFile(data);
+    /*Find the day */
+    controlday = controlDay(appleday, dayapp, monthapp);
+    noMissingDay = addorRemoveday(controlday, getDays(), data);
+    comparedateApple = compareDateReport(noMissingDay);
+    apple_date = completedLastDay(comparedateApple, noMissingDay);
+
+    appledayAxis = getDayonAxis(apple_date);
+    applemonth = determinenamemonth(apple_date);
+    finaldataAppleWatch = dataControl(appledata, appleday, dayapp, monthapp, comparedateApple);
+    heartrateAxis = getAxisLegend(finaldataAppleWatch, 'dizaine');
+    /* Trouver les jours ou il y ades reports :) */
+    symptomData = getSymptomDatafromFile(0);
+}
+function getAppleDatafromFile(data) {
+    cnt = 0;
+    this.file = data.apple_health_summary.map(d => d);
+    this.file.forEach(element => {
+        appledata[cnt] = Math.round(element.data.heart_rate);
+        appleday[cnt] = formatdate(parseTime(element.timestamp));
+        appleyear[cnt] = formatyear(parseTime(element.timestamp));
+        dayapp[cnt] = formatdateday(parseTime(element.timestamp));
+        monthapp[cnt] = formatdatemonth(parseTime(element.timestamp));
+        cnt++;
+    });
+}
+function mainContainer_HeartRate_Apple_Watch(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
+    if (revert[1] == 1) {
+        removeDataSource('circle-apple-watch-ctn', 'apple-axisY-ctn', 'apple-title-ctn', 'apple-sum', 'apple-axisY-ctn-2', 'apple-axisY-ctn');
+        /* Element graphique */
+        showSumdata(maingroupapple, prob, dataAxis, 'apple-sum');
+        createChartePoint(maingroupapple, finaldataAppleWatch, dataAxis, "circle-apple-watch-ctn", "#66c2a5", (gridSize / 10))
+        /* Afficher les données */
+        tooltip("circle-apple-watch-ctn", apple_date, "bpm");
+    } else {
+        removeDataSource('circle-apple-watch-ctn', 'apple-axisY-ctn', 'apple-title-ctn', 'apple-sum', 'apple-axisY-ctn-2', 'apple-axisY-ctn');
+    }
+}
+
+/* OURA - Heart rate */
+function loadDatafromOura(data) {
+    ouradata = [], ouraday = [], ourayear = [], ouradayAxis = [], ouradate = [], repeat = [], noRepeatData = [];
+    ouraday = [];
+    ouramonth = [];
+    controlDatafromOuraSleep(data);
+}
+function controlDatafromOuraSleep(data) {
+    /* Recupérer les données dans le fichier*/
+    getHeartRatefromFileOura(data);
+    /*Find the day */
+    controlday = controlDay(ouradate, ouraday, ouramonth);
+    noMissingDay = addorRemoveday(controlday, getDays(), data);
+    ouracomparedate = compareDateReport(noMissingDay);
+    oura_date = completedLastDay(ouracomparedate, noMissingDay);
+    ouradayAxis = getDayonAxis(oura_date);
+    ouramonth = determinenamemonth(oura_date);
+    finaldataOura = dataControl(ouradata, ouradate, ouraday, ouramonth, ouracomparedate);
+    ouraAxis = getAxisLegend(finaldataOura, 'dizaine');
+    /* Trouver les jours ou il y ades reports :) */
+    symptomData = getSymptomDatafromFile(0);
+}
+function getHeartRatefromFileOura(data) {
+    cnt = 0;
+    this.file = data.oura_sleep_summary.map(d => d);
+    this.file.forEach(element => {
+        ouradata[cnt] = element.data.heart_rate;
+        ouradate[cnt] = formatdate(parseTimeTemp(element.timestamp));
+        ouraday[cnt] = formatdateday(parseTimeTemp(element.timestamp));
+        ouramonth[cnt] = formatdatemonth(parseTimeTemp(element.timestamp));
+        ourayear[cnt] = formatyear(parseTimeTemp(element.timestamp));
+        cnt++;
+    });
+}
+function mainContainer_heart_rate_oura_sleep(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
+    if (revert[3] == 1) {
+        removeDataSource('circle-oura-heart-rate-ctn', 'oura-heart-rate-title-ctn', 'oura-heart-rate-axisY-cnt', 'oura-heart-rate-sum');
+        showSumdata(maingroupapple, prob, dataAxis, 'oura-heart-rate-sum');
+        createChartePoint(maingroupapple, finaldataOura, dataAxis, "circle-oura-heart-rate-ctn", "#8da0cb", (gridSize / 10));
+        /* Afficher les données */
+        tooltip("circle-oura-heart-rate-ctn", oura_date, "bpm");
+    } else
+        removeDataSource('circle-oura-heart-rate-ctn', 'oura-heart-rate-title-ctn', 'oura-heart-rate-axisY-cnt', 'oura-heart-rate-sum');
+}
+
+/* GOOGLE FIT - Heart rate */
+function loadDatafromGoogle(data) {
+    googledata = [], googleday = [], googleyear = [], googledayAxis = [], googledate = [], repeat = [], noRepeatData = [];
+    googleday = [];
+    googlemonth = [];
+    controlDatafromGoogleFit(data);
+}
+function controlDatafromGoogleFit(data) {
+    /* Recupérer les données dans le fichier*/
+    getHeartRatefromFileGoogle(data);
+
+    /*Find the day */
+    controlday = controlDay(googledate, googleday, googlemonth);
+    noMissingDay = addorRemoveday(controlday, getDays(), data);
+    googlecomparedate = compareDateReport(noMissingDay);
+    google_date = completedLastDay(googlecomparedate, noMissingDay);
+
+    googledayAxis = getDayonAxis(google_date);
+    googlemonth = determinenamemonth(google_date);
+    finaldataGoogle = dataControlOura(googledata, googledate, googleday, googlemonth, 1);
+    googleAxis = getAxisLegend(finaldataGoogle, 'dizaine');
+    /* Trouver les jours ou il y ades reports :) */
+    symptomData = getSymptomDatafromFile(0);
+}
+function getHeartRatefromFileGoogle(data) {
+    cnt = 0;
+    this.file = data.googlefit_heartrate.map(d => d);
+    this.file.forEach(element => {
+        googledata[cnt] = element.data.heart_rate;
+        googledate[cnt] = formatdate(parseTimeGarmin(element.timestamp));
+        googleday[cnt] = formatdateday(parseTimeGarmin(element.timestamp));
+        googlemonth[cnt] = formatdatemonth(parseTimeGarmin(element.timestamp));
+        googleyear[cnt] = formatyear(parseTimeGarmin(element.timestamp));
+        cnt++;
+    });
+}
+function mainContainer_heart_rate_google_fit(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
+    if (revert[5] == 1) {
+        removeDataSource('circle-google-heart-rate-ctn', 'google-heart-rate-title-ctn', 'google-heart-rate-axisY-cnt', 'google-heart-rate-sum');
+        showSumdata(maingroupapple, prob, dataAxis, 'google-heart-rate-sum');
+        createChartePoint(maingroupapple, finaldataGoogle, dataAxis, "circle-google-heart-rate-ctn", "#a6d854", (gridSize / 10));
+        tooltip("circle-google-heart-rate-ctn", google_date, "bpm");
+    } else
+        removeDataSource('circle-google-heart-rate-ctn', 'google-heart-rate-title-ctn', 'google-heart-rate-axisY-cnt', 'google-heart-rate-sum');
+}
+
+/* OURA - Respiratory rate */
+function loadDataFromOura_RespiratoryRate(data) {
+    resdata = [], resday = [], resyear = [], resdayAxis = [], resdate = [], repeat = [], noRepeatData = [];
+    day = [];
+    monthres = [];
+    controlDatarespiratory_ratefromOura(data);
+}
 function controlDatarespiratory_ratefromOura(data) {
     /* Recupérer les données dans le fichier*/
     getRespiratory_rateDatafromFile(data);
@@ -138,6 +326,39 @@ function controlDatarespiratory_ratefromOura(data) {
     axisRes_oura = getAxisLegend(finaldataOuraRes, 'dizaine');
     /* Trouver les jours ou il y ades reports :) */
     symptomData = getSymptomDatafromFile(0);
+}
+function getRespiratory_rateDatafromFile(data) {
+    cnt = 0;
+    this.file = data.oura_sleep_summary.map(d => d);
+    this.file.forEach(element => {
+        resdata[cnt] = element.data.respiratory_rate;
+        resday[cnt] = formatdate(parseTimeTemp(element.timestamp));
+        day[cnt] = formatdateday(parseTimeTemp(element.timestamp));
+        monthres[cnt] = formatdatemonth(parseTimeTemp(element.timestamp));
+        resyear[cnt] = formatyear(parseTimeTemp(element.timestamp));
+        cnt++;
+    });
+}
+function mainContainer_RespiratoryRate_oura(data, maingroupapple, legendapple, titleapple, revert) {
+    if (revert[6] == 1) {
+        removeDataSource('circle-resp-ctn', 'oura-resp-axisY-cnt', 'oura-resp-title-ctn', 'oura-resp-sum', 'oura-resp-axisY-cnt-2', 'oura-resp-axisY-cnt');
+        showSumdata(maingroupapple, prob, axisRes_oura, 'oura-sum');
+        createChartePoint(maingroupapple, finaldataOuraRes, axisRes_oura, "circle-resp-ctn", "#97BC5F", (gridSize / 10));
+        createTitle(titleapple, "Respiratory rate evolution", 'oura-resp-title-ctn', '50%');
+        createLegendAxeY(legendapple, axisRes_oura, "RESPIRATORY RATE", 'oura-resp-axisY-cnt');
+        /* Afficher les données */
+        tooltip("circle-resp-ctn", oura_dateRes, "");
+    } else {
+        removeDataSource('circle-resp-ctn', 'oura-resp-axisY-cnt', 'oura-resp-title-ctn', 'oura-resp-sum', 'oura-resp-axisY-cnt-2', 'oura-resp-axisY-cnt');
+    }
+}
+
+/* OURA - Temperature */
+function loadDataFromOura_Temperature(data) {
+    tempdata = [], tempday = [], tempyear = [], tempdayAxis = [], tempdate = [], repeat = [], noRepeatData = [];
+    day = [];
+    monthtemp = [];
+    controlDatafromOura(data);
 }
 function controlDatafromOura(data) {
     /* Recupérer les données dans le fichier*/
@@ -157,86 +378,18 @@ function controlDatafromOura(data) {
     /* Trouver les jours ou il y ades reports :) */
     symptomData = getSymptomDatafromFile(0);
 }
-
-function controlDatafromAppleWatch(data) {
-    /* Recupérer les données dans le fichier*/
-    getAppleDatafromFile(data);
-    /*Find the day */
-    controlday = controlDay(appleday, dayapp, monthapp);
-    noMissingDay = addorRemoveday(controlday, getDays(), data);
-    comparedateApple = compareDateReport(noMissingDay);
-    apple_date = completedLastDay(comparedateApple, noMissingDay);
-
-    appledayAxis = getDayonAxis(apple_date);
-    applemonth = determinenamemonth(apple_date);
-    finaldataAppleWatch = dataControl(appledata, appleday, dayapp, monthapp, comparedateApple);
-    heartrateAxis = getAxisLegend(finaldataAppleWatch, 'dizaine');
-    /* Trouver les jours ou il y ades reports :) */
-    symptomData = getSymptomDatafromFile(0);
+function getTemperatureDatafromFile(data) {
+    cnt = 0;
+    this.file = data.oura_sleep_summary.map(d => d);
+    this.file.forEach(element => {
+        tempdata[cnt] = element.data.temperature_delta;
+        tempday[cnt] = formatdate(parseTimeTemp(element.timestamp));
+        day[cnt] = formatdateday(parseTimeTemp(element.timestamp));
+        monthtemp[cnt] = formatdatemonth(parseTimeTemp(element.timestamp));
+        tempyear[cnt] = formatyear(parseTimeTemp(element.timestamp));
+        cnt++;
+    });
 }
-
-function controlDatafromOuraSleep(data) {
-    /* Recupérer les données dans le fichier*/
-    getHeartRatefromFileOura(data);
-
-    /*Find the day */
-    controlday = controlDay(ouradate, ouraday, ouramonth);
-    noMissingDay = addorRemoveday(controlday, getDays(), data);
-    ouracomparedate = compareDateReport(noMissingDay);
-    oura_date = completedLastDay(ouracomparedate, noMissingDay);
-
-    ouradayAxis = getDayonAxis(oura_date);
-    ouramonth = determinenamemonth(oura_date);
-    finaldataOura = dataControlOura(ouradata, ouradate, ouraday, ouramonth, ouracomparedate);
-    ouraAxis = getAxisLegend(finaldataOura, 'dizaine');
-    /* Trouver les jours ou il y ades reports :) */
-    symptomData = getSymptomDatafromFile(0);
-}
-
-function controlDatafromGoogleFit(data) {
-    /* Recupérer les données dans le fichier*/
-    getHeartRatefromFileGoogle(data);
-
-    /*Find the day */
-    controlday = controlDay(googledate, googleday, googlemonth);
-    noMissingDay = addorRemoveday(controlday, getDays(), data);
-    googlecomparedate = compareDateReport(noMissingDay);
-    google_date = completedLastDay(googlecomparedate, noMissingDay);
-
-    googledayAxis = getDayonAxis(google_date);
-    googlemonth = determinenamemonth(google_date);
-    finaldataGoogle = dataControlOura(googledata, googledate, googleday, googlemonth, 1);
-    googleAxis = getAxisLegend(finaldataGoogle, 'dizaine');
-    /* Trouver les jours ou il y ades reports :) */
-    symptomData = getSymptomDatafromFile(0);
-}
-
-function loadDataFromOura_RespiratoryRate(data) {
-    resdata = [], resday = [], resyear = [], resdayAxis = [], resdate = [], repeat = [], noRepeatData = [];
-    day = [];
-    monthres = [];
-    controlDatarespiratory_ratefromOura(data);
-}
-function mainContainer_RespiratoryRate_oura(data, maingroupapple, legendapple, titleapple, revert) {
-    if (revert[6] == 1) {
-        removeDataSource('circle-resp-ctn', 'oura-resp-axisY-cnt', 'oura-resp-title-ctn', 'oura-resp-sum', 'oura-resp-axisY-cnt-2', 'oura-resp-axisY-cnt');
-        showSumdata(maingroupapple, prob, axisRes_oura, 'oura-sum');
-        createChartePoint(maingroupapple, finaldataOuraRes, axisRes_oura, "circle-resp-ctn", "#97BC5F", (gridSize / 10));
-        createTitle(titleapple, "Respiratory rate evolution", 'oura-resp-title-ctn', '50%');
-        createLegendAxeY(legendapple, axisRes_oura, "RESPIRATORY RATE", 'oura-resp-axisY-cnt');
-        /* Afficher les données */
-        tooltip("circle-resp-ctn", oura_dateRes, "");
-    } else {
-        removeDataSource('circle-resp-ctn', 'oura-resp-axisY-cnt', 'oura-resp-title-ctn', 'oura-resp-sum', 'oura-resp-axisY-cnt-2', 'oura-resp-axisY-cnt');
-    }
-}
-function loadDataFromOura_Temperature(data) {
-    tempdata = [], tempday = [], tempyear = [], tempdayAxis = [], tempdate = [], repeat = [], noRepeatData = [];
-    day = [];
-    monthtemp = [];
-    controlDatafromOura(data);
-}
-/* Function display for the main container */
 function mainContainer_temperature_oura_sleep_summary(data, maingroupapple, legendapple, titleapple, revert) {
     if (revert[0] == 1) {
         removeDataSource('circle-temperature-ctn', 'oura-axisY-cnt', 'oura-title-ctn', 'oura-sum', 'oura-axisY-cnt-2', 'oura-axisY-cnt');
@@ -250,239 +403,11 @@ function mainContainer_temperature_oura_sleep_summary(data, maingroupapple, lege
         removeDataSource('circle-temperature-ctn', 'oura-axisY-cnt', 'oura-title-ctn', 'oura-sum', 'oura-axisY-cnt-2', 'oura-axisY-cnt');
     }
 }
-function loadDatafromGoogle(data) {
-    googledata = [], googleday = [], googleyear = [], googledayAxis = [], googledate = [], repeat = [], noRepeatData = [];
-    googleday = [];
-    googlemonth = [];
-    controlDatafromGoogleFit(data);
-}
-function mainContainer_heart_rate_google_fit(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
-    if (revert[5] == 1) {
-        removeDataSource('circle-google-heart-rate-ctn', 'google-heart-rate-title-ctn', 'google-heart-rate-axisY-cnt', 'google-heart-rate-sum');
-        showSumdata(maingroupapple, prob, dataAxis, 'google-heart-rate-sum');
-        createChartePoint(maingroupapple, finaldataGoogle, dataAxis, "circle-google-heart-rate-ctn", "#a6d854", (gridSize / 10));
-        /* Afficher les données */
-        tooltip("circle-google-heart-rate-ctn", google_date, "bpm");
-    } else
-        removeDataSource('circle-google-heart-rate-ctn', 'google-heart-rate-title-ctn', 'google-heart-rate-axisY-cnt', 'google-heart-rate-sum');
-}
-function loadDatafromOura(data) {
-    ouradata = [], ouraday = [], ourayear = [], ouradayAxis = [], ouradate = [], repeat = [], noRepeatData = [];
-    ouraday = [];
-    ouramonth = [];
-    controlDatafromOuraSleep(data);
-}
-function mainContainer_heart_rate_oura_sleep(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
-    if (revert[3] == 1) {
-        removeDataSource('circle-oura-heart-rate-ctn', 'oura-heart-rate-title-ctn', 'oura-heart-rate-axisY-cnt', 'oura-heart-rate-sum');
-        showSumdata(maingroupapple, prob, dataAxis, 'oura-heart-rate-sum');
-        createChartePoint(maingroupapple, finaldataOura, dataAxis, "circle-oura-heart-rate-ctn", "#8da0cb", (gridSize / 10));
-        /* Afficher les données */
-        tooltip("circle-oura-heart-rate-ctn", oura_date, "bpm");
-    } else
-        removeDataSource('circle-oura-heart-rate-ctn', 'oura-heart-rate-title-ctn', 'oura-heart-rate-axisY-cnt', 'oura-heart-rate-sum');
-}
-
-function loadDatafromAppleWatch(data) {
-    dayapp = [], monthapp = [], appledata = [], appleday = [], appleyear = [], symptomData = [];
-    cnt = 0, appledate = [], repeat = [], noRepeatDataApple = [];
-    controlDatafromAppleWatch(data);
-}
-function mainContainer_HeartRate_Apple_Watch(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
-    if (revert[1] == 1) {
-        removeDataSource('circle-apple-watch-ctn', 'apple-axisY-ctn', 'apple-title-ctn', 'apple-sum', 'apple-axisY-ctn-2', 'apple-axisY-ctn');
-        /* Element graphique */
-        showSumdata(maingroupapple, prob, dataAxis, 'apple-sum');
-        createChartePoint(maingroupapple, finaldataAppleWatch, dataAxis, "circle-apple-watch-ctn", "#66c2a5", (gridSize / 10))
-        /* Afficher les données */
-        tooltip("circle-apple-watch-ctn", apple_date, "bpm");
-    } else {
-        removeDataSource('circle-apple-watch-ctn', 'apple-axisY-ctn', 'apple-title-ctn', 'apple-sum', 'apple-axisY-ctn-2', 'apple-axisY-ctn');
-    }
-}
-
-function loadDatafromFitbit(data) {
-    fitbitdata = [], fitbitdate = [], fitbitday = [], fitbitmonth = [], fitbityear = [];
-    symptomData_fitbit = [];
-    controlDatafromFitbit(data);
-}
-function mainContainer_fitbit_summary_heartrate(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
-    if (revert[2] == 1) {
-        removeDataSource('circle-fitbit-cnt', 'fitbit-axisY-cnt', 'fitbit-title-cnt', 'fitbit-sum');
-        /* Element graphique */
-        showSumdata(maingroupapple, prob, dataAxis, 'fitbit-sum');
-        createChartePoint(maingroupapple, finaldata_fitbit, dataAxis, "circle-fitbit-cnt", "#fc8d62", (gridSize / 10));
-        /* Afficher les données */
-        tooltip("circle-fitbit-cnt", fitbit_date, "bpm");
-    } else {
-        removeDataSource('circle-fitbit-cnt', 'fitbit-axisY-cnt', 'fitbit-title-cnt', 'fitbit-sum');
-    }
-}
-
-function loadDatafromGarmin(data) {
-    garmindata = [], garmindate = [], garminday = [], garminmonth = [], garminyear = [];
-    symptomData_garmin = [];
-    controlDatafromGarmin(data);
-}
-function mainContainer_garmin_heartrate(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
-    if (revert[4] == 1) {
-        removeDataSource('circle-garmin-cnt', 'garmin-axisY-cnt', 'garmin-title-cnt', 'garmin-sum');
-        /* Element graphique */
-        showSumdata(maingroupapple, prob, dataAxis, 'garmin-sum');
-        createChartePoint(maingroupapple, finaldata_garmin, dataAxis, "circle-garmin-cnt", "#e78ac3", (gridSize / 10));
-        /* Afficher les données */
-        tooltip("circle-garmin-cnt", garmin_date, "bpm");
-    } else {
-        removeDataSource('circle-garmin-cnt', 'garmin-axisY-cnt', 'garmin-title-cnt', 'garmin-sum');
-    }
-}
-
-function calculatSum(data) {
-    var sum = 0;
-    var N = 0;
-    var variance = 0;
-    var stddeviation = 0;
-
-    for (let i = 0; i < data.length; i++) {
-        if (data[i] != '-' && data[i] != undefined && data[i] != "NO DATA" && data[i] != "") {
-            sum += data[i];
-            N++;
-        }
-    }
-    if (sum > 1)
-        sum = Math.round(sum / N);
-    else
-        sum = (sum / N);
-
-    for (let i = 0; i < data.length; i++) {
-        if (data[i] != '-' && data[i] != undefined && data[i] != "NO DATA" && data[i] != "") {
-            variance += (1 / N) * ((data[i] - sum) * (data[i] - sum));
-        }
-    }
-    stddeviation = Math.sqrt(variance);
-
-    var prop = [];
-    if (sum > stddeviation)
-        prop[0] = Math.round(sum - (stddeviation * 2));
-    else
-        prop[0] = (sum - (stddeviation * 2));
-    if (sum > stddeviation)
-        prop[1] = Math.round(sum - stddeviation);
-    else
-        prop[1] = (sum - stddeviation);
-    if (sum > 1)
-        prop[2] = Math.round(sum);
-    else
-        prop[2] = (sum);
-    if (sum > stddeviation)
-        prop[3] = Math.round(sum + (stddeviation));
-    else
-        prop[3] = (sum + (stddeviation));
-    if (sum > stddeviation)
-        prop[4] = Math.round(sum + (stddeviation * 2));
-    else
-        prop[4] = (sum + (stddeviation * 2));
-
-    return (prop);
-}
 function removeDataSource(iddata, idtitle, idaxis, idaxis2, idaxis3, idaxis4) {
     d3.selectAll("#" + iddata).remove();
     d3.selectAll("#" + idtitle).remove();
     d3.selectAll("#" + idaxis).remove();
     d3.selectAll("#" + idaxis2).remove();
-    //d3.selectAll("#" + idaxis3).remove();
-    //d3.selectAll("#" + idaxis4).remove();
-}
-
-/* GET THE DATA FROM FILE .JSON */
-function getHeartRateDatafromGarmin(data) {
-    cnt = 0;
-    this.file = data.garmin_heartrate.map(d => d);
-    this.file.forEach(element => {
-        garmindata[cnt] = element.data.heart_rate;
-        garmindate[cnt] = element.timestamp;
-        garminday[cnt] = formatdateday(parseTimeGarmin(element.timestamp));
-        garminmonth[cnt] = formatdatemonth(parseTimeGarmin(element.timestamp));
-        garminyear[cnt] = formatyear(parseTimeGarmin(element.timestamp));
-        cnt++;
-    });
-}
-
-function getHeartRateDatafromFitbit(data) {
-    cnt = 0;
-    this.file = data.fitbit_summary.map(d => d);
-    this.file.forEach(element => {
-        fitbitdata[cnt] = element.data.heart_rate;
-        fitbitdate[cnt] = element.timestamp;
-        fitbitday[cnt] = formatdateday(parseTimeTemp(element.timestamp));
-        fitbitmonth[cnt] = formatdatemonth(parseTimeTemp(element.timestamp));
-        fitbityear[cnt] = formatyear(parseTimeTemp(element.timestamp));
-        cnt++;
-    });
-}
-
-function getAppleDatafromFile(data) {
-    cnt = 0;
-    this.file = data.apple_health_summary.map(d => d);
-    this.file.forEach(element => {
-        appledata[cnt] = Math.round(element.data.heart_rate);
-        appleday[cnt] = formatdate(parseTime(element.timestamp));
-        appleyear[cnt] = formatyear(parseTime(element.timestamp));
-        dayapp[cnt] = formatdateday(parseTime(element.timestamp));
-        monthapp[cnt] = formatdatemonth(parseTime(element.timestamp));
-        cnt++;
-    });
-}
-
-function getRespiratory_rateDatafromFile(data) {
-    cnt = 0;
-    this.file = data.oura_sleep_summary.map(d => d);
-    this.file.forEach(element => {
-        resdata[cnt] = element.data.respiratory_rate;
-        resday[cnt] = formatdate(parseTimeTemp(element.timestamp));
-        day[cnt] = formatdateday(parseTimeTemp(element.timestamp));
-        monthres[cnt] = formatdatemonth(parseTimeTemp(element.timestamp));
-        resyear[cnt] = formatyear(parseTimeTemp(element.timestamp));
-        cnt++;
-    });
-}
-function getTemperatureDatafromFile(data) {
-    cnt = 0;
-    this.file = data.oura_sleep_summary.map(d => d);
-    this.file.forEach(element => {
-        tempdata[cnt] = element.data.temperature_delta;
-        tempday[cnt] = formatdate(parseTimeTemp(element.timestamp));
-        day[cnt] = formatdateday(parseTimeTemp(element.timestamp));
-        monthtemp[cnt] = formatdatemonth(parseTimeTemp(element.timestamp));
-        tempyear[cnt] = formatyear(parseTimeTemp(element.timestamp));
-        cnt++;
-    });
-}
-
-function getHeartRatefromFileOura(data) {
-    cnt = 0;
-    this.file = data.oura_sleep_5min.map(d => d);
-    this.file.forEach(element => {
-        ouradata[cnt] = element.data.heart_rate;
-        ouradate[cnt] = formatdate(parseTimeOuraSleep(element.timestamp));
-        ouraday[cnt] = formatdateday(parseTimeOuraSleep(element.timestamp));
-        ouramonth[cnt] = formatdatemonth(parseTimeOuraSleep(element.timestamp));
-        ourayear[cnt] = formatyear(parseTimeOuraSleep(element.timestamp));
-        cnt++;
-    });
-}
-
-function getHeartRatefromFileGoogle(data) {
-    cnt = 0;
-    this.file = data.googlefit_heartrate.map(d => d);
-    this.file.forEach(element => {
-        googledata[cnt] = element.data.heart_rate;
-        googledate[cnt] = formatdate(parseTimeGarmin(element.timestamp));
-        googleday[cnt] = formatdateday(parseTimeGarmin(element.timestamp));
-        googlemonth[cnt] = formatdatemonth(parseTimeGarmin(element.timestamp));
-        googleyear[cnt] = formatyear(parseTimeGarmin(element.timestamp));
-        cnt++;
-    });
 }
 
 function compare(x, y) {
@@ -554,6 +479,12 @@ function getDayonAxis(data) {
     }
     return axisdays;
 }
+function getreportedSickIncident(maingroupapple, data) {
+    for (let item of data) {
+        showreportedSickIncident(maingroupapple, item);
+    }
+}
+
 
 function getCombineAxisY(revert) {
     var test = [];
@@ -609,7 +540,55 @@ function getCombineAxisY(revert) {
         newAxis = axis;
     return newAxis;
 }
+/* Sum - Standart deviation - display */
+function calculatSum(data) {
+    var sum = 0;
+    var N = 0;
+    var variance = 0;
+    var stddeviation = 0;
 
+    for (let i = 0; i < data.length; i++) {
+        if (data[i] != '-' && data[i] != undefined && data[i] != "NO DATA" && data[i] != "") {
+            sum += data[i];
+            N++;
+        }
+    }
+    if (sum > 1)
+        sum = Math.round(sum / N);
+    else
+        sum = (sum / N);
+
+    for (let i = 0; i < data.length; i++) {
+        if (data[i] != '-' && data[i] != undefined && data[i] != "NO DATA" && data[i] != "") {
+            variance += (1 / N) * ((data[i] - sum) * (data[i] - sum));
+        }
+    }
+    stddeviation = Math.sqrt(variance);
+
+    var prop = [];
+    if (sum > stddeviation)
+        prop[0] = Math.round(sum - (stddeviation * 2));
+    else
+        prop[0] = (sum - (stddeviation * 2));
+    if (sum > stddeviation)
+        prop[1] = Math.round(sum - stddeviation);
+    else
+        prop[1] = (sum - stddeviation);
+    if (sum > 1)
+        prop[2] = Math.round(sum);
+    else
+        prop[2] = (sum);
+    if (sum > stddeviation)
+        prop[3] = Math.round(sum + (stddeviation));
+    else
+        prop[3] = (sum + (stddeviation));
+    if (sum > stddeviation)
+        prop[4] = Math.round(sum + (stddeviation * 2));
+    else
+        prop[4] = (sum + (stddeviation * 2));
+
+    return (prop);
+}
 function getSum(revert) {
     var data = [];
     var cnt1 = 0;
@@ -679,12 +658,6 @@ function getSum(revert) {
     return prop;
 }
 
-function getreportedSickIncident(maingroupapple, data) {
-    for (let item of data) {
-        showreportedSickIncident(maingroupapple, item);
-    }
-}
-
 function tooltip(circleid, data, msg) {
 
     const tooltip = d3
@@ -715,7 +688,6 @@ function tooltip(circleid, data, msg) {
             d3.select(this).attr("r", gridSize / 10)
                 .style("stroke", "#015483")
                 .style("stroke-width", "0.5");
-
             tooltip.style("visibility", "hidden");
         });
 }
@@ -755,29 +727,6 @@ function tooltipInformation(circleid) {
             tooltip.style("visibility", "hidden");
         });
 }
-
-function loadGroupDataSource(data) {
-    if (apple == true) {
-        loadDatafromAppleWatch(data);
-    }
-    if (fitbit == true) {
-        loadDatafromFitbit(data);
-    }
-    if (ouraHR == true) {
-        loadDatafromOura(data);
-    }
-    if (oura == true) {
-        loadDataFromOura_Temperature(data);
-    }
-    if (garmin == true) {
-        loadDatafromGarmin(data);
-    }
-    if (google == true) {
-        loadDatafromGoogle(data);
-    }
-    if (ourares == true)
-        loadDataFromOura_RespiratoryRate(data);
-}
 function tooltipChoice(data) {
     click = 1;
     loadGroupDataSource(data);
@@ -805,6 +754,28 @@ function tooltipChoice(data) {
     })
 }
 
+function loadGroupDataSource(data) {
+    if (apple == true) {
+        loadDatafromAppleWatch(data);
+    }
+    if (fitbit == true) {
+        loadDatafromFitbit(data);
+    }
+    if (ouraHR == true) {
+        loadDatafromOura(data);
+    }
+    if (oura == true) {
+        loadDataFromOura_Temperature(data);
+    }
+    if (garmin == true) {
+        loadDatafromGarmin(data);
+    }
+    if (google == true) {
+        loadDatafromGoogle(data);
+    }
+    if (ourares == true)
+        loadDataFromOura_RespiratoryRate(data);
+}
 function groupGraphic(data) {
     if (revert[1] == 1 || revert[2] == 1 || revert[3] == 1 || revert[4] == 1 || revert[5] == 1) {
         d3.select('#heart-rate-title-ctn').remove();
@@ -837,7 +808,6 @@ function selectedButton(classname, revert, stroke) {
             break;
     }
 }
-
 function selectedCategories(classname, revert, stroke, max) {
     if (revert < max)
         d3.select('.' + classname).attr("width", ((gridSize / 2))).attr("height", ((gridSize / 2))).attr('stroke-width', 1);
@@ -845,7 +815,6 @@ function selectedCategories(classname, revert, stroke, max) {
     if (revert == max)
         d3.select('.' + classname).attr("width", ((gridSize / 2) - stroke)).attr("height", ((gridSize / 2) - stroke)).attr('stroke-width', stroke).attr("stroke", "#e2e2e2");
 }
-
 function selectedGroupButton() {
     selectedCategories('Temperature', revert[0], 6, 1);
     selectedCategories('RespiratoryRate', revert[6], 6, 1);
@@ -989,7 +958,6 @@ function controlGestionclick() {
         click = 1;
     }
 }
-
 function controlGestiondbclick() {
 
     if (classButton == 'apple') {
@@ -1081,7 +1049,7 @@ function createChartePoint(maingroupapple, data, axe, id, color, size) {
 
             if (d == 0)
                 return ((gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom)));
-            else if (d == "NO DATA" || d == "-" || d == "" || d == undefined) return (heightGraph)
+            else if (d == "NO DATA" || d == "-" || d == "" || d == undefined) return (heightGraph * 1.1)
             else
                 return ((gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom)));
         })
@@ -1251,10 +1219,11 @@ function createLegendAxeX(legendapple, axisdays) {
         .enter().append("text")
         .text(function (d) { return d; })
         .style("fill", "#212529")
-        .attr("x", function (d, i) { return gridSize * 1 + (i * gridSize * 7) })
+        .attr("x", function (d, i) { return gridSize + ((i * gridSize * 7)) })
         .attr("y", heightGraph - (margin.bottom / 2))
         .style("text-anchor", "end")
-        .attr("font-size", 0.7 + "rem");
+        .attr("font-weight", "200")
+        .attr("font-size", ".7em");
 
     legendapple.selectAll(".tickSize")
         .data(axisdays)
@@ -1375,11 +1344,11 @@ function controlWearableDatafromfile(data, type) {
                 return false;
             else return true;
         case 'ouraHR':
-            if (data.oura_sleep_5min == undefined)
+            if (data.oura_sleep_summary == undefined)
                 return false;
             var cnt = 0;
-            for (let i = 0; i < data.oura_sleep_5min.length; i++) {
-                if (data.oura_sleep_5min[i].data.heart_rate != "" && data.oura_sleep_5min[i].data.heart_rate != "-")
+            for (let i = 0; i < data.oura_sleep_summary.length; i++) {
+                if (data.oura_sleep_summary[i].data.heart_rate != "" && data.oura_sleep_summary[i].data.heart_rate != "-")
                     cnt++;
             }
             if (cnt == 0)
@@ -1677,6 +1646,23 @@ function formatdateshow(data, id) {
         else if (i > 9 && i == data.split('/')[1])
             return months[i - 1] + " " + data.split('/')[0] + ", 2020" //+ appleyear[id];
     }
+}
+function formatdateshow2(data, year) {
+    let day = [];
+    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    for (let x = 0; x < data.length; x++) {
+        for (let i = 0; i < months.length; i++) {
+            if (i <= 9 && "0" + i == data[x].split('/')[1] && year == "")
+                day[x] = months[i - 1] + " " + data[x].split('/')[0]
+            else if (i <= 9 && "0" + i == data[x].split('/')[1] && year != "")
+                day[x] = months[i - 1] + " " + data[x].split('/')[0] + ", " + year
+            else if (i > 9 && i == data[x].split('/')[1] && year == "")
+                day[x] = months[i - 1] + " " + data[x].split('/')[0]
+            else if (i > 9 && i == data[x].split('/')[1] && year != "")
+                day[x] = months[i - 1] + " " + data[x].split('/')[0] + ", " + year
+        }
+    }
+    return day;
 }
 
 function dayControlGraph(data, days2, month) {
