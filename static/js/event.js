@@ -153,8 +153,8 @@ function loadAxisX(databasename) {
 
     else if (databasename == 'apple')
         createLegendAxeX(maingroup, formatdateshow2(appledayAxis, ""), '20' + appleyear[0], "heart-rate-axisX-cnt");
-
-    else if (databasename == 'oura')
+    
+    else if (databasename == 'ouraHR')
         createLegendAxeX(maingroup, formatdateshow2(ouradayAxis, ""), '20' + ourayear[0], "heart-rate-axisX-cnt");
 
     else if (databasename == 'garmin')
@@ -501,7 +501,6 @@ function mainContainerFitbitIntradaydata(dataAxis) {
         removeGroup('heart-rate-fitbit-intraday-axisY-cnt', 'circle-fitbit-intraday-heart-rate-ctn', 'fitbit-intraday-sum', 'heart-rate-fitbit-intraday-axisX-cnt', 'heart-rate-fitbit-intraday-title-ctn', "fitbit-intraday-incident");
     }
 }
-
 
 /* OURA SUMMARRY -  Heart Rate */
 
