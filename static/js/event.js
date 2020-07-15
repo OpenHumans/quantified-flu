@@ -2045,7 +2045,7 @@ function getnumberday(data, sourceFirstday, sourceLastday) {
 function addDayonGraphic(data, source, type) {
     var datasource = getDataSourceonDay(data);
 
-    if (datasource == source && source == 'oura') {
+    if (datasource == source && source == 'ouraHR') {
         var daycompare = formatdateday(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
     }
     if (datasource == source && source == 'apple') {
