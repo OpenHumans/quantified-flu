@@ -53,7 +53,6 @@ function main(data) {
         maxHr++;
     }
     cntbttHr = maxHr;
-    console.log(data);
     if (fitbit == true || apple == true || oura == true || ouraHR == true || garmin == true || google == true || ourares == true || fitbitintraday == true) {
         createWearableDataSvg('wearable-graph', ((numberdaysongraph + 1) * gridSize), 'wearable-legend', (heightGraph), 'wearable-title', heightGraph / 4, 'wearable-choice');
         getButtonChoice(makeAchoice);
