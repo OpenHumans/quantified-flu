@@ -1159,7 +1159,7 @@ function tooltipdata(circleid, data, msg, color) {
                 .attr("r", gridSize / 5)
                 .attr('stroke-width', 1);
 
-            /*legendCircle 
+            /*legendCircle
                  .style("visibility", "visible")
                  .style("font-weight", "300")
                  .text(data[coordXY] + " " + d + " " + msg);*/
@@ -1184,7 +1184,7 @@ function tooltipdata(circleid, data, msg, color) {
 
 
         .on("mousemove", function () {
-            //legendCircle 
+            //legendCircle
             //  .style("top", 100)
             //.style("left", 2 * gridSize);
         })
@@ -1509,7 +1509,7 @@ function createButton(svgName, type, dataclassname, datalegend, datacolor, margi
         margintest = .5
     } else
         margintest = 1;
-   
+
     svgName.selectAll('circle-choice')
         .data(dataclassname)
         .enter()
@@ -1990,8 +1990,8 @@ function getFirstDataSourceonDay(data) {
 }
 function getnumberday(data, sourceFirstday, sourceLastday) {
     if (sourceFirstday != 'none' && sourceLastday != 'none') {
-        firstday = 0; 
-        lastday = 0;  
+        firstday = 0;
+        lastday = 0;
         if (sourceFirstday == 'fitbit') {
             firstday = parseTimeTemp(data.fitbit_summary[0].timestamp).getTime();
         }
@@ -2037,7 +2037,7 @@ function getnumberday(data, sourceFirstday, sourceLastday) {
             lastday = parseTimeTemp(data.oura_sleep_summary[data.oura_sleep_summary.length - 1].timestamp).getTime();
         }
        var difference = Math.round((lastday - firstday) / (86400000));
-    } else 
+    } else
         var difference = 0;
         return difference;
 }
@@ -2045,7 +2045,7 @@ function getnumberday(data, sourceFirstday, sourceLastday) {
 function addDayonGraphic(data, source, type) {
     var datasource = getDataSourceonDay(data);
 
-    if (datasource == source && source == 'oura') {
+    if (datasource == source && source == 'ouraHR') {
         var daycompare = formatdateday(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
     }
     if (datasource == source && source == 'apple') {
