@@ -53,6 +53,7 @@ function main(data) {
         maxHr++;
     }
     cntbttHr = maxHr;
+    
     if (fitbit == true || apple == true || oura == true || ouraHR == true || garmin == true || google == true || ourares == true || fitbitintraday == true) {
         createWearableDataSvg('wearable-graph', ((numberdaysongraph + 1) * gridSize), 'wearable-legend', (heightGraph), 'wearable-title', heightGraph / 4, 'wearable-choice');
         getButtonChoice(makeAchoice);
@@ -154,7 +155,7 @@ function loadAxisX(databasename) {
     else if (databasename == 'apple')
         createLegendAxeX(maingroup, formatdateshow2(appledayAxis, ""), '20' + appleyear[0], "heart-rate-axisX-cnt");
 
-    else if (databasename == 'oura')
+    else if (databasename == 'ouraHR')
         createLegendAxeX(maingroup, formatdateshow2(ouradayAxis, ""), '20' + ourayear[0], "heart-rate-axisX-cnt");
 
     else if (databasename == 'garmin')
@@ -502,9 +503,7 @@ function mainContainerFitbitIntradaydata(dataAxis) {
     }
 }
 
-
 /* OURA SUMMARRY -  Heart Rate */
-
 function loadDatafromOura(data) {
     ouradata = [], ouraday = [], ourayear = [], ouradayAxis = [], ouradate = [], repeat = [], noRepeatData = [];
     ouraday = [];
@@ -760,7 +759,6 @@ function createTitle(titleapple, title, id, coordX) {
 }
 
 function createLegendAxeX(legendapple, axisdays, year, id) {
-
     legendapple.append("line")
         .attr("x1", 0)
         .attr("y1", heightGraph - margin.bottom)
@@ -1158,12 +1156,6 @@ function tooltipdata(circleid, data, msg, color) {
             d3.select(this)
                 .attr("r", gridSize / 5)
                 .attr('stroke-width', 1);
-
-            /*legendCircle 
-                 .style("visibility", "visible")
-                 .style("font-weight", "300")
-                 .text(data[coordXY] + " " + d + " " + msg);*/
-
             legendCircle.append("circle")
                 .attr("id", "rect-legend")
                 .attr("class", "rect-legend")
@@ -1182,19 +1174,10 @@ function tooltipdata(circleid, data, msg, color) {
                 .style("font-weight", "200");
         })
 
-
-        .on("mousemove", function () {
-            //legendCircle 
-            //  .style("top", 100)
-            //.style("left", 2 * gridSize);
-        })
-
         .on("mouseout", function () {
             d3.select(this).attr("r", gridSize / 10)
                 .style("stroke", "#015483")
                 .style("stroke-width", "0.5");
-            // tooltip.style("visibility", "hidden");
-
             d3.selectAll("#rect-legend").style("visibility", "hidden");
             d3.selectAll("#text-legend").style("visibility", "hidden");
         });
@@ -1685,7 +1668,6 @@ function controlDay(data, days2, month) {
         ii++;
     }
     days3_fixed.push(days2[data.length - 1] + "/" + month[data.length - 1]);
-    //data[data.length - 1]);
     return days3_fixed;
 }
 
@@ -2045,7 +2027,7 @@ function getnumberday(data, sourceFirstday, sourceLastday) {
 function addDayonGraphic(data, source, type) {
     var datasource = getDataSourceonDay(data);
 
-    if (datasource == source && source == 'oura') {
+    if (datasource == source && source == 'ouraHR') {
         var daycompare = formatdateday(parseTimeTemp(data.oura_sleep_summary[0].timestamp));
     }
     if (datasource == source && source == 'apple') {
