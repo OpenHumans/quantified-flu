@@ -154,7 +154,7 @@ function loadAxisX(databasename) {
     else if (databasename == 'apple')
         createLegendAxeX(maingroup, formatdateshow2(appledayAxis, ""), '20' + appleyear[0], "heart-rate-axisX-cnt");
 
-    else if (databasename == 'oura')
+    else if (databasename == 'ouraHR')
         createLegendAxeX(maingroup, formatdateshow2(ouradayAxis, ""), '20' + ourayear[0], "heart-rate-axisX-cnt");
 
     else if (databasename == 'garmin')
