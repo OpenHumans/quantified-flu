@@ -1,0 +1,66 @@
+@media screen and (min-width: 800px) {
+    .textbutton,
+    .textbuttonprincipal {
+      transform: translate(2%);
+    }
+    .textbutton,.legendnameAxisY {
+      font-size: 1em;
+    }
+    .textbuttonprincipal {
+      font-size: 1.25em;
+    }
+    .text-legend {
+    font-size: 1em;
+    }
+  }
+  @media screen and (min-width: 200px) and (max-width: 399px) {
+    .textbutton {
+      font-size: .4em;
+      transform: translate(4.5%);
+    }
+    .legendnameAxisY {
+      font-size: .6em;
+    }
+    .text-legend {
+    font-size: .7em;
+    }
+    .textbuttonprincipal {
+      font-size: .55em;
+      transform: translate(6%);
+      position: absolute;
+      text-overflow: ellipsis;
+      white-space: pre-line;
+      display: inline;
+      justify-content: flex-start;
+      display: block;
+    }
+    .titlenameAxisY {
+    visibility: hidden;
+    }
+  }
+  
+  @media screen and (min-width: 400px) and (max-width: 799px) {
+    .titlenameAxisY {
+    visibility: hidden;
+    }
+  .text-legend {
+    font-size: .8em;
+    }
+    .textbutton {
+      font-size: .5em;
+      transform: translate(4.5%);
+    }
+    .legendnameAxisY {
+      font-size: .6em;
+    }
+    .textbuttonprincipal {
+      font-size: .7em;
+      transform: translate(6%);
+      position: absolute;
+      text-overflow: ellipsis;
+      white-space: pre-line;
+      display: inline;
+      justify-content: flex-start;
+      display: block;
+    }
+  }

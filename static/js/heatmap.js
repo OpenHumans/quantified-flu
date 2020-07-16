@@ -123,26 +123,24 @@ function tooltip_heatmap() {
   const tooltip = d3
     .select("body")
     .append("div")
-    .attr("class", "svg-tooltip")
+    .attr("class", "svg-tooltip-heatmap")
     .style("position", "absolute")
     .style("visibility", "hidden");
 
-  d3.selectAll("#rect-heatmap")
-
+  d3.selectAll("#rect-heatmap") 
     .on("mouseover", function (d) {
       var coordXY = this.getAttribute('class').split('-');
-
       d3.select(this)
         .attr('stroke-width', 2)
         .attr("width", gridSize - 1)
         .attr("height", gridSize - 1)
         .style("fill", "#EE79FE")
         .attr("stroke", "black");
-
       tooltip
         .style("visibility", "visible")
         .text(`${showAppendTitle(d, coordXY[0], coordXY[1])}`);
-      selectSymptomOnclick(symptomgroup, coordXY[1]);
+
+        selectSymptomOnclick(symptomgroup, coordXY[1]);
     })
 
     .on("mousemove", function () {
