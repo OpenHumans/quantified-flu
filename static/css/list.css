@@ -52,6 +52,32 @@
   .select-symptom {
     border-radius: 3.5rem;
   }
+  @media screen and (min-width: 200px) and (max-width: 339px) {
+    .class-button-choice {
+      font-size: .8em;
+    }
+    .data-source-button-choice {
+      font-size: .5em;
+    }
+  }
+
+  @media screen and (min-width: 340px) and (max-width: 399px) {
+    .class-button-choice {
+      font-size: .9em;
+    }
+    .data-source-button-choice {
+      font-size: .6em;
+    }
+  }
+
+  @media screen and (min-width: 400px) {
+    .class-button-choice {
+      font-size: 1.2em;
+    }
+    .data-source-button-choice {
+      font-size: .9em;
+    }
+  }
 
   @media screen and (min-width: 200px) and (max-width: 799px) {
     #legend,

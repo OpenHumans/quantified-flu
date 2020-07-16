@@ -1632,59 +1632,67 @@ function createButton(svgName, type, dataclassname, datalegend, datacolor, margi
         .attr("font-size", (1.2 - (type / 4)) + "rem");
 }
 function createButtonPhone(svgName, type, dataclassname, datalegend, datacolor, marginTop1, marginTop2) {
-    svgName.selectAll('circle-choice')
-        .data(dataclassname)
-        .enter()
-        .append("circle")
-        .attr('id', 'circle-choice-heartrate')
-        .attr('class', function (d, i) { return dataclassname[i] })
+    svgName.selectAll('circle-choice').data(dataclassname).enter().append("circle").attr('id', 'circle-choice-heartrate').attr('class', function (d, i) { return dataclassname[i] })
         .attr("cx", function (d, i) {
-            if (type == 1)
-                return (5 + (i * 35) + '%')
-            else if (type == 2)
-                return 5 + (marginTop2 * 1.5) + '%'
+            if ((type == 1 && i == 0) || (type == 1 && i == 2))
+            return ( (i * 25) + 5 +  '%')
+            else if (type == 1 && i == 1)
+            return (5+'%')
+            else if (dataclassname == classnameRespirator)
+            return (5+'%')
+            else if (type == 2) return 5 + (marginTop2) + '%'
         })
-        .attr("cy", function (d, i) {
-            if (type == 1)
+        .attr("cy", function (d, i) { 
+            if ((type == 1 && i == 0) ||(type == 1 && i == 2))
                 return (margin.top / 2 + marginTop1)
-            else if (type == 2)
-                return (15) + ((i + 1) * 15) + '%'
-        })
-        .attr("r", gridSize / (2 * type))
-        .attr("stroke", "#e2e2e2")
+            else if (type == 1 && i == 1)
+                return (gridSize * 2.75)
+            else if (dataclassname == classnameRespirator)
+                return ((gridSize * 3.75))
+            else if (type == 2) return (15) + ((i + 1) * 15) + '%'
+        }).attr("r", gridSize / (2 * type)).attr("stroke", "#e2e2e2")
         .style("fill", function (d, i) {
             if (type == 1 && d == 'Temperature') {
                 createLinearGradient(svgName, colorscaleTemperature, d);
                 return "url(#" + d + ")"
             } else if (type == 1 && d == 'HeartRate') {
                 createLinearGradient(svgName, colorscaleHeartRate, d);
-                return "url(#" + d + ")"
-            }
-            else
-                return datacolor[i];
+                return "url(#" + d + ")" }
+            else return datacolor[i];
         });
 
     svgName.selectAll(".daysLabel")
         .data(datalegend)
         .enter().append("text")
+        .attr("class", function (d,i) {
+            if (type == 1) return 'class-button-choice';
+            else return 'data-source-button-choice';
+        })
         .text(function (d) { return d; })
         .style("fill", "#212529")
         .attr("x", function (d, i) {
-            if (type == 1)
-            return ( (i * 35) + 2 +  '%')
+            if ((type == 1 && i == 0) || (type == 1 && i == 2))
+            return ( (i * 25) + 3 +  '%')
+            else if (type == 1 && i == 1)
+            return (3+'%')
+            else if (dataclassname == classnameRespirator)
+            return (3+'%')
             else if (type == 2)
-            return 2 + (marginTop2 * 1.5) + '%'
+            return 3 + (marginTop2) + '%'
         })
         .attr("y", function (d, i) {
-            if (type == 1)
-                return (margin.top / 2 + marginTop1 + gridSize / 3)
+            if ((type == 1 && i == 0) ||(type == 1 && i == 2))
+                return (margin.top / 2 + marginTop1 + gridSize / 4)
+            else if (type == 1 && i == 1)
+                return (gridSize * 3)
+            else if (dataclassname == classnameRespirator)
+            return (gridSize * 3.95)
             else if (type == 2)
-                return (16) + ((i + 1) * 15) + '%'
+                return (17) + ((i + 1) * 15) + '%'
         })
         .style("text-anchor", "start")
         .style("font-weight", "200")
-        .attr("transform", "translate(" + gridSize / .9 + "," + 0 + ")")
-        .attr("font-size", (1 - (type / 4)) + "rem");
+        .attr("transform", "translate(" + gridSize / .9 + "," + 0 + ")");
 }
 function loadGroupDataSource(data) {
     if (apple == true) {

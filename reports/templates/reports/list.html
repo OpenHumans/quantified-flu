@@ -75,15 +75,9 @@
   <div id="wearable-legend-phone"> </div>
 </div>
 
-<script>
-  console.log("Loading data...");
-  url = '/static/test.json';
-  //url = "{{ request.path }}.json";
-  console.log("succed to loading public data");
-</script>
+<script> url = "{{ request.path }}.json"; </script>
 <script src="{% static 'js/heatmap.js' %}" ></script>
 <script src="{% static 'js/heart_rate.js' %}"></script>
-
 <table class="table">
   <thead>
     <tr>

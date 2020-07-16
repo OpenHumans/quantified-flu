@@ -82,6 +82,6 @@
   <div id="wearable-graph" style="width: 95%; height: auto; float:left; overflow-x: scroll;"></div>
   <div id="wearable-choice" style="width: 100%; height: auto;"></div>
 </div>
-<script> url = '{% url 'retrospective:view_event_json' object.id %}';</script>
+<script> url = "{% url "retrospective:view_event_json" object.id %}";</script>
 <script src="{% static 'js/event.js' %}"></script>
 {% endblock main %}

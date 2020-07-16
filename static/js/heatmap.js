@@ -594,9 +594,8 @@ function tooltip_heatmap() {
 
     .on("mousemove", function () {
       tooltip
-        .style("top", d3.event.pageY)
-        .style("left", d3.event.pageX)
-        .style("margin-left", - (document.getElementsByClassName('svg-tooltip').width));
+      .style("top", d3.event.pageY + 10 + "px")
+      .style("left", d3.event.pageX - (gridSize * 3.5) + "px");
     })
 
     .on("mouseout", function () {
@@ -985,80 +984,3 @@ formatnewdate = d3.timeFormat("%Y-%m-%d%Z");
 fortmatHour = d3.timeFormat("%H");
 fortmatminutes = d3.timeFormat("%M");
 fortmatsecondes = d3.timeFormat("%S");
-
-function display() {
-  sizedisplay = chooseDisplay();
-  switch (sizedisplay) {
-    case 1:
-      width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
-      gridSize = Math.floor(width / 30);
-      margin = {
-        top: 0.05 * width,
-        right: -0.05 * width,
-        bottom: 0.04 * width,
-        left: 0.005 * width
-      };
-      createheatmap(url);
-      break;
-    case 2:
-      width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
-      gridSize = Math.floor(width / 30);
-      margin = {
-        top: 0.05 * width,
-        right: -0.05 * width,
-        bottom: 0.04 * width,
-        left: 0.005 * width
-      };
-      createheatmap(url);
-      break;
-    case 3:
-      width = 0.9 * Math.max(Math.min(window.innerWidth, 340), 300);
-      margin = {
-        top: 0.1 * width,
-        right: -0.01 * width,
-        bottom: 0.14 * width,
-        left: 0.03 * width
-      };
-
-      gridSize = Math.floor(width / 10);
-      createheatmap(url);
-      break;
-    case 4:
-      width = 0.9 * Math.max(Math.min(window.innerWidth, 650), 300);
-      margin = {
-        top: 0.1 * width,
-        right: -0.01 * width,
-        bottom: 0.14 * width,
-        left: 0.03 * width
-      };
-
-      gridSize = Math.floor(width / 12);
-      createheatmap(url);
-      break;
-    case 5:
-      width = 0.9 * Math.max(Math.min(window.innerWidth, 300), 300);
-      margin = {
-        top: 0.1 * width,
-        right: -0.01 * width,
-        bottom: 0.14 * width,
-        left: 0.03 * width
-      };
-      gridSize = Math.floor(width / 10);
-      createheatmap(url);
-      break;
-  }
-}
-
-function chooseDisplay() {
-  if (window.innerWidth > 1100) {
-    return 1;
-  } else if (window.innerWidth > 800 && window.innerWidth < 1100) {
-    return 2;
-  } else if (window.innerWidth < 640 && window.innerWidth > 200)
-    return 3;
-  else if (window.innerWidth > 640 && window.innerWidth < 800)
-    return 4;
-  else {
-    return 5;
-  }
-}
