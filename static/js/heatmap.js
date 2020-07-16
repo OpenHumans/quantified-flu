@@ -1,77 +1,13 @@
-
 $names = ["Cough", "Wet cough", "Anosmia", "Runny nose", "Sore throat", "Short breath", "Diarrhea", "Nausea", "Chills", "Fatigue", "Headache", "Body ache", "Fever", "", "Comments"];
-symptom_data = [];
-days_axis = [];
-days = [];
-year = [];
-completedDays = [];
+symptom_data = []; days_axis = []; days = []; year = []; completedDays = [];
+gridSize = 30; heightGraph = 14 * gridSize;
+width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500)
+margin = {
+    top: 30, right: -2, bottom: 27, left: 10
+};
+createheatmap(url);
 
-display();
-
-function display() {
-  sizedisplay = chooseDisplay();
-  switch (sizedisplay) {
-    case 1:
-      width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
-      gridSize = Math.floor(width / 30);
-      margin = {
-        top: 0.05 * width,
-        right: -0.05 * width,
-        bottom: 0.04 * width,
-        left: 0.005 * width
-      };
-      createheatmap(url);
-      break;
-    case 2:
-      width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
-      gridSize = Math.floor(width / 30);
-      margin = {
-        top: 0.05 * width,
-        right: -0.05 * width,
-        bottom: 0.04 * width,
-        left: 0.005 * width
-      };
-      createheatmap(url);
-      break;
-    case 3:
-      width = 0.9 * Math.max(Math.min(window.innerWidth, 340), 300);
-      margin = {
-        top: 0.1 * width,
-        right: -0.01 * width,
-        bottom: 0.14 * width,
-        left: 0.03 * width
-      };
-
-      gridSize = Math.floor(width / 10);
-      createheatmap(url);
-      break;
-    case 4:
-      width = 0.9 * Math.max(Math.min(window.innerWidth, 650), 300);
-      margin = {
-        top: 0.1 * width,
-        right: -0.01 * width,
-        bottom: 0.14 * width,
-        left: 0.03 * width
-      };
-
-      gridSize = Math.floor(width / 12);
-      createheatmap(url);
-      break;
-    case 5:
-      width = 0.9 * Math.max(Math.min(window.innerWidth, 300), 300);
-      margin = {
-        top: 0.1 * width,
-        right: -0.01 * width,
-        bottom: 0.14 * width,
-        left: 0.03 * width
-      };
-      gridSize = Math.floor(width / 10);
-      createheatmap(url);
-      break;
-  }
-}
-/* Variable */
-
+/* Fonctions creation of the visualisation of the heatmap*/
 function createheatmap(url) {
   $.getJSON(url, function (data) {
     height = determineHeigth();
@@ -81,7 +17,6 @@ function createheatmap(url) {
     main_wearable_data(data);
   })
 }
-
 function main_heatmap(data) {
   if (data.symptom_report.length > 0) {
     timestamp = data.symptom_report.map(d => d.timestamp);
@@ -98,7 +33,6 @@ function main_heatmap(data) {
     comments = loadComments(data, days);
 
     createSvgReport("heatmap", (((completedDays.length) * gridSize) + 1), (height + margin.top + margin.bottom), "symptom", "heatmap-title", "legend", "legend-phone");
-    //showMonthsAxis(maingroup, namesmonths, -6);
     showDaysAxis(maingroup, formatdateshow2(days_axis, ""));
     showTitleandSubtitle(titlegroup, "Heatmap of Symptom reports");
     showHeatmap(maingroup, symptom_data)
@@ -108,7 +42,6 @@ function main_heatmap(data) {
     tooltip_heatmap();
 
     document.getElementById("heatmap").scroll(((moreday) * gridSize ), 0);
-
     document.getElementById("heatmap").onscroll = function () {
       progressScrollBar();
       var winScroll = document.getElementById("heatmap").scrollLeft;
@@ -118,50 +51,6 @@ function main_heatmap(data) {
     };
   }
 }
-
-function tooltip_heatmap() {
-  const tooltip = d3
-    .select("body")
-    .append("div")
-    .attr("class", "svg-tooltip-heatmap")
-    .style("position", "absolute")
-    .style("visibility", "hidden");
-
-  d3.selectAll("#rect-heatmap") 
-    .on("mouseover", function (d) {
-      var coordXY = this.getAttribute('class').split('-');
-      d3.select(this)
-        .attr('stroke-width', 2)
-        .attr("width", gridSize - 1)
-        .attr("height", gridSize - 1)
-        .style("fill", "#EE79FE")
-        .attr("stroke", "black");
-      tooltip
-        .style("visibility", "visible")
-        .text(`${showAppendTitle(d, coordXY[0], coordXY[1])}`);
-
-        selectSymptomOnclick(symptomgroup, coordXY[1]);
-    })
-
-    .on("mousemove", function () {
-      tooltip
-        .style("top", d3.event.pageY)
-        .style("left", d3.event.pageX)
-        .style("margin-left", - (document.getElementsByClassName('svg-tooltip').width));
-    })
-
-    .on("mouseout", function () {
-      d3.select(this).attr("stroke", "#e2e2e2")
-        .attr('stroke-width', '1')
-        .attr("width", gridSize)
-        .attr("height", gridSize)
-        .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
-
-      d3.select('.select-symptom').remove();
-      tooltip.style("visibility", "hidden");
-    });
-}
-
 function progressScrollBar() {
   var winScroll = document.getElementById("heatmap").scrollLeft;
   var height = document.getElementById("heatmap").scrollWidth - document.getElementById("heatmap").clientWidth;
@@ -169,46 +58,7 @@ function progressScrollBar() {
   document.getElementById("myBar").style.width = scrolled + "%";
 }
 
-function createSvgReport(heatmapDiv, heatmpaSize, SVGheight, symptomDiv, titleDiv, legendDiv, legendPhoneDiv) {
-  maingroup = d3.select('#' + heatmapDiv)
-    .append("svg")
-    .attr("class", "svg")
-    .attr("width", heatmpaSize)
-    .attr("height", SVGheight)
-    .append("g")
-    .attr("transform", "translate(" + 0 + "," + margin.top + ")");
-
-  symptomgroup = d3.select('#' + symptomDiv)
-    .append("svg")
-    .attr("class", "svg")
-    .attr("height", SVGheight)
-    .attr("width", 100 + "%")
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  legendgroup = d3.select('#' + legendDiv)
-    .append("svg")
-    .attr("class", "svg")
-    .attr("width", 100 + "%")
-    .attr("height", SVGheight)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  legendgroupphone = d3.select('#' + legendPhoneDiv)
-    .append("svg")
-    .attr("class", "svg")
-    .attr("width", 100 + "%")
-    .attr("height", gridSize * 3.5)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  titlegroup = d3.select('#' + titleDiv)
-    .append("svg")
-    .attr("class", "svg")
-    .attr("width", 100 + "%")
-    .attr("heigt", 100 + "%");
-}
-
+/* Variable - File.JSON */
 function getDatafromFile(data) {
   this.timestamp = data.symptom_report.map(d => d.timestamp);
   this.file_days = timestamp.map(d => formatdate(parseTime(d)));
@@ -222,321 +72,6 @@ function getDatafromFile(data) {
   this.innerwidth = determineInnerwidth();
   this.namesmonths = determinenamemonth(days);
 }
-
-function showHeatmap(maingroup, symptom_data) {
-  colorScale = scaleColor();
-  y = yScale();
-  let cnt = -1;
-  var heatmap = maingroup.append("g")
-    .attr('id', 'heatmape')
-    .selectAll("g")
-    .data(symptom_data)
-    .enter().append("g")
-    .attr("transform", (d, i) => `translate(0, ${y($names[i])})`)
-    .selectAll("rect")
-    .data(d => d)
-    .enter().append("rect")
-    .attr('id', 'rect-heatmap')
-    .attr("x", (d, i) => i * (gridSize))
-    .attr('class', function (d, i) {
-      if (i == 0) cnt++;
-      if (i == 0 && cnt == 14) cnt++;
-      return i + "-" + cnt
-    })
-    .attr("width", gridSize)
-    .attr("height", gridSize)
-    .attr("stroke", "#e2e2e2")
-    .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
-}
-
-function yScale() {
-  return d3.scaleBand()
-    .domain($names)
-    .rangeRound([0, symptom_data.length * gridSize]);
-}
-
-function determineInnerwidth() {
-  return gridSize * 5 + width;
-}
-
-function determineHeigth() {
-  return gridSize * $names.length;
-}
-
-function scaleColor() {
-  return d3.scaleLinear()
-    .domain([0, 4])
-    .range(["#fff", "#8a0886", "#cc2efa", "#e2a9f3", "#f5a9f2"]);
-}
-
-function showDaysAxis(maingroup, days_axis) {
-
-  var dayLabel = maingroup.selectAll(".daysLabel")
-    .data(days_axis)
-    .enter().append("text")
-    .attr('id', 'xAxis')
-    .text(function (d) { return d; })
-    .attr("x", function (d, i) { return  (i * gridSize * 7); })
-    .attr("y", 0)
-    .attr("transform", "translate(" + (gridSize * 0.5) + ",-" + (gridSize * 0.5) + ")")
-    .style("text-anchor", "middle")
-    .attr("font-weight", "200")
-    .attr("font-size", ".7em");
-
-  var ticksize = maingroup.selectAll(".tickSize")
-    .data(days_axis)
-    .enter().append("line")
-    .attr('id', 'tickSize')
-    .attr("transform", "translate(" + (gridSize * 0.5) + ",-" + (gridSize * 0.3) + ")")
-    .attr("x1", function (d, i) { return (i * gridSize * 7); })
-    .attr("y1", 0)
-    .attr("x2", function (d, i) { return (i * gridSize * 7); })
-    .attr("y2", 10)
-    .style("stroke", "#212529")
-    .style("stroke-width", ".5");
-}
-
-function showMonthsAxis(maingroup, namesmonths, y) {
-  var months = maingroup.selectAll(".monthsLabel")
-    .data(namesmonths)
-    .enter().append("text")
-    .attr('id', 'xmonthAxis')
-    .text(function (d) { return d; })
-    .attr("x", function (d, i) { return (i * gridSize) + (gridSize * 2.5); })
-    .attr("y", y)
-    .style("text-anchor", "middle")
-    .style("font-weight", "300")
-    .style("fill", "#212529")
-    .style("letter-spacing", "0.5rem")
-    .attr("font-size", 1 + "rem");
-}
-
-function showTitleandSubtitle(maingroup, title) {
-  var title = maingroup.append("text")
-    .attr("x", 50 + "%")
-    .attr("y", 50 + "%")
-    .attr("font-size", 1.4 + "rem")
-    .style("text-anchor", "middle")
-    .style("font-weight", "300")
-    .attr("class", "mg-chart-title")
-    .text(title);
-
-  var subtitle = maingroup.append("text")
-    .attr("x", 50 + "%")
-    .attr("y", 70 + "%")
-    .style("text-anchor", "middle")
-    .attr("font-size", 1 + "rem")
-    .style("font-weight", "300")
-    .text("Study on " + days.length + " days - start the " + formatdateshow(days[0], year[0]));
-
-  var subtitle2 = maingroup.append("text")
-    .attr("x", 50 + "%")
-    .attr("y", 90 + "%")
-    .style("text-anchor", "middle")
-    .attr("font-size", 1 + "rem")
-    .style("font-weight", "300")
-    .text("Last update - " + formatdateshow(days[days.length - 1],  year[year.length - 1]));
-}
-
-function showSymptomAxis(maingroup) {
-
-  var symptomLabel = maingroup.selectAll(".symptomLabel")
-    .data($names)
-    .enter().append("text")
-    .text(function (d) { return d; })
-    .attr("x", "80%")
-    .attr("y", function (d, i) { return (i * gridSize * 1) })
-    .attr("transform", "translate(" + 0 + "," + gridSize / 1.5 + ")")
-    .style("text-anchor", "end")
-    .style("font-weight", "300")
-    .attr("font-size", 0.6 + "rem");
-
-  maingroup.append("g")
-    .attr("class", "y axis")
-    .append("text")
-    .style("fill", "#212529")
-    .attr("transform", "rotate(-90)")
-    .attr("x", - 3 * gridSize)
-    .attr("y", '1%')
-    .style("text-anchor", "middle")
-    .attr("font-size", 0.5 + "rem")
-    .text("RESPIRATORY");
-
-  maingroup.append("line")
-    .attr("x1", '10%')
-    .attr("y1", 0.5 * gridSize)
-    .attr("x2", '10%')
-    .attr("y2", 5.5 * gridSize)
-    .style("stroke", "#212529")
-    .style("stroke-width", "0.5");
-
-  maingroup.append("g")
-    .attr("class", "y axis")
-    .append("text")
-    .attr("transform", "rotate(-90)")
-    .style("fill", "#212529")
-    .attr("x", - 7 * gridSize)
-    .attr("y", '1%')
-    .style("text-anchor", "middle")
-    .attr("font-size", 0.5 + "rem")
-    .text("GASTROINTESTINAL");
-
-  maingroup.append("line")
-    .attr("x1", '10%')
-    .attr("y1", 6.25 * gridSize)
-    .attr("x2", '10%')
-    .attr("y2", 7.75 * gridSize)
-    .style("stroke", "#212529")
-    .style("stroke-width", "0.5");
-
-  maingroup.append("g")
-    .attr("class", "y axis")
-    .append("text")
-    .attr("transform", "rotate(-90)")
-    .style("fill", "#212529")
-    .attr("x", - 10 * gridSize)
-    .attr("y", '1%')
-    .style("text-anchor", "middle")
-    .attr("font-size", 0.5 + "rem")
-    .text("SYSTEMIC");
-
-  maingroup.append("line")
-    .attr("x1", '10%')
-    .attr("y1", 8.5 * gridSize)
-    .attr("x2", '10%')
-    .attr("y2", 11.5 * gridSize)
-    .style("stroke", "#212529")
-    .style("stroke-width", "0.5");
-}
-
-function selectSymptomOnclick(maingroup, num) {
-  if (num < 13)
-    maingroup.append("rect")
-      .attr('class', "select-symptom")
-      .attr("x", '25%')
-      .attr("y", num * gridSize)
-      .attr("width", '100%')
-      .attr("height", gridSize)
-      .style('fill', '#00CC99')
-      .lower();
-}
-
-function showLegendPhone(maingroup) {
-
-  var countPoint = [-1, 0, 1, 2, 3, 4];
-  var commentScale = ["No report", "No symptom", "Low", "Middle", "Strong", "Unbearable"];
-
-  var title = maingroup.append("text")
-    .attr("class", "title")
-    .attr("font-size", 0.7 + "rem")
-    .style("text-anchor", "start")
-    .text("Legend");
-
-  var rect = maingroup.selectAll('rect-legend')
-    .data(countPoint)
-    .enter()
-    .append("rect")
-    .attr("x", function (d, i) { return (margin.left + (i * 14) + "%"); })
-    .attr("y", gridSize / 2)
-    .attr("height", gridSize / 2)
-    .attr("width", gridSize / 2)
-    .attr("stroke", "#e2e2e2")
-    .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
-
-  var legende = maingroup.selectAll(".legende")
-    .data(commentScale)
-    .enter().append("text")
-    .text(function (d) { return d; })
-    .attr("x", function (d, i) { return (margin.left + (i * 15) + "%"); })
-    .attr("y", gridSize * 1.5)
-    .style("text-anchor", "middle")
-    .attr("font-size", 0.5 + "rem")
-    .style("font-weight", "300");
-}
-
-function showLegend(maingroup) {
-  var countPoint = [-1, 0, 1, 2, 3, 4];
-  var commentScale = ["No report", "No symptom", "Low symptom", "Middle symptom", "Strong symptom", "Unbearable symptom"];
-
-  var title = maingroup.append("text")
-    .attr("class", "title")
-    .attr("x", gridSize)
-    .attr("y", (height / 2 - gridSize * 3))
-    .attr("font-size", 1 + "rem")
-    .style("font-weight", "300")
-    .text("Legend");
-
-  var rect = maingroup.selectAll('rect-legend')
-    .data(countPoint)
-    .enter()
-    .append("rect")
-    .attr("x", gridSize)
-    .attr("y", function (d, i) { return i * (height / symptom_data.length); })
-    .attr("height", gridSize / 1.5)
-    .attr("width", gridSize / 1.5)
-    .attr("stroke", "#e2e2e2")
-    .attr("transform", "translate(" + 0 + "," + (height / 2 - gridSize * 2) + ")")
-    .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
-
-
-  var legende = maingroup.selectAll(".legende")
-    .data(commentScale)
-    .enter().append("text")
-    .text(function (d) { return d; })
-    .attr("x", gridSize)
-    .attr("y", function (d, i) { return i * (height / symptom_data.length); })
-    .attr("transform", "translate(" + gridSize + "," + (height / 2 - gridSize * 2 + 12) + ")")
-    .attr("font-size", 0.6 + "rem")
-    .style("font-weight", "300");
-}
-
-function showAppendTitle(data, i, y) {
-  var commentScale = ["No report", "No symptom", "Low symptom", "Middle symptom", "Strong symptom", "Unbearable symptom"];
-  if (data == -2)
-    return "Reports : no comments reported \n Date : " + formatdateshow(completedDays[i], "");
-
-  if (data == -1)
-    return "Reports : " + commentScale[data + 1]
-      + " \n Date : " + formatdateshow(completedDays[i], "");
-
-  if (data == 0)
-    return "Reports : " + commentScale[data + 1]
-      + " \n Date : " + formatdateshow(completedDays[i], "");
-
-  if (data == 1 || data == 2 || data == 3 || data == 4) {
-    var msg = "Reports :  " + commentScale[data + 1]
-      + " \n Date : " + formatdateshow(completedDays[i], "")
-      + " \n Symptom : " + $names[y]
-      + " \n Values: " + data + "/4";
-
-    if (finaldataAppleWatch[i] != undefined && finaldataAppleWatch[i] != '-' && finaldataAppleWatch[i] != 'NO DATA')
-      msg += " \n Heart Rate (Apple Watch) : " + finaldataAppleWatch[i] + " bpm";
-
-    if (finaldata_fitbit[i] != undefined && finaldata_fitbit[i] != '-' && finaldata_fitbit[i] != 'NO DATA')
-      msg += " \n Heart Rate (Fitbit) : " + finaldata_fitbit[i] + " bpm";
-
-    if (finaldataOura[i] != undefined && finaldataOura[i] != '-' && finaldataOura[i] != 'NO DATA')
-      msg += " \n Heart Rate (Oura) : " + finaldataOura[i] + " bpm";
-
-    if (finaldataGoogle[i] != undefined && finaldataGoogle[i] != '-' && finaldataGoogle[i] != 'NO DATA')
-      msg += " \n Heart Rate (GoogleFit) : " + finaldataGoogle[i] + " bpm";
-
-    if (finaldata_garmin[i] != undefined && finaldata_garmin[i] != '-' && finaldata_garmin[i] != 'NO DATA')
-      msg += " \n Heart Rate (Garmin) : " + finaldata_garmin[i] + " bpm";
-
-    if (finaldataOuraTemperature[i] != undefined && finaldataOuraTemperature[i] != '-' && finaldataOuraTemperature[i] != 'NO DATA')
-      msg += " \n Body Temp. (Oura) : " + finaldataOuraTemperature[i];
-
-    if (finaldataOuraRes[i] != undefined && finaldataOuraRes[i] != '-' && finaldataOuraRes[i] != 'NO DATA')
-      msg += " \n Resp. Rate (Oura) : " + finaldataOuraRes[i];
-    return msg;
-  }
-  if (data == 5) {
-    return "Comments : " + comments[i] + " \n Date : " + formatdateshow(completedDays[i], "");
-  }
-
-}
-
 function loadCommentsValues(data) {
   const values = [];
   var data1 = data.symptom_report.map(d => d.data.notes);
@@ -639,6 +174,7 @@ function loadDataSymptom(data) {
   return symptom_data;
 }
 
+/* Function - control data - get extern data */
 function dataControlSymptom(data) {
   dayscontrol = dayControl(file_days);
 
@@ -686,7 +222,6 @@ function dataControlSymptom(data) {
   newdata.push(data2[data2.length - 1])
   return newdata;
 }
-
 function dayControl(data) {
   var days_fixed = [];
   var days4_fixed = [];
@@ -705,7 +240,6 @@ function dayControl(data) {
   }
   return days_fixed;
 }
-
 function controlDay(data, days2, month) {
   const days_fixed = [];
   const days2_fixed = [];
@@ -795,7 +329,6 @@ function controlDay(data, days2, month) {
   days3_fixed.push(data[data.length - 1]);
   return days3_fixed;
 }
-
 function determinenamemonth(data) {
   var idmonths = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
   var namemonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
@@ -810,7 +343,6 @@ function determinenamemonth(data) {
   }
   return test;
 }
-
 function showingDayOnTheMap(data) {
   var day_break = [];
   var day_break1 = [];
@@ -831,21 +363,6 @@ function showingDayOnTheMap(data) {
   }
   return day_break1;
 }
-
-function chooseDisplay() {
-  if (window.innerWidth > 1100) {
-    return 1;
-  } else if (window.innerWidth > 800 && window.innerWidth < 1100) {
-    return 2;
-  } else if (window.innerWidth < 640 && window.innerWidth > 200)
-    return 3;
-  else if (window.innerWidth > 640 && window.innerWidth < 800)
-    return 4;
-  else {
-    return 5;
-  }
-}
-
 function getNoReportValues(data) {
   hour = fortmatHour(parseTime(data.symptom_report[0].timestamp));
   min = fortmatminutes(parseTime(data.symptom_report[0].timestamp));
@@ -950,7 +467,6 @@ function getNoReportValues(data) {
   }
   return Math.round(test / (86400000));
 }
-
 function getNoReportDataSource(data) {
 
   firstDay_report = parseTime(data.symptom_report[0].timestamp).getTime();
@@ -1009,7 +525,6 @@ function getNoReportDataSource(data) {
   }
   return test2;
 }
-
 function addDaynoReport(numberdays, datasource, data) {
   var daystoadd = [];
 
@@ -1052,6 +567,379 @@ function addDaynoReport(numberdays, datasource, data) {
 }
 function getDays() {
   return this.days;
+}
+function tooltip_heatmap() {
+  const tooltip = d3
+    .select("body")
+    .append("div")
+    .attr("class", "svg-tooltip-heatmap")
+    .style("position", "absolute")
+    .style("visibility", "hidden");
+
+  d3.selectAll("#rect-heatmap") 
+    .on("mouseover", function (d) {
+      var coordXY = this.getAttribute('class').split('-');
+      d3.select(this)
+        .attr('stroke-width', 2)
+        .attr("width", gridSize - 1)
+        .attr("height", gridSize - 1)
+        .style("fill", "#EE79FE")
+        .attr("stroke", "black");
+      tooltip
+        .style("visibility", "visible")
+        .text(`${showAppendTitle(d, coordXY[0], coordXY[1])}`);
+
+        selectSymptomOnclick(symptomgroup, coordXY[1]);
+    })
+
+    .on("mousemove", function () {
+      tooltip
+        .style("top", d3.event.pageY)
+        .style("left", d3.event.pageX)
+        .style("margin-left", - (document.getElementsByClassName('svg-tooltip').width));
+    })
+
+    .on("mouseout", function () {
+      d3.select(this).attr("stroke", "#e2e2e2")
+        .attr('stroke-width', '1')
+        .attr("width", gridSize)
+        .attr("height", gridSize)
+        .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
+
+      d3.select('.select-symptom').remove();
+      tooltip.style("visibility", "hidden");
+    });
+}
+
+/* Graphics Functions - SVG D3.JS */
+function createSvgReport(heatmapDiv, heatmpaSize, SVGheight, symptomDiv, titleDiv, legendDiv, legendPhoneDiv) {
+  maingroup = d3.select('#' + heatmapDiv)
+    .append("svg")
+    .attr("class", "svg")
+    .attr("width", heatmpaSize)
+    .attr("height", SVGheight)
+    .append("g")
+    .attr("transform", "translate(" + 0 + "," + margin.top + ")");
+
+  symptomgroup = d3.select('#' + symptomDiv)
+    .append("svg")
+    .attr("class", "svg")
+    .attr("height", SVGheight)
+    .attr("width", 100 + "%")
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  legendgroup = d3.select('#' + legendDiv)
+    .append("svg")
+    .attr("class", "svg")
+    .attr("width", 100 + "%")
+    .attr("height", SVGheight)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  legendgroupphone = d3.select('#' + legendPhoneDiv)
+    .append("svg")
+    .attr("class", "svg")
+    .attr("width", 100 + "%")
+    .attr("height", gridSize * 3.5)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  titlegroup = d3.select('#' + titleDiv)
+    .append("svg")
+    .attr("class", "svg")
+    .attr("width", 100 + "%")
+    .attr("heigt", 100 + "%");
+}
+function showHeatmap(maingroup, symptom_data) {
+  colorScale = scaleColor();
+  y = yScale();
+  let cnt = -1;
+  var heatmap = maingroup.append("g")
+    .attr('id', 'heatmape')
+    .selectAll("g")
+    .data(symptom_data)
+    .enter().append("g")
+    .attr("transform", (d, i) => `translate(0, ${y($names[i])})`)
+    .selectAll("rect")
+    .data(d => d)
+    .enter().append("rect")
+    .attr('id', 'rect-heatmap')
+    .attr("x", (d, i) => i * (gridSize))
+    .attr('class', function (d, i) {
+      if (i == 0) cnt++;
+      if (i == 0 && cnt == 14) cnt++;
+      return i + "-" + cnt
+    })
+    .attr("width", gridSize)
+    .attr("height", gridSize)
+    .attr("stroke", "#e2e2e2")
+    .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
+}
+function showDaysAxis(maingroup, days_axis) {
+
+  var dayLabel = maingroup.selectAll(".daysLabel")
+    .data(days_axis)
+    .enter().append("text")
+    .attr('id', 'xAxis')
+    .text(function (d) { return d; })
+    .attr("x", function (d, i) { return  (i * gridSize * 7); })
+    .attr("y", 0)
+    .attr("transform", "translate(" + (gridSize * 0.5) + ",-" + (gridSize * 0.5) + ")")
+    .style("text-anchor", "middle")
+    .attr("font-weight", "200")
+    .attr("font-size", ".7em");
+
+  var ticksize = maingroup.selectAll(".tickSize")
+    .data(days_axis)
+    .enter().append("line")
+    .attr('id', 'tickSize')
+    .attr("transform", "translate(" + (gridSize * 0.5) + ",-" + (gridSize * 0.3) + ")")
+    .attr("x1", function (d, i) { return (i * gridSize * 7); })
+    .attr("y1", 0)
+    .attr("x2", function (d, i) { return (i * gridSize * 7); })
+    .attr("y2", 10)
+    .style("stroke", "#212529")
+    .style("stroke-width", ".5");
+}
+function showTitleandSubtitle(maingroup, title) {
+  var title = maingroup.append("text")
+    .attr("x", 50 + "%")
+    .attr("y", 50 + "%")
+    .attr("font-size", 1.4 + "rem")
+    .style("text-anchor", "middle")
+    .style("font-weight", "300")
+    .attr("class", "mg-chart-title")
+    .text(title);
+
+  var subtitle = maingroup.append("text")
+    .attr("x", 50 + "%")
+    .attr("y", 70 + "%")
+    .style("text-anchor", "middle")
+    .attr("font-size", 1 + "rem")
+    .style("font-weight", "300")
+    .text("Study on " + days.length + " days - start the " + formatdateshow(days[0], year[0]));
+
+  var subtitle2 = maingroup.append("text")
+    .attr("x", 50 + "%")
+    .attr("y", 90 + "%")
+    .style("text-anchor", "middle")
+    .attr("font-size", 1 + "rem")
+    .style("font-weight", "300")
+    .text("Last update - " + formatdateshow(days[days.length - 1],  year[year.length - 1]));
+}
+function showSymptomAxis(maingroup) {
+
+  var symptomLabel = maingroup.selectAll(".symptomLabel")
+    .data($names)
+    .enter().append("text")
+    .text(function (d) { return d; })
+    .attr("x", "80%")
+    .attr("y", function (d, i) { return (i * gridSize * 1) })
+    .attr("transform", "translate(" + 0 + "," + gridSize / 1.5 + ")")
+    .style("text-anchor", "end")
+    .style("font-weight", "300")
+    .attr("font-size", 0.6 + "rem");
+
+  maingroup.append("g")
+    .attr("class", "y axis")
+    .append("text")
+    .style("fill", "#212529")
+    .attr("transform", "rotate(-90)")
+    .attr("x", - 3 * gridSize)
+    .attr("y", '1%')
+    .style("text-anchor", "middle")
+    .attr("font-size", 0.5 + "rem")
+    .text("RESPIRATORY");
+
+  maingroup.append("line")
+    .attr("x1", '10%')
+    .attr("y1", 0.5 * gridSize)
+    .attr("x2", '10%')
+    .attr("y2", 5.5 * gridSize)
+    .style("stroke", "#212529")
+    .style("stroke-width", "0.5");
+
+  maingroup.append("g")
+    .attr("class", "y axis")
+    .append("text")
+    .attr("transform", "rotate(-90)")
+    .style("fill", "#212529")
+    .attr("x", - 7 * gridSize)
+    .attr("y", '1%')
+    .style("text-anchor", "middle")
+    .attr("font-size", 0.5 + "rem")
+    .text("GASTROINTESTINAL");
+
+  maingroup.append("line")
+    .attr("x1", '10%')
+    .attr("y1", 6.25 * gridSize)
+    .attr("x2", '10%')
+    .attr("y2", 7.75 * gridSize)
+    .style("stroke", "#212529")
+    .style("stroke-width", "0.5");
+
+  maingroup.append("g")
+    .attr("class", "y axis")
+    .append("text")
+    .attr("transform", "rotate(-90)")
+    .style("fill", "#212529")
+    .attr("x", - 10 * gridSize)
+    .attr("y", '1%')
+    .style("text-anchor", "middle")
+    .attr("font-size", 0.5 + "rem")
+    .text("SYSTEMIC");
+
+  maingroup.append("line")
+    .attr("x1", '10%')
+    .attr("y1", 8.5 * gridSize)
+    .attr("x2", '10%')
+    .attr("y2", 11.5 * gridSize)
+    .style("stroke", "#212529")
+    .style("stroke-width", "0.5");
+}
+function selectSymptomOnclick(maingroup, num) {
+  if (num < 13)
+    maingroup.append("rect")
+      .attr('class', "select-symptom")
+      .attr("x", '25%')
+      .attr("y", num * gridSize)
+      .attr("width", '100%')
+      .attr("height", gridSize)
+      .style('fill', '#00CC99')
+      .lower();
+}
+function showLegendPhone(maingroup) {
+
+  var countPoint = [-1, 0, 1, 2, 3, 4];
+  var commentScale = ["No report", "No symptom", "Low", "Middle", "Strong", "Unbearable"];
+
+  var title = maingroup.append("text")
+    .attr("class", "title")
+    .attr("font-size", 0.7 + "rem")
+    .style("text-anchor", "start")
+    .text("Legend")
+    .style("font-weight", "200");
+
+  var rect = maingroup.selectAll('rect-legend')
+    .data(countPoint)
+    .enter()
+    .append("rect")
+    .attr("x", function (d, i) { return (margin.left + (i * 14) + "%"); })
+    .attr("y", gridSize / 2)
+    .attr("height", gridSize / 2)
+    .attr("width", gridSize / 2)
+    .attr("stroke", "#e2e2e2")
+    .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
+
+  var legende = maingroup.selectAll(".legende")
+    .data(commentScale)
+    .enter().append("text")
+    .text(function (d) { return d; })
+    .attr("x", function (d, i) { return (margin.left + (i * 15) + "%"); })
+    .attr("y", gridSize * 1.5)
+    .style("text-anchor", "middle")
+    .attr("font-size", 0.5 + "rem")
+    .style("font-weight", "200");
+}
+function showLegend(maingroup) {
+  var countPoint = [-1, 0, 1, 2, 3, 4];
+  var commentScale = ["No report", "No symptom", "Low symptom", "Middle symptom", "Strong symptom", "Unbearable symptom"];
+
+  var title = maingroup.append("text")
+    .attr("class", "title")
+    .attr("x", gridSize)
+    .attr("y", (height / 2 - gridSize * 3))
+    .attr("font-size", 1 + "rem")
+    .style("font-weight", "300")
+    .text("Legend");
+
+  var rect = maingroup.selectAll('rect-legend')
+    .data(countPoint)
+    .enter()
+    .append("rect")
+    .attr("x", gridSize)
+    .attr("y", function (d, i) { return i * (height / symptom_data.length); })
+    .attr("height", gridSize / 1.5)
+    .attr("width", gridSize / 1.5)
+    .attr("stroke", "#e2e2e2")
+    .attr("transform", "translate(" + 0 + "," + (height / 2 - gridSize * 2) + ")")
+    .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
+
+
+  var legende = maingroup.selectAll(".legende")
+    .data(commentScale)
+    .enter().append("text")
+    .text(function (d) { return d; })
+    .attr("x", gridSize)
+    .attr("y", function (d, i) { return i * (height / symptom_data.length); })
+    .attr("transform", "translate(" + gridSize + "," + (height / 2 - gridSize * 2 + 12) + ")")
+    .attr("font-size", 0.6 + "rem")
+    .style("font-weight", "300");
+}
+function showAppendTitle(data, i, y) {
+  var commentScale = ["No report", "No symptom", "Low symptom", "Middle symptom", "Strong symptom", "Unbearable symptom"];
+  if (data == -2)
+    return "Reports : no comments reported \n Date : " + formatdateshow(completedDays[i], "");
+
+  if (data == -1)
+    return "Reports : " + commentScale[data + 1]
+      + " \n Date : " + formatdateshow(completedDays[i], "");
+
+  if (data == 0)
+    return "Reports : " + commentScale[data + 1]
+      + " \n Date : " + formatdateshow(completedDays[i], "");
+
+  if (data == 1 || data == 2 || data == 3 || data == 4) {
+    var msg = "Reports :  " + commentScale[data + 1]
+      + " \n Date : " + formatdateshow(completedDays[i], "")
+      + " \n Symptom : " + $names[y]
+      + " \n Values: " + data + "/4";
+
+    if (finaldataAppleWatch[i] != undefined && finaldataAppleWatch[i] != '-' && finaldataAppleWatch[i] != 'NO DATA')
+      msg += " \n Heart Rate (Apple Watch) : " + finaldataAppleWatch[i] + " bpm";
+
+    if (finaldata_fitbit[i] != undefined && finaldata_fitbit[i] != '-' && finaldata_fitbit[i] != 'NO DATA')
+      msg += " \n Heart Rate (Fitbit) : " + finaldata_fitbit[i] + " bpm";
+
+    if (finaldataOura[i] != undefined && finaldataOura[i] != '-' && finaldataOura[i] != 'NO DATA')
+      msg += " \n Heart Rate (Oura) : " + finaldataOura[i] + " bpm";
+
+    if (finaldataGoogle[i] != undefined && finaldataGoogle[i] != '-' && finaldataGoogle[i] != 'NO DATA')
+      msg += " \n Heart Rate (GoogleFit) : " + finaldataGoogle[i] + " bpm";
+
+    if (finaldata_garmin[i] != undefined && finaldata_garmin[i] != '-' && finaldata_garmin[i] != 'NO DATA')
+      msg += " \n Heart Rate (Garmin) : " + finaldata_garmin[i] + " bpm";
+
+    if (finaldataOuraTemperature[i] != undefined && finaldataOuraTemperature[i] != '-' && finaldataOuraTemperature[i] != 'NO DATA')
+      msg += " \n Body Temp. (Oura) : " + finaldataOuraTemperature[i];
+
+    if (finaldataOuraRes[i] != undefined && finaldataOuraRes[i] != '-' && finaldataOuraRes[i] != 'NO DATA')
+      msg += " \n Resp. Rate (Oura) : " + finaldataOuraRes[i];
+    return msg;
+  }
+  if (data == 5) {
+    return "Comments : " + comments[i] + " \n Date : " + formatdateshow(completedDays[i], "");
+  }
+
+}
+
+/* Variable - Graphics  */
+function yScale() {
+  return d3.scaleBand()
+    .domain($names)
+    .rangeRound([0, symptom_data.length * gridSize]);
+}
+function determineInnerwidth() {
+  return gridSize * 5 + width;
+}
+function determineHeigth() {
+  return gridSize * $names.length;
+}
+function scaleColor() {
+  return d3.scaleLinear()
+    .domain([0, 4])
+    .range(["#fff", "#8a0886", "#cc2efa", "#e2a9f3", "#f5a9f2"]);
 }
 
 /* Format */
@@ -1097,3 +985,80 @@ formatnewdate = d3.timeFormat("%Y-%m-%d%Z");
 fortmatHour = d3.timeFormat("%H");
 fortmatminutes = d3.timeFormat("%M");
 fortmatsecondes = d3.timeFormat("%S");
+
+function display() {
+  sizedisplay = chooseDisplay();
+  switch (sizedisplay) {
+    case 1:
+      width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
+      gridSize = Math.floor(width / 30);
+      margin = {
+        top: 0.05 * width,
+        right: -0.05 * width,
+        bottom: 0.04 * width,
+        left: 0.005 * width
+      };
+      createheatmap(url);
+      break;
+    case 2:
+      width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500);
+      gridSize = Math.floor(width / 30);
+      margin = {
+        top: 0.05 * width,
+        right: -0.05 * width,
+        bottom: 0.04 * width,
+        left: 0.005 * width
+      };
+      createheatmap(url);
+      break;
+    case 3:
+      width = 0.9 * Math.max(Math.min(window.innerWidth, 340), 300);
+      margin = {
+        top: 0.1 * width,
+        right: -0.01 * width,
+        bottom: 0.14 * width,
+        left: 0.03 * width
+      };
+
+      gridSize = Math.floor(width / 10);
+      createheatmap(url);
+      break;
+    case 4:
+      width = 0.9 * Math.max(Math.min(window.innerWidth, 650), 300);
+      margin = {
+        top: 0.1 * width,
+        right: -0.01 * width,
+        bottom: 0.14 * width,
+        left: 0.03 * width
+      };
+
+      gridSize = Math.floor(width / 12);
+      createheatmap(url);
+      break;
+    case 5:
+      width = 0.9 * Math.max(Math.min(window.innerWidth, 300), 300);
+      margin = {
+        top: 0.1 * width,
+        right: -0.01 * width,
+        bottom: 0.14 * width,
+        left: 0.03 * width
+      };
+      gridSize = Math.floor(width / 10);
+      createheatmap(url);
+      break;
+  }
+}
+
+function chooseDisplay() {
+  if (window.innerWidth > 1100) {
+    return 1;
+  } else if (window.innerWidth > 800 && window.innerWidth < 1100) {
+    return 2;
+  } else if (window.innerWidth < 640 && window.innerWidth > 200)
+    return 3;
+  else if (window.innerWidth > 640 && window.innerWidth < 800)
+    return 4;
+  else {
+    return 5;
+  }
+}
