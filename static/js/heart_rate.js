@@ -1740,10 +1740,9 @@ function createLinearGradient(svgName, color, id) {
     }
     return linearGradient;
 }
-
 function formatdateshow(data, id) {
     let months = ["Jan", "Fev", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    for (let i = 0; i < months.length; i++) {
+    for (let i = 1; i < months.length + 1; i++) {
         if (i <= 9 && "0" + i == data.split('/')[1])
             return months[i - 1] + " " + data.split('/')[0] + ", 2020" //+ appleyear[id];
         else if (i > 9 && i == data.split('/')[1])
@@ -1754,7 +1753,7 @@ function formatdateshow2(data, year) {
     let day = [];
     let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     for (let x = 0; x < data.length; x++) {
-        for (let i = 0; i < months.length; i++) {
+        for (let i = 1; i < months.length + 1; i++) {
             if (i <= 9 && "0" + i == data[x].split('/')[1] && year == "")
                 day[x] = months[i - 1] + " " + data[x].split('/')[0]
             else if (i <= 9 && "0" + i == data[x].split('/')[1] && year != "")

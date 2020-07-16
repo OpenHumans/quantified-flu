@@ -15,23 +15,7 @@ function creategraphics(url) {
     })
 }
 
-function main(data) {
-    fitbit = controlWearableDatafromfile(data, 'fitbit');
-    apple = controlWearableDatafromfile(data, 'apple');
-    oura = controlWearableDatafromfile(data, 'oura');
-    ouraHR = controlWearableDatafromfile(data, 'ouraHR');
-    garmin = controlWearableDatafromfile(data, 'garmin');
-    google = controlWearableDatafromfile(data, 'google');
-    ourares = controlWearableDatafromfile(data, 'ourares');
-    fitbitintraday = false;//controlWearableDatafromfile(data, 'fitbitintraday');
-    maxHr = 0;
-    axiscombined = [];
-    propcombined = [];
-    revert = [0, 0, 0, 0, 0, 0, 0, 0];
-    databasename = getDataSourceonDay(data);
-    databasenameFirstdayname = getFirstDataSourceonDay(data);
-    databasenameLastdayname = getLastDataSourceonDay(data);
-    numberdaysongraph = getnumberday(data, databasenameFirstdayname, databasenameLastdayname);
+function setrevert () {
     if (apple == true) {
         revert[1] = 1;
         maxHr++;
@@ -52,6 +36,28 @@ function main(data) {
         revert[4] = 1;
         maxHr++;
     }
+    if (oura == true && apple == false && fitbit == false && ouraHR == false && google == false && garmin == false) {
+        revert[0] = 1; 
+    }
+    if (ourares == true && apple == false && fitbit == false && ouraHR == false && google == false && garmin == false && oura == false) {
+        revert[6] = 1; 
+    }
+}
+function main(data) {
+    fitbit = controlWearableDatafromfile(data, 'fitbit');
+    apple = controlWearableDatafromfile(data, 'apple');
+    oura = controlWearableDatafromfile(data, 'oura');
+    ouraHR = controlWearableDatafromfile(data, 'ouraHR');
+    garmin = controlWearableDatafromfile(data, 'garmin');
+    google = controlWearableDatafromfile(data, 'google');
+    ourares = controlWearableDatafromfile(data, 'ourares');
+    fitbitintraday = false;//controlWearableDatafromfile(data, 'fitbitintraday');
+    maxHr = 0; axiscombined = []; propcombined = []; revert = [0, 0, 0, 0, 0, 0, 0, 0];
+    databasename = getDataSourceonDay(data);
+    databasenameFirstdayname = getFirstDataSourceonDay(data);
+    databasenameLastdayname = getLastDataSourceonDay(data);
+    numberdaysongraph = getnumberday(data, databasenameFirstdayname, databasenameLastdayname);
+    setrevert ();
     cntbttHr = maxHr;
     if (fitbit == true || apple == true || oura == true || ouraHR == true || garmin == true || google == true || ourares == true || fitbitintraday == true) {
         createWearableDataSvg('wearable-graph', ((numberdaysongraph + 1) * gridSize), 'wearable-legend', (heightGraph), 'wearable-title', heightGraph / 4, 'wearable-choice');
@@ -70,7 +76,6 @@ function sickness_event(data, datecompare) {
     }
     return incident;
 }
-
 function tooltipChoice(data) {
     click = 1;
     loadGroupDataSource(data);
@@ -96,7 +101,6 @@ function tooltipChoice(data) {
         selectedGroupButton();
     })
 }
-
 function graphicsGroup() {
     if (revert[1] == 1 || revert[2] == 1 || revert[3] == 1 || revert[4] == 1 || revert[5] == 1 || revert[7] == 1) {
         d3.select('#heart-rate-title-ctn').remove();
@@ -116,11 +120,9 @@ function graphicsGroup() {
     mainContainer_heart_rate_oura_sleep(axiscombined, maingroup, legendgroup, titlegroup, revert, "");
     mainContainer_RespiratoryRate_oura("", maingroup, legendgroup, titlegroup, revert, "");
     mainContainerAppleWatchdata(axiscombined, maingroup, legendgroup, titlegroup, revert, "");
-    mainContainerFitbitIntradaydata(axiscombined, maingroup, legendgroup, titlegroup, revert, "");
     mainContainer_heart_rate_google_fit(axiscombined, maingroup, legendgroup, titlegroup, revert, "");
     mainContainer_garmin_heartrate(axiscombined, maingroup, legendgroup, titlegroup, revert, "");
 }
-
 function loadGroupDataSource(data) {
     if (fitbit == true) {
         loadDataFromFitbitSummary(data);
@@ -137,34 +139,24 @@ function loadGroupDataSource(data) {
     if (apple == true) {
         loadDatafromAppleWatch(data);
     }
-    if (fitbitintraday == true)
-        loadDataFromFitbitIntraday(data);
-
     if (google == true)
         loadDatafromGoogle(data);
 
     if (garmin == true)
         loadDatafromGarmin(data);
 }
-
 function loadAxisX(databasename) {
     if (databasename == 'fitbit')
         createLegendAxeX(maingroup, formatdateshow2(dayAxis_fitbit, ""), '20' + fitbityear[0], "heart-rate-axisX-cnt");
-
     else if (databasename == 'apple')
         createLegendAxeX(maingroup, formatdateshow2(appledayAxis, ""), '20' + appleyear[0], "heart-rate-axisX-cnt");
-
     else if (databasename == 'ouraHR')
         createLegendAxeX(maingroup, formatdateshow2(ouradayAxis, ""), '20' + ourayear[0], "heart-rate-axisX-cnt");
-
     else if (databasename == 'garmin')
         createLegendAxeX(maingroup, formatdateshow2(dayAxis_garmin, ""), '20' + garminyear[0], "heart-rate-axisX-cnt");
-
     else if (databasename == 'google')
         createLegendAxeX(maingroup, formatdateshow2(googledayAxis, ""), '20' + googleyear[0], "heart-rate-axisX-cnt");
-
 }
-
 function selectedGroupButton() {
     selectedCategories('Temperature', revert[0], 6, 1);
     selectedCategories('RespiratoryRate', revert[6], 6, 1);
@@ -178,7 +170,6 @@ function selectedGroupButton() {
     selectedButton('ourares', revert[6], 4);
     selectedButton('fitbiintraday', revert[7], 4);
 }
-
 function selectedButton(classname, revert, stroke) {
     switch (revert) {
         case 0:
@@ -189,7 +180,6 @@ function selectedButton(classname, revert, stroke) {
             break;
     }
 }
-
 function selectedCategories(classname, revert, stroke, max) {
     if (revert < max)
         d3.select('.' + classname).attr("width", ((gridSize / 2))).attr("height", ((gridSize / 2))).attr('stroke-width', 1);
@@ -197,7 +187,6 @@ function selectedCategories(classname, revert, stroke, max) {
     if (revert == max)
         d3.select('.' + classname).attr("width", ((gridSize / 2) - stroke)).attr("height", ((gridSize / 2) - stroke)).attr('stroke-width', stroke).attr("stroke", "#e2e2e2");
 }
-
 function controlGestionclick() {
     if ((classButton == 'oura' || classButton == 'Temperature') && revert[0] == 1) {
         revert[0] = 0;
@@ -462,49 +451,7 @@ function mainContainerFitbitdata(dataAxis) {
     }
 }
 
-/* FITBIT INTRADAY - Heart Rate */
-function loadDataFromFitbitIntraday(data) {
-    fitbitintradaydata = [], fitbitintradaydate = [], fitbitintradayday = [], fitbitintradaymonth = [], fitbitintradayyear = [];
-    symptomData_fitbitintraday = [];
-    controlDatafromFitbitIntraday(data);
-    fitbitintraday_sum = calculatSum(fitbitintradaydata);
-    fitbitintradayreportedIncident = sickness_event(data, newfitbitintradaydate);
-}
-function controlDatafromFitbitIntraday(data) {
-    getFitbitSummaryFromFileIntraday(data);
-    newfitbitintradaydate = controlDay(fitbitintradaydate, fitbitintradayday, fitbitintradaymonth);
-    dayAxis_fitbitintraday = getDayonAxis(newfitbitintradaydate);
-    fitbitintradayAxis = getAxisLegend(fitbitintradaydata, 'dizaine');
-    newdataFitbitintraday = dataControl(fitbitintradaydata, fitbitintradaydate, fitbitintradayday, fitbitintradaymonth, 0);
-}
-function getFitbitSummaryFromFileIntraday(data) {
-    cnt = 0;
-    this.file = data.fitbit_intraday.map(d => d);
-    this.file.forEach(element => {
-        fitbitintradaydata[cnt] = element.data.heart_rate;
-        fitbitintradaydate[cnt] = element.timestamp;
-        fitbitintradayday[cnt] = formatdateday(parseTime(element.timestamp));
-        fitbitintradaymonth[cnt] = formatdatemonth(parseTime(element.timestamp));
-        fitbitintradayyear[cnt] = formatyear(parseTime(element.timestamp));
-        cnt++;
-    });
-}
-function mainContainerFitbitIntradaydata(dataAxis) {
-    if (revert[7] == 1) {
-        removeGroup('heart-rate-fitbit-intraday-axisY-cnt', 'circle-fitbit-intraday-heart-rate-ctn', 'fitbit-intraday-sum', 'heart-rate-fitbit-intraday-axisX-cnt', 'heart-rate-fitbit-intraday-title-ctn', "fitbit-intraday-incident");
-        createLegendAxeX(maingroup, formatdateshow2(dayAxis_fitbitintraday, ""), '20' + fitbitintradayyear[0], "heart-rate-fitbit-intraday-axisX-cnt");
-        createmutipleChartePoint(maingroup, fitbitintradaydata, dataAxis, "circle-fitbit-intraday-heart-rate-ctn", "#A8B88F", (gridSize / 10), 0);
-        tooltipdata("circle-fitbit-heart-rate-ctn", formatdateshow2(fitbitintradayday, '20' + fitbitintradayyear[0]), "bpm", "#A8B88F");
-        createSumdata(maingroup, propcombined, dataAxis, 'fitbit-intraday-sum');
-        //showreportedSickIncident(maingroup, (fitbitreportedIncident) + '/0', "fitbit-intraday-incident");
-    } else {
-        removeGroup('heart-rate-fitbit-intraday-axisY-cnt', 'circle-fitbit-intraday-heart-rate-ctn', 'fitbit-intraday-sum', 'heart-rate-fitbit-intraday-axisX-cnt', 'heart-rate-fitbit-intraday-title-ctn', "fitbit-intraday-incident");
-    }
-}
-
-
 /* OURA SUMMARRY -  Heart Rate */
-
 function loadDatafromOura(data) {
     ouradata = [], ouraday = [], ourayear = [], ouradayAxis = [], ouradate = [], repeat = [], noRepeatData = [];
     ouraday = [];
@@ -713,151 +660,52 @@ function mainContainer_RespiratoryRate_oura(data, maingroupapple, legendapple, t
     }
 }
 
-/* Graphics Functions */
+function tooltipdata(circleid, data, msg, color) {
+    tooltip = d3.select("#wearable-title").append("div").attr("class", "svg-tooltip").style("position", "absolute").style("visibility", "hidden");
+    d3.selectAll("#" + circleid)
+        .on("mouseover", function (d) {
+            let coordXY = this.getAttribute('class').split('- ')[1];
+            d3.select(this).attr("r", gridSize / 5).attr('stroke-width', 1);
+            legendCircle.append("circle").attr("id", "rect-legend").attr("class", "rect-legend").attr("cx", 65 + "%").attr("cy", 50 + "%").attr("r", gridSize / 5).attr("fill", color);
+            legendCircle.append("text").attr("id", "text-legend").attr("class", "text-legend").text(data[coordXY] + " " + d + " " + msg).attr("x", 69 + "%").attr("y", 60 + "%").attr("fill", "black").style("font-weight", "200");
+        })
+        .on("mouseout", function () {
+            d3.select(this).attr("r", gridSize / 10).style("stroke", "#015483").style("stroke-width", "0.5");
+            d3.selectAll("#rect-legend").style("visibility", "hidden");
+            d3.selectAll("#text-legend").style("visibility", "hidden");
+        });
+}
+/* Functions - Graphic element visualisation */
 function createWearableDataSvg(div1, widthdiv1, div2, heightdiv2, div3, heightdiv3, divChoice) {
-    maingroup = d3.select('#' + div1)
-        .append("svg")
-        .attr("class", "svg")
-        .attr("width", widthdiv1)
-        .attr("height", heightdiv2)
-
-    legendgroup = d3.select('#' + div2)
-        .append("svg")
-        .attr("class", "svg")
-        .attr("width", 100 + "%")
-        .attr("height", heightdiv2)
-
-    titlegroup = d3.select('#' + div3)
-        .append("svg")
-        .attr("class", "svg")
-        .attr("width", 100 + "%")
-        .attr("height", heightdiv3 / 2)
-
-    makeAchoice = d3.select('#' + divChoice)
-        .append("svg")
-        .attr("class", "svg")
-        .attr("width", 100 + "%")
-        .attr("height", heightdiv3 * 1.7);
-
-    legendCircle = d3.select('#wearable-legend-circle')
-        .append("svg")
-        .attr("class", "svg")
-        .attr("width", 100 + "%")
-        .attr("height", heightdiv3 / 2);
+    maingroup = d3.select('#'+div1).append("svg").attr("class","svg").attr("width", widthdiv1).attr("height", heightdiv2);
+    legendgroup = d3.select('#'+div2).append("svg").attr("class","svg").attr("width",100+"%").attr("height", heightdiv2);
+    titlegroup = d3.select('#'+div3).append("svg").attr("class","svg").attr("width",100+"%").attr("height", heightdiv3/2);
+    makeAchoice = d3.select('#'+divChoice).append("svg").attr("class","svg").attr("width",100+"%").attr("height", heightdiv3*1.7);
+    legendCircle = d3.select('#wearable-legend-circle').append("svg").attr("class","svg").attr("width",100+"%").attr("height",heightdiv3/2);
 }
-
 function createTitle(titleapple, title, id, coordX) {
-    titleapple.append("text")
-        .attr('id', id)
-        .attr("x", coordX)
-        .attr("y", 50 + "%")
-        .attr("text-anchor", "middle")
-        .style("fill", "#212529")
-        .style("font-weight", "200")
-        .style("font-size", 1.4 + "rem")
-        .attr("class", "mg-chart-title")
-        .text(title);
+    titleapple.append("text").attr('id', id).attr("x", coordX).attr("y", 50 + "%").attr("text-anchor", "middle").style("fill", "#212529").style("font-weight", "200").style("font-size", 1.4 + "rem").attr("class", "mg-chart-title").text(title);
 }
-
 function createLegendAxeX(legendapple, axisdays, year, id) {
-
-    legendapple.append("line")
-        .attr("x1", 0)
-        .attr("y1", heightGraph - margin.bottom)
-        .attr("x2", 100 + "%")
-        .attr("y2", heightGraph - margin.bottom)
-        .style("stroke", "#778899")
-        .style("stroke-width", "0.5");
-
-    legendapple.selectAll(".daysLabel")
-        .data(axisdays)
-        .enter().append("text")
-        .attr('id', id)
-        .text(function (d) { return d; })
-        .style("fill", "#212529")
-        .attr("x", function (d, i) { return gridSize * 5 + (i * gridSize * 7) })
-        .attr("y", heightGraph - (margin.bottom / 4.5))
-        .style("text-anchor", "end")
-        .attr("font-weight", "200")
-        .attr("font-size", "1em");
-
-    legendapple.append("text")
-        .attr('id', id)
-        .text(year)
-        .attr("x", gridSize * 3)
-        .attr("y", heightGraph)
-        .style("text-anchor", "end")
-        .attr("font-weight", "200")
-        .attr("font-size", ".7em");
-
-    legendapple.selectAll(".tickSize")
-        .attr('id', id)
-        .data(axisdays)
-        .enter().append("line")
-        .attr("x1", function (d, i) { return gridSize * 5 + ((i * gridSize * 7) - (gridSize / 2)) })
-        .attr("y1", heightGraph - margin.bottom)
-        .attr("x2", function (d, i) { return gridSize * 5 + ((i * gridSize * 7) - (gridSize / 2)) })
-        .attr("y2", heightGraph - (margin.bottom / 1.25))
-        .style("stroke", "#212529")
-        .style("stroke-width", "0.5");
-
+    legendapple.append("line").attr("x1", 0).attr("y1", heightGraph - margin.bottom).attr("x2", 100 + "%").attr("y2", heightGraph - margin.bottom).style("stroke", "#778899").style("stroke-width", "0.5");
+    legendapple.selectAll(".daysLabel").data(axisdays).enter().append("text").attr('id', id).text(function (d) { return d; }).style("fill", "#212529").attr("x", function (d, i) { return gridSize * 5 + (i * gridSize * 7) }).attr("y", heightGraph - (margin.bottom / 4.5)).style("text-anchor", "end").attr("font-weight", "200").attr("font-size", "1em");
+    legendapple.append("text").attr('id', id).text(year).attr("x", gridSize * 3).attr("y", heightGraph).style("text-anchor", "end").attr("font-weight", "200").attr("font-size", ".7em");
+    legendapple.selectAll(".tickSize").attr('id', id).data(axisdays).enter().append("line").attr("x1", function (d, i) { return gridSize * 5 + ((i * gridSize * 7) - (gridSize / 2)) }).attr("y1", heightGraph - margin.bottom).attr("x2", function (d, i) { return gridSize * 5 + ((i * gridSize * 7) - (gridSize / 2)) }).attr("y2", heightGraph - (margin.bottom / 1.25)).style("stroke", "#212529").style("stroke-width", "0.5");
 }
-
 function createLegendAxeY(legendapple, heartrateAxis, title, id) {
-    legendapple.append("line")
-        .attr("x1", 100 + "%")
-        .attr("y1", (margin.top / 2.5))
-        .attr("x2", 100 + "%")
-        .attr("y2", heightGraph - margin.bottom)
-        .style("stroke", "#778899")
-        .style("stroke-width", "1");
-
+    legendapple.append("line").attr("x1",100+"%").attr("y1",(margin.top/2.5)).attr("x2",100+"%").attr("y2",heightGraph - margin.bottom).style("stroke","#778899").style("stroke-width","1");
     if (heartrateAxis != 'null')
-        legendapple.selectAll(".daysLabel")
-            .data(heartrateAxis)
-            .enter().append("text")
-            .text(function (d) { return d; })
-            .attr('id', id)
-            .attr('class', "legendnameAxisY")
-            .style("fill", "#212529")
-            .style("font-weight", "200")
-            .attr("x", 90 + "%")
+        legendapple.selectAll(".daysLabel").data(heartrateAxis).enter().append("text").text(function (d) {return d; }).attr('id', id).attr('class',"legendnameAxisY").style("fill","#212529").style("font-weight","200").attr("x",90+"%")
             .attr("y", function (d, i) {
-                if (this.min < 0)
-                    return (heightGraph - margin.bottom * 2) - (i * 4 * ((heightGraph - margin.bottom * 2) / (heartrateAxis.length * 4)))
-                else
-                    return (heightGraph - margin.bottom * 2) - (i * 4 * ((heightGraph - margin.bottom * 2) / (heartrateAxis.length * 4)))
-            })
-            .style("text-anchor", "end")
-            .attr("font-weight", 200);
-
-    legendapple.append("g")
-        .attr("class", "y axis")
-        .append("text")
-        .attr('id', id)
-        .attr("transform", "rotate(-90)")
-        .style("fill", "#212529")
-        .attr("x", - (heightGraph / 2) + margin.bottom)
-        .attr("y", "2%")
-        .style("text-anchor", "middle")
-        .style("font-weight", "200")
-        .attr("font-size", 0.7 + "rem")
-        .attr('class', "titlenameAxisY")
-        .text(title);
-
+                if (this.min < 0)return (heightGraph - margin.bottom * 2) - (i * 4 * ((heightGraph - margin.bottom * 2) / (heartrateAxis.length * 4)))
+                else return (heightGraph - margin.bottom * 2) - (i * 4 * ((heightGraph - margin.bottom * 2) / (heartrateAxis.length * 4)))
+            }).style("text-anchor", "end").attr("font-weight", 200);
+    legendapple.append("g").attr("class","y axis").append("text").attr('id',id).attr("transform","rotate(-90)").style("fill","#212529").attr("x",-(heightGraph / 2) + margin.bottom).attr("y","2%").style("text-anchor","middle").style("font-weight","200").attr("font-size",.7+"rem").attr('class',"titlenameAxisY").text(title);
     if (heartrateAxis != 'null')
-        legendapple.selectAll(".tickSize")
-            .data(heartrateAxis)
-            .enter().append("line")
-            .attr('id', id)
-            .attr("x1", 95 + "%")
-            .attr("y1", function (d, i) { return (heightGraph - margin.bottom * 2 - 5) - (i * ((heightGraph - margin.bottom * 2) / (heartrateAxis.length))) })
-            .attr("x2", 100 + "%")
-            .attr("y2", function (d, i) { return (heightGraph - margin.bottom * 2 - 5) - (i * ((heightGraph - margin.bottom * 2) / (heartrateAxis.length))) })
-            .style("stroke", "#212529")
-            .style("stroke-width", "0.5");
+        legendapple.selectAll(".tickSize").data(heartrateAxis).enter().append("line").attr('id', id).style("stroke", "#212529").style("stroke-width", "0.5")
+            .attr("x1", 95 + "%").attr("y1", function (d, i) { return (heightGraph - margin.bottom * 2 - 5) - (i * ((heightGraph - margin.bottom * 2) / (heartrateAxis.length))) })
+            .attr("x2", 100 + "%").attr("y2", function (d, i) { return (heightGraph - margin.bottom * 2 - 5) - (i * ((heightGraph - margin.bottom * 2) / (heartrateAxis.length))) });
 }
-
 function createChartePoint(maingroupapple, data, axe, id, color, size, compare) {
     maingroupapple.selectAll("circle-test")
         .data(data)
@@ -900,95 +748,22 @@ function createChartePoint(maingroupapple, data, axe, id, color, size, compare) 
         })
         .style("stroke-width", "0.5");
 }
-
-function createmutipleChartePoint(maingroupapple, data, axe, id, color, size, compare) {
-    var cnt = 0;
-    maingroupapple.selectAll("circle-test")
-        .data(data)
-        .enter()
-        .append("circle")
-        .attr('id', id)
-        .attr('class', function (d, i) { return "circle - " + i })
-        .attr("cx", function (d, i) {
-            test = (gridSize * (compare + .5) + (gridSize * cnt));
-            if (ouradate[i] != ouradate[i - 1] && i > 0 || ouradate[i] != ouracontrolday[cnt]) {
-                cnt++;
-                test = (gridSize * (compare + .5)) + (gridSize * cnt);
-            }
-            return test;
-        })
-        .attr("cy", function (d) {
-            var gap = {
-                bottom: heightGraph - (margin.bottom * 2) - 5,
-                top: (margin.top / 2.5) + 8,
-                betweenTopAndBottom: axe[axe.length - 1] - axe[0],
-                betweenValues: d - axe[0],
-                test: ((heightGraph - (margin.bottom * 2) - 5) - ((axe.length - 1) * ((heightGraph - margin.bottom * 2) / (axe.length)))),
-                test2: ((heightGraph - (margin.bottom * 2) - 5) - (((heightGraph - margin.bottom * 2) / (axe.length)))),
-            };
-
-            if (d == 0)
-                return ((gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom)));
-            else if (d == "NO DATA" || d == "-" || d == "" || d == undefined) return (heightGraph)
-            else
-                return ((gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom)));
-        })
-        .attr("r", size)//gridSize / 10)
-        .attr("fill", function (d) {
-            if (d == 0)
-                return color;
-            if (d == "NO DATA" || d == "-" || d == "" || d == undefined) return 'white'
-            else return color;//"#67FFFF"
-        })
-        .style("stroke", function (d) {
-            if (d == 0)
-                return "#015483"
-            else if (d == "NO DATA" || d == "-" || d == "" || d == undefined) return 'white'
-            else
-                return "#015483"
-        })
-        .style("stroke-width", "0.5");
-}
-
 function createSumdata(svgName, data, axe, id) {
-    var gap = {
-        bottom: heightGraph - (margin.bottom * 2) - 5,
-        top: (margin.top / 2.5) + 8,
-        betweenTopAndBottom: axe[axe.length - 1] - axe[0],
-        betweenValues: data[2] - axe[0],
-        test2: ((heightGraph - margin.bottom * 2 - 5) - (((heightGraph - margin.bottom * 2) / (axe.length)))),
-    };
-
-    svgName.append("rect")
-        .attr('id', id)
-        .attr("x", 0)
-        .attr("y", ((gap.bottom) - ((data[3] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))))
-        .attr("width", (numberdaysongraph + 1) * gridSize)
-        .attr("height", (((gap.bottom) - ((data[1] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) - ((gap.bottom) - ((data[3] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom)))))
-        .style("fill", "#ededed")
-        .lower();
-
-    svgName.append("rect")
-        .attr('id', id)
-        .attr("x", 0)
-        .attr("y", ((gap.bottom) - ((data[4] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))))
-        .attr("width", (numberdaysongraph + 1) * gridSize)
-        .attr("height", (((gap.bottom) - ((data[0] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) - ((gap.bottom) - ((data[4] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom)))))
-        .style("fill", "#f7f7f7")
-        .lower();
-
-    svgName.append("line")
-        .attr('id', id)
-        .attr("x1", 0)
-        .attr("y1", ((gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom))))
-        .attr("x2", (numberdaysongraph + 1) * gridSize)
-        .attr("y2", ((gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom))))
-        .style("stroke", "#34495e")
-        .style("stroke-dasharray", 5)
-        .style("stroke-width", "1");
-
+    var gap = { bottom: heightGraph - (margin.bottom * 2) - 5,op: (margin.top / 2.5) + 8,betweenTopAndBottom: axe[axe.length - 1] - axe[0],betweenValues: data[2] - axe[0],test2: ((heightGraph - margin.bottom * 2 - 5) - (((heightGraph - margin.bottom * 2) / (axe.length))))};
+    svgName.append("rect").attr('id', id).attr("x", 0).attr("y", ((gap.bottom) - ((data[3] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom)))).attr("width", (numberdaysongraph + 1) * gridSize).attr("height", (((gap.bottom) - ((data[1] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) - ((gap.bottom) - ((data[3] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))))).style("fill", "#ededed").lower();
+    svgName.append("rect").attr('id', id).attr("x", 0).attr("y", ((gap.bottom) - ((data[4] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom)))).attr("width", (numberdaysongraph + 1) * gridSize).attr("height", (((gap.bottom) - ((data[0] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) - ((gap.bottom) - ((data[4] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))))).style("fill", "#f7f7f7").lower();
+    svgName.append("line").attr('id', id).attr("x1", 0).attr("y1", ((gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom)))).attr("x2", (numberdaysongraph + 1) * gridSize).attr("y2", ((gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom)))).style("stroke", "#34495e").style("stroke-dasharray", 5).style("stroke-width", "1");
 }
-
+function showreportedSickIncident(svgName, coord, id) {
+    coordX = coord.split('/');
+    let x=((gridSize*.5))+coordX[0]*gridSize;
+    let y=(gridSize/2);
+    if (coordX[1] == 0){text="Reported sick incident";} 
+    else {text = "";}
+    svgName.append("g").attr("id",id).append("text").attr("transform", "rotate(0)").style("fill","#212529").attr("x",x).attr("y",y).style("text-anchor","middle").style("fill","#A7AAAA").style("font-weight", "200").attr("font-size",.7+"rem").text(text);
+    svgName.append("line").attr("id",id).attr("x1",((gridSize*.5)+coordX[0]*gridSize)).attr("y1",y).attr("x2",((gridSize*.5)+coordX[0]*gridSize)).attr("y2",heightGraph - margin.bottom).style("stroke", "#A7AAAA").style("stroke-dasharray",5).style("stroke-width","1");
+}
+/* Functions - Get element variable display */
 function getDayonAxis(data) {
     axisdays = [];
     var cnt = 0;
@@ -998,7 +773,6 @@ function getDayonAxis(data) {
     }
     return axisdays;
 }
-
 function getAxisLegend(symptomdata, dizaine) {
     var min = 200;
     var max = 0;
@@ -1034,41 +808,6 @@ function getAxisLegend(symptomdata, dizaine) {
     }
     return legende;
 }
-
-function showreportedSickIncident(svgName, coord, id) {
-    coordX = coord.split('/');
-    let x = ((gridSize * 0.5)) + coordX[0] * gridSize;
-    let y = (gridSize / 2);
-    if (coordX[1] == 0) {
-        text = "Reported sick incident";
-    } else {
-        text = "";
-    }
-
-    svgName.append("g")
-        .attr("id", id)
-        .append("text")
-        .attr("transform", "rotate(0)")
-        .style("fill", "#212529")
-        .attr("x", x)
-        .attr("y", y)
-        .style("text-anchor", "middle")
-        .style("fill", "#A7AAAA")
-        .style("font-weight", "200")
-        .attr("font-size", 0.7 + "rem")
-        .text(text);
-
-    svgName.append("line")
-        .attr("id", id)
-        .attr("x1", ((gridSize * 0.5) + coordX[0] * gridSize))
-        .attr("y1", y)
-        .attr("x2", ((gridSize * 0.5) + coordX[0] * gridSize))
-        .attr("y2", heightGraph - margin.bottom)
-        .style("stroke", "#A7AAAA")
-        .style("stroke-dasharray", 5)
-        .style("stroke-width", "1");
-}
-
 function getSum(revert) {
     var data = [];
     var cnt1 = 0;
@@ -1143,63 +882,6 @@ function getSum(revert) {
         prop = calculatSum(data);
     return prop;
 }
-
-function tooltipdata(circleid, data, msg, color) {
-    tooltip = d3
-        .select("#wearable-title")
-        .append("div")
-        .attr("class", "svg-tooltip")
-        .style("position", "absolute")
-        .style("visibility", "hidden");
-
-    d3.selectAll("#" + circleid)
-        .on("mouseover", function (d) {
-            let coordXY = this.getAttribute('class').split('- ')[1];
-            d3.select(this)
-                .attr("r", gridSize / 5)
-                .attr('stroke-width', 1);
-
-            /*legendCircle
-                 .style("visibility", "visible")
-                 .style("font-weight", "300")
-                 .text(data[coordXY] + " " + d + " " + msg);*/
-
-            legendCircle.append("circle")
-                .attr("id", "rect-legend")
-                .attr("class", "rect-legend")
-                .attr("cx", 65 + "%")
-                .attr("cy", 50 + "%")
-                .attr("r", gridSize / 5)
-                .attr("fill", color);
-
-            legendCircle.append("text")
-                .attr("id", "text-legend")
-                .attr("class", "text-legend")
-                .text(data[coordXY] + " " + d + " " + msg)
-                .attr("x", 69 + "%")
-                .attr("y", 60 + "%")
-                .attr("fill", "black")
-                .style("font-weight", "200");
-        })
-
-
-        .on("mousemove", function () {
-            //legendCircle
-            //  .style("top", 100)
-            //.style("left", 2 * gridSize);
-        })
-
-        .on("mouseout", function () {
-            d3.select(this).attr("r", gridSize / 10)
-                .style("stroke", "#015483")
-                .style("stroke-width", "0.5");
-            // tooltip.style("visibility", "hidden");
-
-            d3.selectAll("#rect-legend").style("visibility", "hidden");
-            d3.selectAll("#text-legend").style("visibility", "hidden");
-        });
-}
-
 function calculatSum(data) {
     var sum = 0;
     var N = 0;
@@ -1250,7 +932,6 @@ function calculatSum(data) {
 
     return (prop);
 }
-
 function getCombineAxisY(revert) {
     var test = [];
     var cnt1 = 0;
@@ -1409,7 +1090,6 @@ function controlWearableDatafromfile(data, type) {
             else return true;
     }
 }
-
 function getButtonChoice(svgName) {
     classname = [];
     colorscale = [];
@@ -1431,7 +1111,6 @@ function getButtonChoice(svgName) {
     createButton(svgName, 1, classname, legendname, colorscale, 0, (gridSize * .2));
     createButton(svgName, 2, classnameHeartRate, legendnameHeartRate, colorscaleHeartRate, (classname.length), (classname.length * gridSize * 1.55));
 }
-
 function setAttributButton() {
     if (oura == true) {
         classname[cnt] = 'Temperature';
@@ -1503,7 +1182,6 @@ function setAttributButton() {
         cntRS++;
     }
 }
-
 function createButton(svgName, type, dataclassname, datalegend, datacolor, marginTop1, marginTop2) {
     if (marginTop1 == 1) {
         margintest = .5
@@ -1522,7 +1200,7 @@ function createButton(svgName, type, dataclassname, datalegend, datacolor, margi
             else if (type == 2 && i > 1 && i <= 3)
                 return (45 * margintest) + '%'
             else if (type == 2 && i > 3)
-                return (60 * margintest) + '%'
+                return (65 * margintest) + '%'
             else if (type == 2 && i >= 0 && i <= 1)
                 return (25 * margintest) + '%'
         })
@@ -1565,7 +1243,7 @@ function createButton(svgName, type, dataclassname, datalegend, datacolor, margi
             else if (type == 2 && i > 1 && i <= 3)
                 return (2 + 45 * margintest) + '%'
             else if (type == 2 && i > 3)
-                return (2 + 60 * margintest) + '%'
+                return (2 + 65 * margintest) + '%'
             else if (type == 2 && i >= 0 && i <= 1)
                 return (2 + 25 * margintest) + '%'
         })
@@ -1573,17 +1251,16 @@ function createButton(svgName, type, dataclassname, datalegend, datacolor, margi
             if (type == 1)
                 return (13 + '%')
             else if (type == 2 && i > 1 && i <= 3)
-                return (18) + ((i - 1) * 15) + '%'
+                return (17) + ((i - 1) * 15) + '%'
             else if (type == 2 && i >= 0 && i <= 1)
-                return (18) + ((i + 1) * 15) + '%'
+                return (17) + ((i + 1) * 15) + '%'
             else if (type == 2 && i > 3)
-                return (18) + ((i - 3) * 15) + '%'
+                return (17) + ((i - 3) * 15) + '%'
         })
         .style("text-anchor", "start")
         .style("font-weight", "200")
         .attr("font-size", (.75 - (type / 8)) + "rem");
 }
-
 function createLinearGradient(svgName, color, id) {
     linearGradient = svgName.append("defs")
         .append("linearGradient")
@@ -1595,206 +1272,6 @@ function createLinearGradient(svgName, color, id) {
     }
     return linearGradient;
 }
-
-function controlDay(data, days2, month) {
-    const days_fixed = [];
-    const days2_fixed = [];
-    const days3_fixed = [];
-    const days4_fixed = [];
-    var daybeug = [];
-    var count = 0;
-    for (var i = 0; i < data.length - 1; i++) {
-        days4_fixed[i] = days2[i + 1] - days2[i] - 1;
-
-        if (days_fixed[i] > 0) {
-            for (let y = 0; y < days_fixed[i]; y++) {
-                daybeug[count] = i;
-                count++;
-            }
-        }
-    }
-    days4_fixed.push(0);
-
-    for (let i = 0; i < days4_fixed.length; i++) {
-        if (days4_fixed[i] < -1) {
-            if (month[i] == 1 || month[i] == 3 || month[i] == 5 || month[i] == 7 || month[i] == 8 || month[i] == 10 || month[i] == 12) {
-                days_fixed[i] = days4_fixed[i] + 31;
-            } else if (month[i] == 2)
-                days_fixed[i] = days4_fixed[i] + 28;
-            else
-                days_fixed[i] = days4_fixed[i] + 30;
-        } else
-            days_fixed[i] = days4_fixed[i];
-    }
-
-    var counter = 0;
-    for (var i = 0; i < (data.length - 1); i++) {
-
-        if (days_fixed[i] != -1 && days_fixed[i] != -30 && days_fixed[i] != -31) {
-
-            for (var t = 0; t < days_fixed[i] + 1; t++) {
-
-                if ((days2[i] - (-t)) < 10) {
-                    days2_fixed[i + counter] = "0" + (days2[i] - (-t)) + "/" + (month[i]);
-                    counter++;
-                }
-                else if (month[i] == 1 || month[i] == 3 || month[i] == 5 || month[i] == 7 || month[i] == 8 || month[i] == 10 || month[i] == 12) {
-                    if ((days2[i] - (-t)) > 31) {
-                        if (month[i] > 9) {
-                            days2_fixed[i + counter] = "0" + ((days2[i] - (-t)) - 31) + "/" + (month[i] - (-1));
-                            counter++;
-                        }
-                        else {
-                            days2_fixed[i + counter] = "0" + ((days2[i] - (-t)) - 31) + "/" + "0" + (month[i] - (-1));
-                            counter++;
-                        }
-                    } else {
-                        days2_fixed[i + counter] = (days2[i] - (-t)) + "/" + (month[i]);
-                        counter++;
-                    }
-                } else {
-                    if ((days2[i] - (-t)) > 30) {
-                        if (month[i] > 9) {
-                            days2_fixed[i + counter] = "0" + ((days2[i] - (-t)) - 30) + "/" + (month[i] - (-1));
-                            counter++;
-                        } else {
-                            days2_fixed[i + counter] = "0" + ((days2[i] - (-t)) - 30) + "/" + "0" + (month[i] - (-1));
-                            counter++;
-                        }
-                    } else {
-                        days2_fixed[i + counter] = (days2[i] - (-t)) + "/" + (month[i]);
-                        counter++;
-                    }
-                }
-            }
-        }
-        else if (days_fixed[i] == -1) {
-            counter--;
-        }
-        else {
-            days2_fixed[i + counter] = data[i];
-        }
-    }
-    var ii = 0;
-    for (var i = 0; i < days2_fixed.length; i++) {
-        if (days2_fixed[i] == null) i++;
-
-        if (days2_fixed[i] == undefined) i++;
-
-        days3_fixed[ii] = days2_fixed[i];
-        ii++;
-    }
-    days3_fixed.push(days2[data.length - 1] + "/" + month[data.length - 1]);
-    //data[data.length - 1]);
-    return days3_fixed;
-}
-
-function dataControl(data, tempdate, day, monthtemp, rapport) {
-    dayscontrol = dayControlGraph(tempdate, day, monthtemp);
-    const data2 = [];
-    var cnt = 0;
-
-    if (rapport < 0) {
-        let count = -rapport;
-        for (let i = 0; i < count; i++) {
-            data2[i] = "";
-        }
-        for (var i = count; i < dayscontrol.length + count; i++) {
-            data2[i + cnt] = data[i - count];
-            if (dayscontrol[i] != -1 && dayscontrol[i] != -30 && dayscontrol[i] != -31) {
-                for (var t = 0; t < dayscontrol[i]; t++) {
-                    cnt++;
-                    data2[i + cnt] = "NO DATA";
-                }
-            }
-            else if (dayscontrol[i] == -1) {
-                cnt--;
-            }
-        }
-
-    } else {
-        for (var i = 0; i < dayscontrol.length; i++) {
-            data2[i + cnt] = data[i];
-            if (dayscontrol[i] != -1 && dayscontrol[i] != -30 && dayscontrol[i] != -31) {
-                for (var t = 0; t < dayscontrol[i]; t++) {
-                    cnt++;
-                    data2[i + cnt] = "NO DATA";
-                }
-            }
-            else if (dayscontrol[i] == -1) {
-                cnt--;
-            }
-        }
-    }
-    return data2;
-}
-
-function dayControlGraph(data, days2, month) {
-    var days_fixed = [];
-    var days4_fixed = [];
-    for (var i = 0; i < data.length - 1; i++) {
-        days4_fixed[i] = days2[i + 1] - days2[i] - 1;
-    }
-    days4_fixed.push(0);
-    for (let i = 0; i < days4_fixed.length; i++) {
-        if (days4_fixed[i] < -1) {
-            if (month[i] == 1 || month[i] == 3 || month[i] == 5 || month[i] == 7 || month[i] == 8 || month[i] == 10 || month[i] == 12) {
-                days_fixed[i] = days4_fixed[i] + 31;
-            } else if (month[i] == 2)
-                days_fixed[i] = days4_fixed[i] + 28;
-            else
-                days_fixed[i] = days4_fixed[i] + 30;
-        } else
-            days_fixed[i] = days4_fixed[i];
-    }
-    return days_fixed;
-}
-
-function removeGroup(title, axisX, axisY, circle, sum, incident) {
-    d3.selectAll('#' + title).remove();
-    d3.selectAll('#' + axisX).remove();
-    d3.selectAll('#' + axisY).remove();
-    d3.selectAll('#' + circle).remove();
-    d3.selectAll('#' + sum).remove();
-    d3.selectAll('#' + incident).remove();
-}
-/* Functions Formats data */
-function formatdateshow(data, year) {
-    let day = [];
-    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    for (let x = 0; x < data.length; x++) {
-        for (let i = 0; i < months.length; i++) {
-            if (i <= 9 && "0" + i == data[x].split('-')[1] && year == "")
-                day[x] = months[i - 1] + " " + data[x].split('-')[2]
-            else if (i <= 9 && "0" + i == data[x].split('-')[1] && year != "")
-                day[x] = months[i - 1] + " " + data[x].split('-')[2] + ", " + year
-            else if (i > 9 && i == data[x].split('-')[1] && year == "")
-                day[x] = months[i - 1] + " " + data[x].split('-')[2]
-            else if (i > 9 && i == data[x].split('-')[1] && year != "")
-                day[x] = months[i - 1] + " " + data[x].split('-')[2] + ", " + year
-        }
-    }
-    return day;
-}
-
-function formatdateshow2(data, year) {
-    let day = [];
-    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    for (let x = 0; x < data.length; x++) {
-        for (let i = 0; i < months.length; i++) {
-            if (i <= 9 && "0" + i == data[x].split('/')[1] && year == "")
-                day[x] = months[i - 1] + " " + data[x].split('/')[0]
-            else if (i <= 9 && "0" + i == data[x].split('/')[1] && year != "")
-                day[x] = months[i - 1] + " " + data[x].split('/')[0] + ", " + year
-            else if (i > 9 && i == data[x].split('/')[1] && year == "")
-                day[x] = months[i - 1] + " " + data[x].split('/')[0]
-            else if (i > 9 && i == data[x].split('/')[1] && year != "")
-                day[x] = months[i - 1] + " " + data[x].split('/')[0] + ", " + year
-        }
-    }
-    return day;
-}
-
 function getDataSourceonDay(data) {
     firstDay_fitbit = 0;
     firstDay_apple = 0;
@@ -1845,7 +1322,6 @@ function getDataSourceonDay(data) {
     }
     return test2;
 }
-
 function getLastDataSourceonDay(data) {
     firstDay_fitbit = 0;
     firstDay_apple = 0;
@@ -2041,7 +1517,6 @@ function getnumberday(data, sourceFirstday, sourceLastday) {
         var difference = 0;
         return difference;
 }
-
 function addDayonGraphic(data, source, type) {
     var datasource = getDataSourceonDay(data);
 
@@ -2081,7 +1556,6 @@ function addDayonGraphic(data, source, type) {
     }
     return compare;
 }
-
 function dataControlOura(data, tempdate, day, monthtemp, rapport) {
     dayscontrol = dayControlGraph(tempdate, day, monthtemp);
     const data2 = [];
@@ -2132,7 +1606,200 @@ function dataControlOura(data, tempdate, day, monthtemp, rapport) {
     }
     return data2;
 }
+function controlDay(data, days2, month) {
+    const days_fixed = [];
+    const days2_fixed = [];
+    const days3_fixed = [];
+    const days4_fixed = [];
+    var daybeug = [];
+    var count = 0;
+    for (var i = 0; i < data.length - 1; i++) {
+        days4_fixed[i] = days2[i + 1] - days2[i] - 1;
 
+        if (days_fixed[i] > 0) {
+            for (let y = 0; y < days_fixed[i]; y++) {
+                daybeug[count] = i;
+                count++;
+            }
+        }
+    }
+    days4_fixed.push(0);
+
+    for (let i = 0; i < days4_fixed.length; i++) {
+        if (days4_fixed[i] < -1) {
+            if (month[i] == 1 || month[i] == 3 || month[i] == 5 || month[i] == 7 || month[i] == 8 || month[i] == 10 || month[i] == 12) {
+                days_fixed[i] = days4_fixed[i] + 31;
+            } else if (month[i] == 2)
+                days_fixed[i] = days4_fixed[i] + 28;
+            else
+                days_fixed[i] = days4_fixed[i] + 30;
+        } else
+            days_fixed[i] = days4_fixed[i];
+    }
+
+    var counter = 0;
+    for (var i = 0; i < (data.length - 1); i++) {
+
+        if (days_fixed[i] != -1 && days_fixed[i] != -30 && days_fixed[i] != -31) {
+
+            for (var t = 0; t < days_fixed[i] + 1; t++) {
+
+                if ((days2[i] - (-t)) < 10) {
+                    days2_fixed[i + counter] = "0" + (days2[i] - (-t)) + "/" + (month[i]);
+                    counter++;
+                }
+                else if (month[i] == 1 || month[i] == 3 || month[i] == 5 || month[i] == 7 || month[i] == 8 || month[i] == 10 || month[i] == 12) {
+                    if ((days2[i] - (-t)) > 31) {
+                        if (month[i] > 9) {
+                            days2_fixed[i + counter] = "0" + ((days2[i] - (-t)) - 31) + "/" + (month[i] - (-1));
+                            counter++;
+                        }
+                        else {
+                            days2_fixed[i + counter] = "0" + ((days2[i] - (-t)) - 31) + "/" + "0" + (month[i] - (-1));
+                            counter++;
+                        }
+                    } else {
+                        days2_fixed[i + counter] = (days2[i] - (-t)) + "/" + (month[i]);
+                        counter++;
+                    }
+                } else {
+                    if ((days2[i] - (-t)) > 30) {
+                        if (month[i] > 9) {
+                            days2_fixed[i + counter] = "0" + ((days2[i] - (-t)) - 30) + "/" + (month[i] - (-1));
+                            counter++;
+                        } else {
+                            days2_fixed[i + counter] = "0" + ((days2[i] - (-t)) - 30) + "/" + "0" + (month[i] - (-1));
+                            counter++;
+                        }
+                    } else {
+                        days2_fixed[i + counter] = (days2[i] - (-t)) + "/" + (month[i]);
+                        counter++;
+                    }
+                }
+            }
+        }
+        else if (days_fixed[i] == -1) {
+            counter--;
+        }
+        else {
+            days2_fixed[i + counter] = data[i];
+        }
+    }
+    var ii = 0;
+    for (var i = 0; i < days2_fixed.length; i++) {
+        if (days2_fixed[i] == null) i++;
+
+        if (days2_fixed[i] == undefined) i++;
+
+        days3_fixed[ii] = days2_fixed[i];
+        ii++;
+    }
+    days3_fixed.push(days2[data.length - 1] + "/" + month[data.length - 1]);
+    //data[data.length - 1]);
+    return days3_fixed;
+}
+function dataControl(data, tempdate, day, monthtemp, rapport) {
+    dayscontrol = dayControlGraph(tempdate, day, monthtemp);
+    const data2 = [];
+    var cnt = 0;
+
+    if (rapport < 0) {
+        let count = -rapport;
+        for (let i = 0; i < count; i++) {
+            data2[i] = "";
+        }
+        for (var i = count; i < dayscontrol.length + count; i++) {
+            data2[i + cnt] = data[i - count];
+            if (dayscontrol[i] != -1 && dayscontrol[i] != -30 && dayscontrol[i] != -31) {
+                for (var t = 0; t < dayscontrol[i]; t++) {
+                    cnt++;
+                    data2[i + cnt] = "NO DATA";
+                }
+            }
+            else if (dayscontrol[i] == -1) {
+                cnt--;
+            }
+        }
+
+    } else {
+        for (var i = 0; i < dayscontrol.length; i++) {
+            data2[i + cnt] = data[i];
+            if (dayscontrol[i] != -1 && dayscontrol[i] != -30 && dayscontrol[i] != -31) {
+                for (var t = 0; t < dayscontrol[i]; t++) {
+                    cnt++;
+                    data2[i + cnt] = "NO DATA";
+                }
+            }
+            else if (dayscontrol[i] == -1) {
+                cnt--;
+            }
+        }
+    }
+    return data2;
+}
+function dayControlGraph(data, days2, month) {
+    var days_fixed = [];
+    var days4_fixed = [];
+    for (var i = 0; i < data.length - 1; i++) {
+        days4_fixed[i] = days2[i + 1] - days2[i] - 1;
+    }
+    days4_fixed.push(0);
+    for (let i = 0; i < days4_fixed.length; i++) {
+        if (days4_fixed[i] < -1) {
+            if (month[i] == 1 || month[i] == 3 || month[i] == 5 || month[i] == 7 || month[i] == 8 || month[i] == 10 || month[i] == 12) {
+                days_fixed[i] = days4_fixed[i] + 31;
+            } else if (month[i] == 2)
+                days_fixed[i] = days4_fixed[i] + 28;
+            else
+                days_fixed[i] = days4_fixed[i] + 30;
+        } else
+            days_fixed[i] = days4_fixed[i];
+    }
+    return days_fixed;
+}
+function removeGroup(title, axisX, axisY, circle, sum, incident) {
+    d3.selectAll('#' + title).remove();
+    d3.selectAll('#' + axisX).remove();
+    d3.selectAll('#' + axisY).remove();
+    d3.selectAll('#' + circle).remove();
+    d3.selectAll('#' + sum).remove();
+    d3.selectAll('#' + incident).remove();
+}
+/* Functions Formats data */
+function formatdateshow(data, year) {
+    let day = [];
+    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    for (let x = 0; x < data.length; x++) {
+        for (let i = 1; i < months.length + 1; i++) {
+            if (i <= 9 && "0" + i == data[x].split('-')[1] && year == "")
+                day[x] = months[i - 1] + " " + data[x].split('-')[2]
+            else if (i <= 9 && "0" + i == data[x].split('-')[1] && year != "")
+                day[x] = months[i - 1] + " " + data[x].split('-')[2] + ", " + year
+            else if (i > 9 && i == data[x].split('-')[1] && year == "")
+                day[x] = months[i - 1] + " " + data[x].split('-')[2]
+            else if (i > 9 && i == data[x].split('-')[1] && year != "")
+                day[x] = months[i - 1] + " " + data[x].split('-')[2] + ", " + year
+        }
+    }
+    return day;
+}
+function formatdateshow2(data, year) {
+    let day = [];
+    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    for (let x = 0; x < data.length; x++) {
+        for (let i = 1; i < months.length + 1; i++) {
+            if (i <= 9 && "0" + i == data[x].split('/')[1] && year == "")
+                day[x] = months[i - 1] + " " + data[x].split('/')[0]
+            if (i <= 9 && "0" + i == data[x].split('/')[1] && year != "")
+                day[x] = months[i - 1] + " " + data[x].split('/')[0] + ", " + year
+            if (i > 9 && i == data[x].split('/')[1] && year == "")
+                day[x] = months[i - 1] + " " + data[x].split('/')[0]
+            if (i > 9 && i == data[x].split('/')[1] && year != "")
+                day[x] = months[i - 1] + " " + data[x].split('/')[0] + ", " + year
+        }
+    }
+    return day;
+}
 parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S.%f%Z");
 parseTimeFitbitintrday = d3.timeParse("%Y-%m-%d %H:%M:%S +00:00");
 parseTimeOuraSleep = d3.timeParse("%Y-%m-%dT%H:%M:%S%Z");
@@ -2142,7 +1809,6 @@ formatdate = d3.timeFormat("%d/%m");
 formatdateday = d3.timeFormat("%d");
 formatdatemonth = d3.timeFormat("%m");
 parseTimeGarmin = d3.timeParse("%Y-%m-%dT%H:%M:%S");
-
 function precise(x) {
     return Number.parseFloat(x).toPrecision(2);
 }

@@ -1,7 +1,7 @@
 @media screen and (min-width: 800px) {
     .textbutton,
     .textbuttonprincipal {
-      transform: translate(2%);
+      transform: translate(10px);
     }
     .textbutton,.legendnameAxisY {
       font-size: 1em;
@@ -15,18 +15,18 @@
   }
   @media screen and (min-width: 200px) and (max-width: 399px) {
     .textbutton {
-      font-size: .4em;
-      transform: translate(4.5%);
+      font-size: .5em;
+      transform: translate(10px);
     }
     .legendnameAxisY {
-      font-size: .6em;
+      font-size: .5em;
     }
     .text-legend {
     font-size: .7em;
     }
     .textbuttonprincipal {
       font-size: .55em;
-      transform: translate(6%);
+      transform: translate(10px);
       position: absolute;
       text-overflow: ellipsis;
       white-space: pre-line;
@@ -48,14 +48,14 @@
     }
     .textbutton {
       font-size: .5em;
-      transform: translate(4.5%);
+      transform: translate(10px);
     }
     .legendnameAxisY {
-      font-size: .6em;
+      font-size: .5em;
     }
     .textbuttonprincipal {
       font-size: .7em;
-      transform: translate(6%);
+      transform: translate(10px);
       position: absolute;
       text-overflow: ellipsis;
       white-space: pre-line;
