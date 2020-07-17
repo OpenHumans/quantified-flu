@@ -1,14 +1,15 @@
-$names = ["Cough", "Wet cough", "Anosmia", "Runny nose", "Sore throat", "Short breath", "Diarrhea", "Nausea", "Chills", "Fatigue", "Headache", "Body ache", "Fever", "", "Comments"];
-symptom_data = []; days_axis = []; days = []; year = []; completedDays = [];
-gridSize = 30; heightGraph = 14 * gridSize;
-width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500)
-margin = {
-    top: 30, right: -2, bottom: 27, left: 10
-};
+/** * @author Basile Morane
+ * @description heatmap.js (javascript). Mai 2020
+ * @fileOverview This file is useful for displaying on screen the heatmap of the symptom reports
+ */ /** @type {Array} */$names = ["Cough", "Wet cough", "Anosmia", "Runny nose", "Sore throat", "Short breath", "Diarrhea", "Nausea", "Chills", "Fatigue", "Headache", "Body ache", "Fever", "", "Comments"];
+/** @type {Array} */symptom_data = [];/** @type {Array} */ days_axis = []; /** @type {Array} */days = []; /** @type {Array} */year = []; /** @type {Array} */completedDays = [];
+/** @type {Number} */gridSize = 30; /** @type {Number} */heightGraph = 14 * gridSize;
+/** @type {Number} */width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500)
+/** @type {Array} */margin = {top: 30, right: -2, bottom: 27, left: 10};
 createheatmap(url);
-
-/* Fonctions creation of the visualisation of the heatmap*/
-function createheatmap(url) {
+/** * @description Function to connect to the JSON file and call of function to display heatmap and graphics of wearable data. 
+ * @param {*} url of the JSON file to get the data
+ */ function createheatmap(url) {
   $.getJSON(url, function (data) {
     height = determineHeigth();
     innerwidth = determineInnerwidth();
@@ -16,8 +17,9 @@ function createheatmap(url) {
     main_heatmap(data);
     main_wearable_data(data);
   })
-}
-function main_heatmap(data) {
+} /** * @description	main function which allows you to display the graphics corresponding to the existing data. 
+ * @param { Array } data of the JSON file
+ */ function main_heatmap(data) {
   if (data.symptom_report.length > 0) {
     timestamp = data.symptom_report.map(d => d.timestamp);
     file_days = timestamp.map(d => formatdate(parseTime(d)));
@@ -50,16 +52,16 @@ function main_heatmap(data) {
       }
     };
   }
-}
-function progressScrollBar() {
+} /** * @description	Display on screen the movment of the scrooling representing by a scrolling bar. 
+*/ function progressScrollBar() {
   var winScroll = document.getElementById("heatmap").scrollLeft;
   var height = document.getElementById("heatmap").scrollWidth - document.getElementById("heatmap").clientWidth;
   var scrolled = (winScroll / height) * 71.1;
   document.getElementById("myBar").style.width = scrolled + "%";
-}
-
-/* Variable - File.JSON */
-function getDatafromFile(data) {
+} /** * @description	Get the existing data values from the symptom report 
+ * @description timestamp / date / comments
+ * @param { Array } data of the JSON file
+ */ function getDatafromFile(data) {
   this.timestamp = data.symptom_report.map(d => d.timestamp);
   this.file_days = timestamp.map(d => formatdate(parseTime(d)));
   this.reportday = timestamp.map(d => formatdateday(parseTime(d)));
@@ -71,8 +73,12 @@ function getDatafromFile(data) {
   this.height = determineHeigth();
   this.innerwidth = determineInnerwidth();
   this.namesmonths = determinenamemonth(days);
-}
-function loadCommentsValues(data) {
+} /** * @description	Return a array of values for the none comments or existing comments
+ * @description	5: User write a comments
+ * @description	 -2:User did not write any comments 
+ * @param { Array } data of the JSON file
+ * @returns {values}
+ */ function loadCommentsValues(data) {
   const values = [];
   var data1 = data.symptom_report.map(d => d.data.notes);
 
@@ -103,8 +109,10 @@ function loadCommentsValues(data) {
       values[i] = 5;
   }
   return values;
-}
-
+}/** * @description	Return a array of the comments the user writed. 
+ * @param { Array } data of the JSON file
+ * @param { Array } days days in JSON file 
+ */
 function loadComments(data, days) {
   var data1 = data.symptom_report.map(d => d.data.notes);
   var dayscontrol = dayControl(file_days);
@@ -131,7 +139,13 @@ function loadComments(data, days) {
   }
   return comments;
 }
-
+/**
+ * @description	Get the existing data values of the syptoms from the symptom report 
+ * @description	Once we had read them, we "control the values with the "
+ * @function dataControlSymptom to add or remove data from missing or repeat day
+ * @param { Array } data of the JSON file
+ * @returns {symptom_data}
+ */
 function loadDataSymptom(data) {
   cnt = 0;
   cough = [], wet_cought = [], anosmia = [], runny_nose = [], short_breath = [], diarrhea = [], nausea = [], chills = [], fatigue = [], headache = [], body_ache = [], sore_throat = [], fever = [];
@@ -173,31 +187,31 @@ function loadDataSymptom(data) {
   symptom_data[14] = comments;
   return symptom_data;
 }
-
-/* Function - control data - get extern data */
+/**
+ * @description Function to control the values of the symptom reported 
+ * @description add values:  "", if values is undefined
+ * @description add values:  "", if the day is missing
+ * @description remove value if the day is repeating (Only keeping the last reported symptom of a day)
+ * @param {*} data 
+ * @returns {newdata}
+ */
 function dataControlSymptom(data) {
   dayscontrol = dayControl(file_days);
 
   for (i = 0; i < data.length; i++) {
     if (data[i] === undefined || data[i] === "")
       data[i] = 0;
-
     if ((data[i] >= 95 && data[i] < 99.5) || (data[i] >= 37 && data[i] < 37.5))
       data[i] = 0;
-    /* Managing of the entering data symptom of the fever */
     if ((data[i] >= 99.5 && data[i] < 100.4) || (data[i] >= 37.5 && data[i] < 38))
       data[i] = 1;
-
     if ((data[i] >= 100.4 && data[i] < 102.2) || (data[i] >= 38 && data[i] < 39))
       data[i] = 2;
-
     if ((data[i] >= 102.2 && data[i] < 104) || (data[i] >= 39 && data[i] < 40))
       data[i] = 3;
-
     if (data[i] >= 104 || data[i] >= 40)
       data[i] = 4;
   }
-
   const data2 = [];
   var cnt = 0;
   for (var i = 0; i < dayscontrol.length; i++) {
@@ -222,6 +236,12 @@ function dataControlSymptom(data) {
   newdata.push(data2[data2.length - 1])
   return newdata;
 }
+/**
+ * * @description Function to get the missing or repeat day in an array of formated timestamp
+ * @description Return a new array 
+ * @param {Array} data - timestamp of the data source 
+ * @returns {days_fixed}
+ */
 function dayControl(data) {
   var days_fixed = [];
   var days4_fixed = [];
@@ -240,6 +260,15 @@ function dayControl(data) {
   }
   return days_fixed;
 }
+/**
+ * @description Function to add or remove the missing or repeat day
+ * @description Return a new array of date for the data source
+ * @param {Array} data - timestamp of the data source 
+ * @param {*} days2 -  Map of days of the data source 
+ * @param {*} month - Map of month of the data source 
+ * @example controlday = controlDay(appleday, dayapp, monthapp);
+ * @returns {days3_fixed}
+ */
 function controlDay(data, days2, month) {
   const days_fixed = [];
   const days2_fixed = [];
@@ -329,6 +358,11 @@ function controlDay(data, days2, month) {
   days3_fixed.push(data[data.length - 1]);
   return days3_fixed;
 }
+/**
+ * @description Returns the writing name of an months with a formated date (dd/mm)
+ * @param {*} data - array of formated timestamp
+ * @returns {}
+ */
 function determinenamemonth(data) {
   var idmonths = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
   var namemonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
@@ -343,6 +377,12 @@ function determinenamemonth(data) {
   }
   return test;
 }
+/**
+ * @description Returns only a day every seven days = one weeks
+ * @description This array of data will be display on the heatmap
+ * @param {*} data - completed days (with missing day and no repeat days) of the symptom reports 
+ * @returns {day_break1}
+ */
 function showingDayOnTheMap(data) {
   var day_break = [];
   var day_break1 = [];
@@ -363,6 +403,12 @@ function showingDayOnTheMap(data) {
   }
   return day_break1;
 }
+/**
+ * @description Function to get the datasource (symptom report / Fitbit / Oura ...) with the old first day of data
+ * @description Returns the number of different days 
+ * @param {*} data - JSON file 
+ * @returns {test}
+ */
 function getNoReportValues(data) {
   hour = fortmatHour(parseTime(data.symptom_report[0].timestamp));
   min = fortmatminutes(parseTime(data.symptom_report[0].timestamp));
@@ -467,10 +513,14 @@ function getNoReportValues(data) {
   }
   return Math.round(test / (86400000));
 }
+/**
+ * @description Function to get the datasource (symptom report / Fitbit / Oura ...) with the old first day of data
+ * @description Returns name of the data source 
+ * @param {*} data - JSON file 
+ * @returns {data2}
+ */
 function getNoReportDataSource(data) {
-
   firstDay_report = parseTime(data.symptom_report[0].timestamp).getTime();
-
   if (data.fitbit_summary != undefined)
     firstDay_fitbit = parseTimeTemp(data.fitbit_summary[0].timestamp).getTime();
   else
@@ -525,6 +575,14 @@ function getNoReportDataSource(data) {
   }
   return test2;
 }
+/**
+ * @description Adding the day missing before the first reported
+ * @description return a new array of days
+ * @param {*} numberdays - return of the function getNoReportValues()
+ * @param {*} datasource - return of the function getNoReportDataSource
+ * @param {*} data - JSON file 
+ * @returns {daystoadd}
+ */
 function addDaynoReport(numberdays, datasource, data) {
   var daystoadd = [];
 
@@ -565,9 +623,17 @@ function addDaynoReport(numberdays, datasource, data) {
   }
   return daystoadd;
 }
+/**
+ * @description Returns the number of completed days (no missing and no repeat day) of reported symptoms
+ * @returns {days}
+ */
 function getDays() {
   return this.days;
 }
+/**
+ * @description Display on a new HTML element the data symptom values of the day we select by clicking on it 
+ * @description Can show also the data of our wearable data source if we connect one
+ */
 function tooltip_heatmap() {
   const tooltip = d3
     .select("body")
@@ -609,8 +675,16 @@ function tooltip_heatmap() {
       tooltip.style("visibility", "hidden");
     });
 }
-
-/* Graphics Functions - SVG D3.JS */
+/**
+ * @description Instancy the svg variable with a HTML div (width, height...)
+ * @param {*} heatmapDiv - maingroup - svg element 
+ * @param {*} heatmpaSize - variable width of the heatmap 
+ * @param {*} SVGheight - variable height of the heatmap 
+ * @param {*} symptomDiv - symptomgroup - svg element 
+ * @param {*} titleDiv - titlegroup - svg element 
+ * @param {*} legendDiv - legendgroup - svg element 
+ * @param {*} legendPhoneDiv - legendgroupphone - svg element 
+ */
 function createSvgReport(heatmapDiv, heatmpaSize, SVGheight, symptomDiv, titleDiv, legendDiv, legendPhoneDiv) {
   maingroup = d3.select('#' + heatmapDiv)
     .append("svg")
@@ -650,6 +724,13 @@ function createSvgReport(heatmapDiv, heatmpaSize, SVGheight, symptomDiv, titleDi
     .attr("width", 100 + "%")
     .attr("heigt", 100 + "%");
 }
+/**
+ * @description Display on screen an new graphic svg element: heatmap 
+ * @description Each case is depending of a value, a day and a symptom
+ * @description THe color represents the value of the report
+ * @param {*} maingroup - svg element
+ * @param {*} symptom_data - data values of symptom report
+ */
 function showHeatmap(maingroup, symptom_data) {
   colorScale = scaleColor();
   y = yScale();
@@ -675,6 +756,12 @@ function showHeatmap(maingroup, symptom_data) {
     .attr("stroke", "#e2e2e2")
     .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
 }
+/**
+ * @description Display on screen the axis X - showing on the heatmap the days
+ * @description We show only a day per week 
+ * @param {*} maingroup - svg element
+ * @param {*} days_axis - data of symptom report (days)
+ */
 function showDaysAxis(maingroup, days_axis) {
 
   var dayLabel = maingroup.selectAll(".daysLabel")
@@ -701,6 +788,12 @@ function showDaysAxis(maingroup, days_axis) {
     .style("stroke", "#212529")
     .style("stroke-width", ".5");
 }
+/**
+ * @description Display on screen the title of the heatmap
+ * @description Display on screen the subtitle of the heatmap
+ * @param {Element} titleapple - svg element
+ * @param {String} title - title text message
+ */
 function showTitleandSubtitle(maingroup, title) {
   var title = maingroup.append("text")
     .attr("x", 50 + "%")
@@ -727,6 +820,11 @@ function showTitleandSubtitle(maingroup, title) {
     .style("font-weight", "300")
     .text("Last update - " + formatdateshow(days[days.length - 1],  year[year.length - 1]));
 }
+/**
+ * @description Display on the screen the caption of the symptoms 
+ * @description This Caption is dependable of the variable $names 
+ * @param {*} maingroup 
+ */
 function showSymptomAxis(maingroup) {
 
   var symptomLabel = maingroup.selectAll(".symptomLabel")
@@ -797,6 +895,11 @@ function showSymptomAxis(maingroup) {
     .style("stroke", "#212529")
     .style("stroke-width", "0.5");
 }
+/**
+ * @description Display on screen the symptom we look at when we click on a case
+ * @param {*} maingroup 
+ * @param {*} num - indice of the symptom caption
+ */
 function selectSymptomOnclick(maingroup, num) {
   if (num < 13)
     maingroup.append("rect")
@@ -808,6 +911,12 @@ function selectSymptomOnclick(maingroup, num) {
       .style('fill', '#00CC99')
       .lower();
 }
+/**
+ * @description Display on the screen the color scale of the symptom 
+ * @description This Caption go at 0 to 4
+ * @description This Caption is for an use on phone
+ * @param {*} maingroup 
+ */
 function showLegendPhone(maingroup) {
 
   var countPoint = [-1, 0, 1, 2, 3, 4];
@@ -841,6 +950,12 @@ function showLegendPhone(maingroup) {
     .attr("font-size", 0.5 + "rem")
     .style("font-weight", "200");
 }
+/**
+ * @description Display on the screen the color scale of the symptom 
+ * @description This Caption go at 0 to 4
+ * @description This Caption is for an use on computer
+ * @param {*} maingroup 
+ */
 function showLegend(maingroup) {
   var countPoint = [-1, 0, 1, 2, 3, 4];
   var commentScale = ["No report", "No symptom", "Low symptom", "Middle symptom", "Strong symptom", "Unbearable symptom"];
@@ -876,6 +991,12 @@ function showLegend(maingroup) {
     .attr("font-size", 0.6 + "rem")
     .style("font-weight", "300");
 }
+/**
+ * @description Display on screen the values of the selected cases of the heatmap depending of the day. 
+ * @param {*} data - values of the symptom (0 to 4)
+ * @param {*} i - indice of the days
+ * @param {*} y - indice of the comments
+ */
 function showAppendTitle(data, i, y) {
   var commentScale = ["No report", "No symptom", "Low symptom", "Middle symptom", "Strong symptom", "Unbearable symptom"];
   if (data == -2)
@@ -922,26 +1043,46 @@ function showAppendTitle(data, i, y) {
   }
 
 }
-
-/* Variable - Graphics  */
+/**
+ * @description get a scale for the axis y (symptom)
+ */
 function yScale() {
   return d3.scaleBand()
     .domain($names)
     .rangeRound([0, symptom_data.length * gridSize]);
 }
+/**
+ * @description Get the witdh of the heatmap display
+ * @returns {height}
+ */
 function determineInnerwidth() {
   return gridSize * 5 + width;
 }
+/**
+ * @description Get the height of the heatmap display
+ * @returns {height}
+ */
 function determineHeigth() {
   return gridSize * $names.length;
 }
+/**
+ * @description return a scale colors for the heatmap 
+ * @description #fff", "#8a0886", "#cc2efa", "#e2a9f3", "#f5a9f2
+ * @returns {ScaleColor}
+ */
 function scaleColor() {
   return d3.scaleLinear()
     .domain([0, 4])
     .range(["#fff", "#8a0886", "#cc2efa", "#e2a9f3", "#f5a9f2"]);
 }
-
-/* Format */
+/**
+ * @function formatdateshow
+ * @description This function transform a single date with a format (dd/mm) in new format (Jan 01)
+ * @description We display this format of date on the screen
+ * @param { Array } data of the JSON file
+ * @param { String} year - year of the sick incident 
+ * @return { day  } - Array of the new formating date of the JSoN File to display
+ */
 function formatdateshow(data, year) {
   let months = ["Jan", "Fev", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   for (let i = 1; i < months.length + 1; i++) {
@@ -955,6 +1096,14 @@ function formatdateshow(data, year) {
       day = months[i - 1] + " " + data.split('/')[0] + ", " + year
   }
 }
+/**
+ * @function formatdateshow2
+ * @description This function transform an array of date with a format (dd/mm) in new format (Jan 01)
+ * @description We display this format of date on the screen 
+ * @param { Array } data of the JSON file
+ * @param { String} year - year of the sick incident 
+ * @return { day  } - Array of the new formating date of the JSoN File to display
+ */
 function formatdateshow2(data, year) {
   let day = [];
   let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];

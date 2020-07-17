@@ -1,15 +1,24 @@
-comparedateApple = 0;
-comparedate = 0;
-comparedate_fitbit = 0;
-finaldataAppleWatch = [];
-finaldataOuraTemperature = [];
-finaldataOura = [];
-finaldata_fitbit = [];
-finaldata_garmin = [];
-finaldataGoogle = [];
-finaldataOuraRes = [];
-comparateDayReportWearable = [];
-symptom_data_heatmap = [];
+/**
+ * @author Basile Morane
+ * @description heart_rate.js (javascript). Juin 2020
+ * @fileOverview This file is useful for displaying on screen the graphics of the data source connected with our account
+ */
+/** @type {number} */comparedateApple = 0;
+/** @type {number} */comparedate = 0;
+/** @type {number} */comparedate_fitbit = 0;
+/** @type {Array} */finaldataAppleWatch = [];
+/** @type {Array} */finaldataOuraTemperature = [];
+/** @type {Array} */finaldataOura = [];
+/** @type {Array} */finaldata_fitbit = [];
+/** @type {Array} */finaldata_garmin = [];
+/** @type {Array} */finaldataGoogle = [];
+/** @type {Array} */finaldataOuraRes = [];
+/** @type {Array} */comparateDayReportWearable = [];
+/** @type {Array} */symptom_data_heatmap = [];
+/**
+ * @description	main function which allows you to display the graphics corresponding to the existing data. 
+ * @param { Array } data of the JSON file
+ */
 function main_wearable_data(data) {
     fitbit = controlWearableDatafromfile(data, 'fitbit');
     apple = controlWearableDatafromfile(data, 'apple');
@@ -44,17 +53,15 @@ function main_wearable_data(data) {
     if (fitbit != true && apple != true && ouraHR != true && oura != true && garmin != true && google != true && ourares != true)
         revert[0] = 1;
     if (fitbit != true && apple != true && ouraHR != true && oura != true && garmin != true && google != true && oura != true)
-    revert[6] = 1;
+        revert[6] = 1;
     cntbttHr = maxHr;
-    if (fitbit == true || apple == true || oura == true || ouraHR == true || garmin == true || google == true || ourares== true) {
+    if (fitbit == true || apple == true || oura == true || ouraHR == true || garmin == true || google == true || ourares == true) {
         symptom_report = getSymptomDatafromFile(0);
-       // month = determinenamemonth(completedDays);
         createWearableDataSvg('wearable-graph', ((completedDays.length) * gridSize), 'wearable-legend', (heightGraph * 1.1), 'wearable-title', (margin.top * 1.5), 'wearable-choice');
-        createLegendAxeX(maingroup, formatdateshow2 (this.days_axis, ""));
+        createLegendAxeX(maingroup, formatdateshow2(this.days_axis, ""));
         createLegendAxeY(legendgroup, "null", "");
         getreportedSickIncident(maingroup, symptom_report);
         getButtonChoice(makeAchoice, legendgroupphone);
-       // showMonthsAxis(maingroup, month, (heightGraph - 5));
         tooltipChoice(data);
         tooltipInformation('circle-information');
         var winScroll = document.getElementById("heatmap").scrollLeft;
@@ -66,29 +73,51 @@ function main_wearable_data(data) {
         }
     } else d3.select('#wearable-container').remove();
 }
-/* Garmin - Heart rate */
+/**
+ * @description Garmin -  Heart Rate
+ * @description Load the variable needed to display the svg element - chart pie 
+ * @description Get the sum & standart deviation / axis X day / Axis Y values / data point / reported sick incdent 
+ * @param {Array} data - variable JSON file data
+ * @function controlDatafromGarmin
+ * @function calculatSum
+ * @function sickness_event
+ */
 function loadDatafromGarmin(data) {
     garmindata = [], garmindate = [], garminday = [], garminmonth = [], garminyear = [];
     symptomData_garmin = [];
     controlDatafromGarmin(data);
 }
+/**
+ * @description  Garmin -  Heart Rate
+ * @description Get and control all the element we need to display the graphics of this data source 
+ * @description Get compare / axis Y values element / data values / axis X element - days 
+ * @param {Array} data - variable JSON file data
+ * @function getHeartRateDatafromGarmin
+ * @function controlDay
+ * @function getDayonAxis
+ * @function dataControl
+ * @function getAxisLegend
+ * @function addorRemoveday
+ * @function getSymptomDatafromFile
+ * @function compareDateReport
+ */
 function controlDatafromGarmin(data) {
     getHeartRateDatafromGarmin(data);
-    /* Find the day */
     controlday_garmin = controlDay(garminday, garminday, garminmonth);
     noMissingDay_garmin = addorRemoveday(controlday_garmin, getDays(), data);
-
-    /* Get the difference between the day */
     comparedate_garmin = compareDateReport(noMissingDay_garmin);
     garmin_date = completedLastDay(comparedate_garmin, noMissingDay_garmin);
     dayAxis_garmin = getDayonAxis(garmin_date);
     monthOnAxis_garmin = determinenamemonth(garmin_date);
-
-    /* Udpate the data with the missing day / repeat day */
     finaldata_garmin = dataControl(garmindata, garminday, garminday, garminmonth, comparedate_garmin);
     symptomData_garmin = getSymptomDatafromFile(0);
     garminAxis = getAxisLegend(finaldata_garmin, 'dizaine');
-}
+}/**
+ * @description  Garmin -  Heart Rate
+ * @description Read all the data available from the JSON file for this data source 
+ * @description Get element data / formated element timestamp (day/month - day - month -year)
+ * @param {Array} data - variable JSON file data
+ */
 function getHeartRateDatafromGarmin(data) {
     cnt = 0;
     this.file = data.garmin_heartrate.map(d => d);
@@ -101,6 +130,17 @@ function getHeartRateDatafromGarmin(data) {
         cnt++;
     });
 }
+/**
+ * @description Garmin -  Heart Rate
+ * @description Display on screen (if data source selected) all svg element depending from this data source 
+ * @description Chart point - Axis X - Axis Y - Sum & standart deviation - reported incident - data on tooltip 
+ * @param {*} dataAxis- values of the axis X 
+ * @param {*} maingroup- svg element to display the chart point, the caption of the X axis and visualiton of the data of the selected circle
+ * @param {*} legendgroup - svg element to display the caption of the Y axis 
+ * @param {*} titlegroup - svg element to display the title
+ * @param {*} revert - variable of click mouse gestion 
+ * @param {*} prob - non utilised variable 
+ */
 function mainContainer_garmin_heartrate(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
     if (revert[4] == 1) {
         removeDataSource('circle-garmin-cnt', 'garmin-axisY-cnt', 'garmin-title-cnt', 'garmin-sum');
@@ -113,30 +153,52 @@ function mainContainer_garmin_heartrate(dataAxis, maingroupapple, legendapple, t
         removeDataSource('circle-garmin-cnt', 'garmin-axisY-cnt', 'garmin-title-cnt', 'garmin-sum');
     }
 }
-
-/* FITBIT - Heart rate */
+/**
+ * @description FITBIT - Heart Rate 
+ * @description Load the variable needed to display the svg element - chart pie 
+ * @description Get the sum & standart deviation / axis X day / Axis Y values / data point / reported sick incdent 
+ * @param {Array} data - variable JSON file data
+ * @function controlDatafromFitbit
+  * @function calculatSum
+ * @function sickness_event
+ */
 function loadDatafromFitbit(data) {
     fitbitdata = [], fitbitdate = [], fitbitday = [], fitbitmonth = [], fitbityear = [];
     symptomData_fitbit = [];
     controlDatafromFitbit(data);
 }
+/**
+ * @description FITBIT - Heart Rate 
+ * @description Get and control all the element we need to display the graphics of this data source 
+ * @description Get compare / axis Y values element / data values / axis X element - days 
+ * @param {Array} data - variable JSON file data
+ * @function getFitbitSummaryFromFile
+ * @function controlDay
+ * @function getDayonAxis
+ * @function dataControl
+ * @function getAxisLegend
+ * @function addorRemoveday
+ * @function getSymptomDatafromFile
+ * @function compareDateReport
+ */
 function controlDatafromFitbit(data) {
     getHeartRateDatafromFitbit(data);
-    /* Find the day */
     controlday_fitbit = controlDay(fitbitday, fitbitday, fitbitmonth);
     noMissingDay_fitbit = addorRemoveday(controlday_fitbit, getDays(), data);
-
-    /* Get the difference between the day */
     comparedate_fitbit = compareDateReport(noMissingDay_fitbit);
     fitbit_date = completedLastDay(comparedate_fitbit, noMissingDay_fitbit);
     dayAxis_fitbit = getDayonAxis(fitbit_date);
     monthOnAxis_fitbit = determinenamemonth(fitbit_date);
-
-    /* Udpate the data with the missing day / repeat day */
     finaldata_fitbit = dataControl(fitbitdata, fitbitday, fitbitday, fitbitmonth, comparedate_fitbit);
     symptomData_fitbit = getSymptomDatafromFile(0);
     fitbitAxis = getAxisLegend(finaldata_fitbit, 'dizaine');
 }
+/**
+ * @description FITBIT - Heart Rate 
+ * @description Read all the data available from the JSON file for this data source 
+ * @description Get element data / formated element timestamp (day/month - day - month -year)
+ * @param {Array} data - variable JSON file data
+ */
 function getHeartRateDatafromFitbit(data) {
     cnt = 0;
     this.file = data.fitbit_summary.map(d => d);
@@ -149,6 +211,17 @@ function getHeartRateDatafromFitbit(data) {
         cnt++;
     });
 }
+/**
+ * @description FITBIT - Heart Rate 
+ * @description Display on screen (if data source selected) all svg element depending from this data source 
+ * @description Chart point - Axis X - Axis Y - Sum & standart deviation - reported incident - data on tooltip 
+ * @param {*} dataAxis- values of the axis X 
+ * @param {*} maingroup- svg element to display the chart point, the caption of the X axis and visualiton of the data of the selected circle
+ * @param {*} legendgroup - svg element to display the caption of the Y axis 
+ * @param {*} titlegroup - svg element to display the title
+ * @param {*} revert - variable of click mouse gestion 
+ * @param {*} prob - non utilised variable 
+ */
 function mainContainer_fitbit_summary_heartrate(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
     if (revert[2] == 1) {
         removeDataSource('circle-fitbit-cnt', 'fitbit-axisY-cnt', 'fitbit-title-cnt', 'fitbit-sum');
@@ -161,13 +234,32 @@ function mainContainer_fitbit_summary_heartrate(dataAxis, maingroupapple, legend
         removeDataSource('circle-fitbit-cnt', 'fitbit-axisY-cnt', 'fitbit-title-cnt', 'fitbit-sum');
     }
 }
-
-/*APPLE WATCH - Heart rate */
+/**
+ * @description APPLE WATCH - Heart Rate 
+ * @description Load the variable needed to display the svg element - chart pie 
+ * @description Get the sum & standart deviation / axis X day / Axis Y values / data point / reported sick incdent 
+ * @param {Array} data - variable JSON file data
+ * @function controlDatafromAppleWatch
+ */
 function loadDatafromAppleWatch(data) {
     dayapp = [], monthapp = [], appledata = [], appleday = [], appleyear = [], symptomData = [];
     cnt = 0, appledate = [], repeat = [], noRepeatDataApple = [];
     controlDatafromAppleWatch(data);
 }
+/**
+ * @description APPLE WATCH - Heart Rate 
+ * @description Get and control all the element we need to display the graphics of this data source 
+ * @description Get compare / axis Y values element / data values / axis X element - days 
+ * @param {Array} data - variable JSON file data
+ * @function getAppleDatafromFile
+ * @function controlDay
+ * @function getDayonAxis
+ * @function dataControl
+ * @function getAxisLegend
+ * @function addorRemoveday
+ * @function getSymptomDatafromFile
+ * @function compareDateReport
+ */
 function controlDatafromAppleWatch(data) {
     /* Recupérer les données dans le fichier*/
     getAppleDatafromFile(data);
@@ -184,6 +276,12 @@ function controlDatafromAppleWatch(data) {
     /* Trouver les jours ou il y ades reports :) */
     symptomData = getSymptomDatafromFile(0);
 }
+/**
+ * @description APPLE WATCH - Heart Rate 
+ * @description Read all the data available from the JSON file for this data source 
+ * @description Get element data / formated element timestamp (day/month - day - month -year)
+ * @param {Array} data - variable JSON file data
+ */
 function getAppleDatafromFile(data) {
     cnt = 0;
     this.file = data.apple_health_summary.map(d => d);
@@ -196,6 +294,16 @@ function getAppleDatafromFile(data) {
         cnt++;
     });
 }
+/**
+ * @description APPLE WATCH - Heart Rate 
+ * @description Display on screen (if data source selected) all svg element depending from this data source 
+ * @description Chart point - Axis X - Axis Y - Sum & standart deviation - reported incident - data on tooltip 
+ * @param {*} dataAxis- values of the axis X 
+ * @param {*} maingroup- svg element to display the chart point, the caption of the X axis and visualiton of the data of the selected circle
+ * @param {*} legendgroup - svg element to display the caption of the Y axis 
+ * @param {*} titlegroup - svg element to display the title
+ * @param {*} revert - variable of click mouse gestion 
+ */
 function mainContainer_HeartRate_Apple_Watch(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
     if (revert[1] == 1) {
         removeDataSource('circle-apple-watch-ctn', 'apple-axisY-ctn', 'apple-title-ctn', 'apple-sum', 'apple-axisY-ctn-2', 'apple-axisY-ctn');
@@ -208,14 +316,35 @@ function mainContainer_HeartRate_Apple_Watch(dataAxis, maingroupapple, legendapp
         removeDataSource('circle-apple-watch-ctn', 'apple-axisY-ctn', 'apple-title-ctn', 'apple-sum', 'apple-axisY-ctn-2', 'apple-axisY-ctn');
     }
 }
-
-/* OURA - Heart rate */
+/**
+ * @description OURA SUMMARRY -  Heart Rate
+ * @function loadDatafromOura
+ * @description Load the variable needed to display the svg element - chart pie 
+ * @description Get axis X day / Axis Y values / data point / reported sick incdent 
+ * @param {Array} data - variable JSON file data
+ * @function controlDatafromOuraSleep
+ */
 function loadDatafromOura(data) {
     ouradata = [], ouraday = [], ourayear = [], ouradayAxis = [], ouradate = [], repeat = [], noRepeatData = [];
     ouraday = [];
     ouramonth = [];
     controlDatafromOuraSleep(data);
 }
+/**
+ * @description OURA SUMMARRY -  Heart Rate
+ * @function controlDatafromOuraSleep
+ * @description Get and control all the element we need to display the graphics of this data source 
+ * @description Get compare / axis Y values element / data values / axis X element - days 
+ * @param {Array} data - variable JSON file data
+ * @function getHeartRatefromFileOura
+ * @function controlDay
+ * @function getDayonAxis
+ * @function dataControl
+ * @function getAxisLegend
+ * @function addorRemoveday
+ * @function getSymptomDatafromFile
+ * @function compareDateReport
+ */
 function controlDatafromOuraSleep(data) {
     /* Recupérer les données dans le fichier*/
     getHeartRatefromFileOura(data);
@@ -231,6 +360,13 @@ function controlDatafromOuraSleep(data) {
     /* Trouver les jours ou il y ades reports :) */
     symptomData = getSymptomDatafromFile(0);
 }
+/**
+ * @description OURA SUMMARRY -  Heart Rate
+ * @function getHeartRatefromFileOura
+ * @description Read all the data available from the JSON file for this data source 
+ * @description Get element data / formated element timestamp (day/month - day - month -year)
+ * @param {Array} data - variable JSON file data
+ */
 function getHeartRatefromFileOura(data) {
     cnt = 0;
     this.file = data.oura_sleep_summary.map(d => d);
@@ -243,6 +379,18 @@ function getHeartRatefromFileOura(data) {
         cnt++;
     });
 }
+/**
+ * @description OURA SUMMARRY -  Heart Rate
+ * @function mainContainer_heart_rate_oura_sleep
+ * @description Display on screen (if data source selected) all svg element depending from this data source 
+ * @description Chart point - Axis X - Axis Y - Sum & standart deviation - reported incident - data on tooltip 
+ * @param {*} dataAxis- values of the axis X 
+ * @param {*} maingroup- svg element to display the chart point, the caption of the X axis and visualiton of the data of the selected circle
+ * @param {*} legendgroup - svg element to display the caption of the Y axis 
+ * @param {*} titlegroup - svg element to display the title
+ * @param {*} revert - variable of click mouse gestion 
+ * @param {*} prob - non utilised variable 
+ */
 function mainContainer_heart_rate_oura_sleep(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
     if (revert[3] == 1) {
         removeDataSource('circle-oura-heart-rate-ctn', 'oura-heart-rate-title-ctn', 'oura-heart-rate-axisY-cnt', 'oura-heart-rate-sum');
@@ -253,14 +401,35 @@ function mainContainer_heart_rate_oura_sleep(dataAxis, maingroupapple, legendapp
     } else
         removeDataSource('circle-oura-heart-rate-ctn', 'oura-heart-rate-title-ctn', 'oura-heart-rate-axisY-cnt', 'oura-heart-rate-sum');
 }
-
-/* GOOGLE FIT - Heart rate */
+/**
+ * @description Google fit -  Heart Rate
+ * @function loadDatafromGoogle
+ * @description Load the variable needed to display the svg element - chart pie 
+ * @description Get the sum & standart deviation / axis X day / Axis Y values / data point / reported sick incdent 
+ * @param {Array} data - variable JSON file data
+ * @function controlDatafromGoogleFit
+ */
 function loadDatafromGoogle(data) {
     googledata = [], googleday = [], googleyear = [], googledayAxis = [], googledate = [], repeat = [], noRepeatData = [];
     googleday = [];
     googlemonth = [];
     controlDatafromGoogleFit(data);
 }
+/**
+ * @description Google fit -  Heart Rate
+ * @function controlDatafromGoogleFit
+ * @description Get and control all the element we need to display the graphics of this data source 
+ * @description Get compare / axis Y values element / data values / axis X element - days 
+ * @param {Array} data - variable JSON file data
+ * @function getHeartRatefromFileGoogle
+ * @function controlDay
+ * @function getDayonAxis
+ * @function dataControlOura
+ * @function addDayonGraphic
+ * @function addorRemoveday
+ * @function getSymptomDatafromFile
+ * @function compareDateReport
+ */
 function controlDatafromGoogleFit(data) {
     /* Recupérer les données dans le fichier*/
     getHeartRatefromFileGoogle(data);
@@ -278,6 +447,13 @@ function controlDatafromGoogleFit(data) {
     /* Trouver les jours ou il y ades reports :) */
     symptomData = getSymptomDatafromFile(0);
 }
+/**
+ * @description Google fit -  Heart Rate
+ * @function getHeartRatefromFileGoogle
+ * @description Read all the data available from the JSON file for this data source 
+ * @description Get element data / formated element timestamp (day/month - day - month -year)
+ * @param {Array} data - variable JSON file data
+ */
 function getHeartRatefromFileGoogle(data) {
     cnt = 0;
     this.file = data.googlefit_heartrate.map(d => d);
@@ -290,6 +466,18 @@ function getHeartRatefromFileGoogle(data) {
         cnt++;
     });
 }
+/**
+ * @description Google fit -  Heart Rate
+ * @function mainContainer_heart_rate_google_fit
+ * @description Display on screen (if data source selected) all svg element depending from this data source 
+ * @description Chart point - Axis X - Axis Y - Sum & standart deviation - reported incident - data on tooltip 
+ * @param {*} dataAxis- values of the axis X 
+ * @param {*} maingroup- svg element to display the chart point, the caption of the X axis and visualiton of the data of the selected circle
+ * @param {*} legendgroup - svg element to display the caption of the Y axis 
+ * @param {*} titlegroup - svg element to display the title
+ * @param {*} revert - variable of click mouse gestion 
+ * @param {*} prob - non utilised variable 
+ */
 function mainContainer_heart_rate_google_fit(dataAxis, maingroupapple, legendapple, titleapple, revert, prob) {
     if (revert[5] == 1) {
         removeDataSource('circle-google-heart-rate-ctn', 'google-heart-rate-title-ctn', 'google-heart-rate-axisY-cnt', 'google-heart-rate-sum');
@@ -299,32 +487,53 @@ function mainContainer_heart_rate_google_fit(dataAxis, maingroupapple, legendapp
     } else
         removeDataSource('circle-google-heart-rate-ctn', 'google-heart-rate-title-ctn', 'google-heart-rate-axisY-cnt', 'google-heart-rate-sum');
 }
-
-/* OURA - Respiratory rate */
+/**
+ * @description OURA - Oura Respiratory Rate
+ * @function loadDataFromOura_RespiratoryRate
+ * @description Load the variable needed to display the svg element - chart pie 
+ * @description Get the sum & standart deviation / axis X day / Axis Y values / data point / reported sick incdent 
+ * @param {Array} data - variable JSON file data
+ * @function controlDatarespiratory_ratefromOura
+ */
 function loadDataFromOura_RespiratoryRate(data) {
     resdata = [], resday = [], resyear = [], resdayAxis = [], resdate = [], repeat = [], noRepeatData = [];
     day = [];
     monthres = [];
     controlDatarespiratory_ratefromOura(data);
 }
+/**
+ * @description OURA - Oura Respiratory Rate
+ * @function controlDatarespiratory_ratefromOura
+ * @description Get and control all the element we need to display the graphics of this data source 
+ * @description Get axis Y values element / data values / axis X element - days 
+ * @param {Array} data - variable JSON file data
+ * @function getRespiratory_rateDatafromFile
+ * @function controlDay
+ * @function getDayonAxis
+ * @function dataControl
+ * @function addorRemoveday
+ * @function getSymptomDatafromFile
+ * @function compareDateReport
+ */
 function controlDatarespiratory_ratefromOura(data) {
-    /* Recupérer les données dans le fichier*/
     getRespiratory_rateDatafromFile(data);
-
-    /*Find the day */
     controldayRes = controlDay(resday, day, monthres);
     noMissingDayRes = addorRemoveday(controldayRes, getDays(), data);
     comparedate = compareDateReport(noMissingDayRes);
     oura_dateRes = completedLastDay(comparedate, noMissingDayRes);
-
     ResdayAxis = getDayonAxis(oura_dateRes);
     monthRes = determinenamemonth(oura_dateRes);
-
     finaldataOuraRes = dataControl(resdata, resday, day, monthres, comparedate);
     axisRes_oura = getAxisLegend(finaldataOuraRes, 'dizaine');
-    /* Trouver les jours ou il y ades reports :) */
     symptomData = getSymptomDatafromFile(0);
 }
+/**
+ * @description OURA - Oura Respiratory Rate
+ * @function getRespiratory_rateDatafromFile
+ * @description Read all the data available from the JSON file for this data source 
+ * @description Get element data / formated element timestamp (day/month - day - month -year)
+ * @param {Array} data - variable JSON file data
+ */
 function getRespiratory_rateDatafromFile(data) {
     cnt = 0;
     this.file = data.oura_sleep_summary.map(d => d);
@@ -337,6 +546,17 @@ function getRespiratory_rateDatafromFile(data) {
         cnt++;
     });
 }
+/**
+ * @description OURA - Oura Respiratory Rate
+ * @function mainContainer_RespiratoryRate_oura
+ * @description Display on screen (if data source selected) all svg element depending from this data source 
+ * @description Chart point - Axis X - Axis Y - Sum & standart deviation - reported incident - data on tooltip 
+ * @param {*} data - values of the axis X 
+ * @param {*} maingroupapple - svg element to display the chart point, the caption of the X axis and visualiton of the data of the selected circle
+ * @param {*} legendapple - svg element to display the caption of the Y axis 
+ * @param {*} titleapple - svg element to display the title
+ * @param {*} revert - variable of click mouse gestion 
+ */
 function mainContainer_RespiratoryRate_oura(data, maingroupapple, legendapple, titleapple, revert) {
     if (revert[6] == 1) {
         removeDataSource('circle-resp-ctn', 'oura-resp-axisY-cnt', 'oura-resp-title-ctn', 'oura-resp-sum', 'oura-resp-axisY-cnt-2', 'oura-resp-axisY-cnt');
@@ -350,32 +570,54 @@ function mainContainer_RespiratoryRate_oura(data, maingroupapple, legendapple, t
         removeDataSource('circle-resp-ctn', 'oura-resp-axisY-cnt', 'oura-resp-title-ctn', 'oura-resp-sum', 'oura-resp-axisY-cnt-2', 'oura-resp-axisY-cnt');
     }
 }
-
-/* OURA - Temperature */
+/**
+ * @description OURA - Temperature
+ * @function loadDataFromOura_Temperature
+ * @description Load the variable needed to display the svg element - chart pie 
+ * @description Get the sum & standart deviation / axis X day / Axis Y values / data point / reported sick incdent 
+ * @param {Array} data - variable JSON file data
+ * @function controlDatafromOura
+ */
 function loadDataFromOura_Temperature(data) {
     tempdata = [], tempday = [], tempyear = [], tempdayAxis = [], tempdate = [], repeat = [], noRepeatData = [];
     day = [];
     monthtemp = [];
     controlDatafromOura(data);
 }
+/**
+ * @description OURA - Temperature
+ * @function controlDatafromOura
+ * @description Get and control all the element we need to display the graphics of this data source 
+ * @description Get axis Y values element / data values / axis X element - days 
+ * @param {Array} data - variable JSON file data
+ * @function getOuraTemperatureDatafromFile
+ * @function controlDay
+ * @function getDayonAxis
+ * @function getAxisLegend
+ * @function completedLastDay
+ * @function ompareDateReport
+ * @function determinenamemonth
+ * @function getSymptomDatafromFile
+ */
 function controlDatafromOura(data) {
-    /* Recupérer les données dans le fichier*/
     getTemperatureDatafromFile(data);
-
-    /*Find the day */
     controldayTemp = controlDay(tempday, day, monthtemp);
     noMissingDayTemp = addorRemoveday(controldayTemp, getDays(), data);
     comparedate = compareDateReport(noMissingDayTemp);
     oura_date = completedLastDay(comparedate, noMissingDayTemp);
-
     tempdayAxis = getDayonAxis(oura_date);
     month = determinenamemonth(oura_date);
-
     finaldataOuraTemperature = dataControl(tempdata, tempday, day, monthtemp, comparedate);
     axisTemperature_oura = getAxisLegend(finaldataOuraTemperature, 'decimal');
-    /* Trouver les jours ou il y ades reports :) */
     symptomData = getSymptomDatafromFile(0);
 }
+/**
+ * @description OURA - Temperature
+ * @function getTemperatureDatafromFile
+ * @description Read all the data available from the JSON file for this data source 
+ * @description Get element data / formated element timestamp (day/month - day - month -year)
+ * @param {Array} data - variable JSON file data
+ */
 function getTemperatureDatafromFile(data) {
     cnt = 0;
     this.file = data.oura_sleep_summary.map(d => d);
@@ -388,6 +630,16 @@ function getTemperatureDatafromFile(data) {
         cnt++;
     });
 }
+/**
+ * @description OURA - Temperature
+ * @description Display on screen (if data source selected) all svg element depending from this data source 
+ * @description Chart point - Axis X - Axis Y - Sum & standart deviation - reported incident - data on tooltip 
+ * @param {*} data - null
+ * @param {*} maingroupapple - svg element to display the chart point, the caption of the X axis and visualiton of the data of the selected circle
+ * @param {*} legendapple - svg element to display the caption of the Y axis 
+ * @param {*} titleapple - svg element to display the title
+ * @param {*} revert - variable of click mouse gestion 
+ */
 function mainContainer_temperature_oura_sleep_summary(data, maingroupapple, legendapple, titleapple, revert) {
     if (revert[0] == 1) {
         removeDataSource('circle-temperature-ctn', 'oura-axisY-cnt', 'oura-title-ctn', 'oura-sum', 'oura-axisY-cnt-2', 'oura-axisY-cnt');
@@ -395,29 +647,41 @@ function mainContainer_temperature_oura_sleep_summary(data, maingroupapple, lege
         createChartePoint(maingroupapple, finaldataOuraTemperature, axisTemperature_oura, "circle-temperature-ctn", "#beaed4", (gridSize / 10));
         createTitle(titleapple, "Temperature evolution", 'oura-title-ctn', '50%');
         createLegendAxeY(legendapple, axisTemperature_oura, "BODY TEMPERATURE", 'oura-axisY-cnt');
-        /* Afficher les données */
         tooltip("circle-temperature-ctn", oura_date, "");
     } else {
         removeDataSource('circle-temperature-ctn', 'oura-axisY-cnt', 'oura-title-ctn', 'oura-sum', 'oura-axisY-cnt-2', 'oura-axisY-cnt');
     }
 }
-
-/* Fonction - Extern graphic display */
+/**
+ * @description Function to remove from the screen the SVG and HTML element
+ * @function remove
+ * @description We identified the graphic elements with their id 
+ * @param {*} iddata id of the chart point svg element
+ * @param {*} idtitle - id of the title svg element 
+ * @param {*} idaxis id of the axis X svg element 
+ * @param {*} idaxis2 id of the axis Y svg element 
+ * @param {*} idaxis3 id of the sum svg element 
+ * @param {*} idaxis4 id of the sick incident  svg element 
+ */
 function removeDataSource(iddata, idtitle, idaxis, idaxis2, idaxis3, idaxis4) {
     d3.selectAll("#" + iddata).remove();
     d3.selectAll("#" + idtitle).remove();
     d3.selectAll("#" + idaxis).remove();
     d3.selectAll("#" + idaxis2).remove();
 }
+/**
+ * @description Display on a new HTML element the data values of the day we select by clicking on it 
+ * @param {*} circleid - id of the select circle 
+ * @param {Array} data - day of the displaying graphics 
+ * @param {*} msg - msg to display 
+ */
 function tooltip(circleid, data, msg) {
-
     const tooltip = d3
         .select("body")
         .append("div")
         .attr("class", "svg-tooltip")
         .style("position", "absolute")
         .style("visibility", "hidden");
-
     d3.selectAll("#" + circleid)
         .on("click", function (d) {
             let coordXY = this.getAttribute('class').split('- ')[1];
@@ -428,13 +692,11 @@ function tooltip(circleid, data, msg) {
                 .style("visibility", "visible")
                 .text(formatdateshow(data[coordXY], coordXY) + " " + d + " " + msg);
         })
-
         .on("mousemove", function () {
             tooltip
                 .style("top", d3.event.pageY + 10 + "px")
                 .style("left", d3.event.pageX - (gridSize * 3.5) + "px");
         })
-
         .on("mouseout", function () {
             d3.select(this).attr("r", gridSize / 10)
                 .style("stroke", "#015483")
@@ -442,15 +704,17 @@ function tooltip(circleid, data, msg) {
             tooltip.style("visibility", "hidden");
         });
 }
+/**
+ * @description This function display on the screen an information message to user
+ * @param {*} circleid - id of the circle 
+ */
 function tooltipInformation(circleid) {
-
     const tooltip = d3
         .select("body")
         .append("div")
         .attr("class", "svg-tooltip-information")
         .style("position", "absolute")
         .style("visibility", "hidden");
-
     d3.selectAll("#" + circleid)
         .on("mouseover", function (d) {
             d3.select(this)
@@ -462,7 +726,6 @@ function tooltipInformation(circleid) {
                     "Use a single click to activate/deactivate a data source. \n Double click to hide all but the clicked data source."
                 );
         })
-
         .on("mousemove", function () {
             tooltip
                 .style("top", d3.event.pageY - (gridSize * 2) + "px")
@@ -477,6 +740,11 @@ function tooltipInformation(circleid) {
             tooltip.style("visibility", "hidden");
         });
 }
+/**
+ * @function tooltipChoice
+ * @description	function to control the display of the graphics with an inteface of multiple buttons (click / double click)
+ * @param { Array } data of the JSON file
+ */
 function tooltipChoice(data) {
     click = 1;
     loadGroupDataSource(data);
@@ -503,8 +771,11 @@ function tooltipChoice(data) {
         selectedGroupButton();
     })
 }
-
-/* Function - Get extern data - visualisation */
+/**
+ * @description This function return an array with all the reported sick incident from the user, with their position and their close number
+ * @param {Number} comparedateApple - number of days shift between the heatmap and the first data of the graphs
+ * @returns {cal2} - Array 
+ */
 function getSymptomDatafromFile(comparedateApple) {
     var cmpt = 0;
     var cnt = 0;
@@ -521,9 +792,7 @@ function getSymptomDatafromFile(comparedateApple) {
             }
         }
     }
-    /* Ordre croissant */
     symptomData.sort(compare);
-
     for (let i = 0; i <= symptomData.length - 1; i++) {
         if (symptomData[i + 1] != symptomData[i]) {
             cal[cnt] = symptomData[i];
@@ -531,35 +800,33 @@ function getSymptomDatafromFile(comparedateApple) {
             cnt++;
         }
     }
-
     for (let i = 1; i <= cal.length - 1; i++) {
         if (cal[i] == (cal[i - 1] + 1) || cal[i] == (cal[i - 1] + 1) + '/1') {
-
             if (cal[i] == (cal[i + 1] - 1)) {
                 cal[i + 1] += '/1';
             }
-
             if (cal[i] == (cal[i + 2] - 2)) {
                 cal[i + 2] += '/1';
             }
-
             if (cal[i] == (cal[i + 3] - 3)) {
                 cal[i + 3] += '/1';
             }
-
             cal[i] += '/0';
             cal[i - 1] += '/1';
         }
     }
-
     for (let i = 0; i < cal.length; i++) {
-        if ((cal[i] != (cal2[i] + "/1")))
-            cal2[i] += '/0';
-        else
-            cal2[i] = cal[i];
+        if ((cal[i] != (cal2[i] + "/1"))) cal2[i] += '/0';
+        else cal2[i] = cal[i];
     }
     return cal2;
 }
+/* Functions - Get element variable display */
+/**
+ * @description function to get the day to display on the graphics - one day every seven - one week 
+ * @param { Array } data - of the JSON file 
+ * @returns { axisdays }
+ */
 function getDayonAxis(data) {
     axisdays = [];
     var cnt = 0;
@@ -569,11 +836,20 @@ function getDayonAxis(data) {
     }
     return axisdays;
 }
+/**
+ * @description Display on screen and on graphics all the reported sock incident from the file JSON
+ * @param {*} maingroupapple - svg element
+ * @param {*} data - return of function getSymptomDatafromFile
+ */
 function getreportedSickIncident(maingroupapple, data) {
     for (let item of data) {
         showreportedSickIncident(maingroupapple, item);
     }
 }
+/**
+ * @description Combine all the chart point data displayed on the screen to obtain a Y-axis legend suitable for every chart point selected. 
+ * @param {Array} revert - user gestion mouse click 
+ */
 function getCombineAxisY(revert) {
     var test = [];
     var cnt1 = 0;
@@ -628,6 +904,12 @@ function getCombineAxisY(revert) {
         newAxis = axis;
     return newAxis;
 }
+/**
+ * @description Get, analyse and return a array to create a Y-axis caption with the min and max values of the data receive in params 
+ * @param { Array } symptomdata 
+ * @param { String } dizaine 
+ * @returns { legende }
+ */
 function getAxisLegend(symptomdata, dizaine) {
     var min = 200;
     var max = 0;
@@ -663,6 +945,13 @@ function getAxisLegend(symptomdata, dizaine) {
     }
     return legende;
 }
+/**
+ * @description Return true if they are data for this data source, else return false
+ * @description This function allow us to display the button to display the chart point 
+ * @param {*} data - JSON file data
+ * @param {*} type - name of the data source we want to know the availability of their data
+ * @returns {boolean} 
+ */
 function controlWearableDatafromfile(data, type) {
     switch (type) {
         case 'fitbit':
@@ -744,6 +1033,11 @@ function controlWearableDatafromfile(data, type) {
             else return true;
     }
 }
+/**
+ * @description Get the difference of day betwenn the data source and the heatmap reporting
+ * @param {*} appledayAxis 
+ * @returns {compteday}
+ */
 function compareDateReport(appledayAxis) {
     let compteday = 0;
     var dayinmonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -755,6 +1049,18 @@ function compareDateReport(appledayAxis) {
     }
     return compteday += (datereport[0] - date[0]);
 }
+/**
+ * @description Function to get the missing or repeat day in an array of formated timestamp
+ * @description Return a new array 
+ * @description 0: the day isn't repat or missing 
+ * @description < 0: missing day 
+ * @description -1: repeat day
+ * @param {Array} data - timestamp of the data source 
+ * @param {*} days2 -  Map of days of the data source 
+ * @param {*} month - Map of month of the data source 
+ * @example dayscontrol = dayControlGraph(tempdate, day, monthtemp);
+ * @returns {days_fixed}
+ */
 function dayControlGraph(data, days2, month) {
     var days_fixed = [];
     var days4_fixed = [];
@@ -773,6 +1079,16 @@ function dayControlGraph(data, days2, month) {
     }
     return days_fixed;
 }
+/**
+ * @description This function add data values ("NO DATA") for the missing day 
+ * @description This function keep only the last data values for repeat day 
+ * @param {*} data - values element data of the data source 
+ * @param {*} tempdate - timestamp of the data source 
+ * @param {*} day -  Map of days of the data source 
+ * @param {*} monthtemp - Map of month of the data source 
+ * @param {*} rapport - values of call function dayControlGraph()
+ * @returns {data2}
+ */
 function dataControl(data, tempdate, day, monthtemp, rapport) {
     dayscontrol = dayControlGraph(tempdate, day, monthtemp);
     const data2 = [];
@@ -812,6 +1128,17 @@ function dataControl(data, tempdate, day, monthtemp, rapport) {
     }
     return data2;
 }
+/**
+ * @description This fonction is use when the data source send several data values per day
+ * @description This function keep the lowest data values for the day 
+ * @description This function add data values ("NO DATA") for the missing day 
+ * @param {*} data - values element data of the data source 
+ * @param {*} tempdate - timestamp of the data source 
+ * @param {*} day -  Map of days of the data source 
+ * @param {*} monthtemp - Map of month of the data source 
+ * @param {*} rapport - values of call function dayControlGraph() 
+ * @returns {data2}
+ */
 function dataControlOura(data, tempdate, day, monthtemp, rapport) {
     dayscontrol = dayControlGraph(tempdate, day, monthtemp);
     const data2 = [];
@@ -862,6 +1189,13 @@ function dataControlOura(data, tempdate, day, monthtemp, rapport) {
     }
     return data2;
 }
+/**
+ * @description
+ * @param {*} date - formated timestamp of the data source
+ * @param {*} days - days of the data source
+ * @param {*} data - JSON file
+ * @returns {newListeDate}
+ */
 function addorRemoveday(date, days, data) {
     var length = data.symptom_report.length - 1;
     var length2 = completedDays.length - 1;
@@ -879,12 +1213,17 @@ function addorRemoveday(date, days, data) {
         }
         for (let i = (date.length); i < ((date.length) + datedif); i++) {
             newListeDate.push(completedDays[length2 - cnt + 1]);
-            //newListeDate.push(formatdate(parseTime(data.symptom_report[length - cnt + 1].timestamp)));
             cnt--;
         }
     }
     return newListeDate;
 }
+/**
+ * @description 
+ * @param {*} rapport - difference of nomber of day between the last day of report and the last day of a datasource
+ * @param {*} date - data values of an array of completed days 
+ * * @returns {newdate}
+ */
 function completedLastDay(rapport, date) {
     var cnt = 0;
     let newdate = [];
@@ -893,15 +1232,17 @@ function completedLastDay(rapport, date) {
         for (let i = 0; i < cnt; i++) {
             newdate[i] = completedDays[i]
         }
-    } else
-        cnt = 0;
+    } else cnt = 0;
     for (let i = cnt; i < date.length + cnt; i++) {
         newdate[i] = date[i - cnt]
     }
-
     return newdate;
 }
-/* Sum - Standart deviation - display */
+/**
+ * @description Calculate the sum and stadart deviation of the data we have in parameters
+ * @param { Array } data values of a data source
+ * @returns {prop}  
+ */
 function calculatSum(data) {
     var sum = 0;
     var N = 0;
@@ -950,6 +1291,11 @@ function calculatSum(data) {
 
     return (prop);
 }
+/**
+ * @description Get, calculate and return the combining sum and standart deviation of the data we want to display 
+ * @param { Array } revert 
+ * @returns {prop}
+ */
 function getSum(revert) {
     var data = [];
     var cnt1 = 0;
@@ -1001,7 +1347,7 @@ function getSum(revert) {
     if (revert[4] == 1 && revert[0] == 0) {
         for (let i = 0; i < finaldata_garmin.length; i++) {
             data[i + cnt3] = finaldata_garmin[i];
-          
+
             cnt4++;
             cnt5++;
         }
@@ -1018,8 +1364,12 @@ function getSum(revert) {
         prop = calculatSum(data);
     return prop;
 }
-
-/* Function - Button choice - visualisation */
+/**
+ * @description Select or deselect the button we click on it by changing the stroke of the button
+ * @param { String } classname - class name of the button 
+ * @param { Array } revert - array controling the gestion of the mouse click
+ * @param { int } stroke - width stroke of the button selected
+ */
 function selectedButton(classname, revert, stroke) {
     switch (revert) {
         case 0:
@@ -1030,6 +1380,14 @@ function selectedButton(classname, revert, stroke) {
             break;
     }
 }
+/**
+ * @description Select or deselect the categories button which we click on
+ * @description or if we select or deselect all the button depending on it
+ * @param { String } classname - class name of the button 
+ * @param { Array } revert - array controling the gestion of the mouse click
+ * @param { int } stroke - width stroke of the button selected
+ * * @param { int } max - max number of button depending of this categories buttons
+ */
 function selectedCategories(classname, revert, stroke, max) {
     if (revert < max)
         d3.select('.' + classname).attr("width", ((gridSize / 2))).attr("height", ((gridSize / 2))).attr('stroke-width', 1);
@@ -1037,6 +1395,11 @@ function selectedCategories(classname, revert, stroke, max) {
     if (revert == max)
         d3.select('.' + classname).attr("width", ((gridSize / 2) - stroke)).attr("height", ((gridSize / 2) - stroke)).attr('stroke-width', stroke).attr("stroke", "#e2e2e2");
 }
+/** 
+ * @description	Group and control button choice of displaying graphics
+ * @function selectedCategories
+ * @function selectedButton
+ */
 function selectedGroupButton() {
     selectedCategories('Temperature', revert[0], 6, 1);
     selectedCategories('RespiratoryRate', revert[6], 6, 1);
@@ -1049,6 +1412,10 @@ function selectedGroupButton() {
     selectedButton('google', revert[5], 4);
     selectedButton('ourares', revert[6], 4);
 }
+/**
+ * @description function to control the gestion of mouse click on the button choice
+ * @description changes the values of the variable revert
+ */
 function controlGestionclick() {
     if ((classButton == 'oura' || classButton == 'Temperature') && revert[0] == 1) {
         revert[0] = 0;
@@ -1179,6 +1546,10 @@ function controlGestionclick() {
         click = 1;
     }
 }
+/**
+ * @description function to control the gestion of mouse double click on the button choice
+ * @description  put revert at 0 or put revert at 1
+ */
 function controlGestiondbclick() {
 
     if (classButton == 'apple') {
@@ -1213,8 +1584,16 @@ function controlGestiondbclick() {
         click = 0;
     }
 }
-
-/* Function - Graphic element visualisation */
+/**
+ * @description Instancy the svg variable with a HTML div (width, height...)
+ * @param {*} div1 - maingroup - dislay of the graphics and X-axis
+ * @param {*} widthdiv1 - width of the size depending of the number of days
+ * @param {*} div2 legendgroup - display of the Y-axis
+ * @param {*} heightdiv2 
+ * @param {*} div3 ) titlegroup - display of the title graphics
+ * @param {*} heightdiv3 
+ * @param {*} divChoice - div with id "makeAchoice"
+ */
 function createWearableDataSvg(div1, widthdiv1, div2, heightdiv2, div3, heightdiv3, divChoice) {
     maingroup = d3.select('#' + div1)
         .append("svg")
@@ -1246,6 +1625,15 @@ function createWearableDataSvg(div1, widthdiv1, div2, heightdiv2, div3, heightdi
         .attr("width", 100 + "%")
         .attr("height", gridSize * 5.5);
 }
+/**
+ * @description Display on screen the svg element - pie chart 
+ * @param {Element} maingroupapple - svg element
+ * @param {Array} data - data to display 
+ * @param {Array} axe - values of Y axis to have the position of the point
+ * @param {String} id - id of the point
+ * @param {Array} color - color of the chart
+ * @param {Number} size - size of the point 
+ */
 function createChartePoint(maingroupapple, data, axe, id, color, size) {
     maingroupapple.selectAll("circle-test")
         .data(data)
@@ -1298,6 +1686,13 @@ function createChartePoint(maingroupapple, data, axe, id, color, size) {
         .style("stroke", "#778899")
         .style("stroke-width", "1");
 }
+/**
+ * @description Display on screen the title of the graphic
+ * @param {Element} titleapple - svg element
+ * @param {String} title - title text message
+ * @param {Number} id - id of the text message 
+ * @param {Number} coordX - positon X of the text message 
+ */
 function createTitle(titleapple, title, id, coordX) {
     titleapple.append("text")
         .attr('id', id)
@@ -1310,6 +1705,14 @@ function createTitle(titleapple, title, id, coordX) {
         .attr("class", "mg-chart-title")
         .text(title);
 }
+/**
+ * @description Display on screen the legend Y of the graphics - data caption 
+ * @param {Element} legendapple - svg element
+ * @param {Array} heartrateAxis - data to display
+ * @param {String} title - text descriptif
+ * @param {Number} id - id of element
+ */
+
 function createLegendAxeY(legendapple, heartrateAxis, title, id) {
     legendapple.append("line")
         .attr('id', id)
@@ -1365,6 +1768,13 @@ function createLegendAxeY(legendapple, heartrateAxis, title, id) {
 
 
 }
+/**
+ * @description Display on screen the legend X of the graphic - day
+ * @param {Element} legendapple - svg element
+ * @param {Array} axisdays - data to display
+ * @param {String} year - data year
+ * @param {Number} id - id of element
+ */
 function createLegendAxeX(legendapple, axisdays) {
     legendapple.append("line")
         .attr('id', 'tickSize')
@@ -1396,6 +1806,12 @@ function createLegendAxeX(legendapple, axisdays) {
         .style("stroke", "#212529")
         .style("stroke-width", "0.5");
 }
+/**
+ * @description Display on screen the day the sick incident was reported
+ * @param {*} svgName - svg element 
+ * @param {*} coord - position of the day sick incident in comparaison of the first day 
+ * @param {*} id - id of the element 
+ */
 function showreportedSickIncident(svgName, coord) {
     coordX = coord.split('/');
     let x = ((gridSize * 0.5)) + coordX[0] * gridSize;
@@ -1427,6 +1843,13 @@ function showreportedSickIncident(svgName, coord) {
         .style("stroke-dasharray", 5)
         .style("stroke-width", "1");
 }
+/**
+ * @description Display on screen rect to show the sum of the value with a double standart deviation 
+ * @param {Element} svgName - svg element
+ * @param {Array} data - data to display 
+ * @param {Array} axe - values of Y axis to have the position of the point
+ * @param {String} id - id of the element
+ */
 function showSumdata(svgName, data, axe, id) {
     var gap = {
         bottom: heightGraph - (margin.bottom * 1.25) - 5,
@@ -1465,6 +1888,12 @@ function showSumdata(svgName, data, axe, id) {
         .style("stroke-width", "1");
 
 }
+/**
+ * @description Display on screen the button which allow us to display or not all the available data source 
+ * @param {Element} svgName - svg element name  
+ * @function createButton
+ * @function setAttributButton
+ */
 function getButtonChoice(svgName, svgPhone) {
     classname = [];
     colorscale = [];
@@ -1479,7 +1908,7 @@ function getButtonChoice(svgName, svgPhone) {
     legendnameTemperature = [];
     cntTP = 0;
     classnameRespirator = [];
-    colorscaleRespirator= [];
+    colorscaleRespirator = [];
     legendnameRespirator = [];
     cntRS = 0;
     setAttributButton();
@@ -1523,6 +1952,11 @@ function getButtonChoice(svgName, svgPhone) {
         .style("stroke", "#778899")
         .style("stroke-width", "1");
 }
+/**
+ * @description Function to get all the available data source we have in the JSON file
+ * @description And fill all the different kind of the different buttons 
+ * @description color - caption - text - size - class
+ */
 function setAttributButton() {
     if (oura == true) {
         classname[cnt] = 'Temperature';
@@ -1536,7 +1970,7 @@ function setAttributButton() {
     }
     if (ourares == true) {
         classname[cnt] = 'RespiratoryRate';
-        colorscale[cnt] ='#97BC5F';
+        colorscale[cnt] = '#97BC5F';
         legendname[cnt] = "Respiratory Rate";
         classnameRespirator[cntRS] = 'ourares';
         colorscaleRespirator[cntRS] = '#97BC5F';
@@ -1587,6 +2021,17 @@ function setAttributButton() {
         cntHR++;
     }
 }
+/**
+ * @description Display on screen an button element svg with it own id and classname 
+ * @description Available on computer
+ * @param {*} svgName - element svg
+ * @param {*} type - 1: categories / 2; data source
+ * @param {*} dataclassname specific button class 
+ * @param {*} datalegend - specific button text
+ * @param {*} datacolor - specific button color
+ * @param {*} marginTop1 - x position 
+ * @param {*} marginTop2 - y position 
+ */
 function createButton(svgName, type, dataclassname, datalegend, datacolor, marginTop1, marginTop2) {
     svgName.selectAll('circle-choice')
         .data(dataclassname)
@@ -1631,19 +2076,30 @@ function createButton(svgName, type, dataclassname, datalegend, datacolor, margi
         .style("font-weight", "200")
         .attr("font-size", (1.2 - (type / 4)) + "rem");
 }
+/**
+ * @description Display on screen an button element svg with it own id and classname 
+ * @description Available on phone 
+ * @param {*} svgName - element svg
+ * @param {*} type - 1: categories / 2; data source
+ * @param {*} dataclassname specific button class 
+ * @param {*} datalegend - specific button text
+ * @param {*} datacolor - specific button color
+ * @param {*} marginTop1 - x position 
+ * @param {*} marginTop2 - y position 
+ */
 function createButtonPhone(svgName, type, dataclassname, datalegend, datacolor, marginTop1, marginTop2) {
     svgName.selectAll('circle-choice').data(dataclassname).enter().append("circle").attr('id', 'circle-choice-heartrate').attr('class', function (d, i) { return dataclassname[i] })
         .attr("cx", function (d, i) {
             if ((type == 1 && i == 0) || (type == 1 && i == 2))
-            return ( (i * 25) + 5 +  '%')
+                return ((i * 25) + 5 + '%')
             else if (type == 1 && i == 1)
-            return (5+'%')
+                return (5 + '%')
             else if (dataclassname == classnameRespirator)
-            return (5+'%')
+                return (5 + '%')
             else if (type == 2) return 5 + (marginTop2) + '%'
         })
-        .attr("cy", function (d, i) { 
-            if ((type == 1 && i == 0) ||(type == 1 && i == 2))
+        .attr("cy", function (d, i) {
+            if ((type == 1 && i == 0) || (type == 1 && i == 2))
                 return (margin.top / 2 + marginTop1)
             else if (type == 1 && i == 1)
                 return (gridSize * 2.75)
@@ -1657,14 +2113,15 @@ function createButtonPhone(svgName, type, dataclassname, datalegend, datacolor, 
                 return "url(#" + d + ")"
             } else if (type == 1 && d == 'HeartRate') {
                 createLinearGradient(svgName, colorscaleHeartRate, d);
-                return "url(#" + d + ")" }
+                return "url(#" + d + ")"
+            }
             else return datacolor[i];
         });
 
     svgName.selectAll(".daysLabel")
         .data(datalegend)
         .enter().append("text")
-        .attr("class", function (d,i) {
+        .attr("class", function (d, i) {
             if (type == 1) return 'class-button-choice';
             else return 'data-source-button-choice';
         })
@@ -1672,21 +2129,21 @@ function createButtonPhone(svgName, type, dataclassname, datalegend, datacolor, 
         .style("fill", "#212529")
         .attr("x", function (d, i) {
             if ((type == 1 && i == 0) || (type == 1 && i == 2))
-            return ( (i * 25) + 3 +  '%')
+                return ((i * 25) + 3 + '%')
             else if (type == 1 && i == 1)
-            return (3+'%')
+                return (3 + '%')
             else if (dataclassname == classnameRespirator)
-            return (3+'%')
+                return (3 + '%')
             else if (type == 2)
-            return 3 + (marginTop2) + '%'
+                return 3 + (marginTop2) + '%'
         })
         .attr("y", function (d, i) {
-            if ((type == 1 && i == 0) ||(type == 1 && i == 2))
+            if ((type == 1 && i == 0) || (type == 1 && i == 2))
                 return (margin.top / 2 + marginTop1 + gridSize / 4)
             else if (type == 1 && i == 1)
                 return (gridSize * 3)
             else if (dataclassname == classnameRespirator)
-            return (gridSize * 3.95)
+                return (gridSize * 3.95)
             else if (type == 2)
                 return (17) + ((i + 1) * 15) + '%'
         })
@@ -1694,6 +2151,11 @@ function createButtonPhone(svgName, type, dataclassname, datalegend, datacolor, 
         .style("font-weight", "200")
         .attr("transform", "translate(" + gridSize / .9 + "," + 0 + ")");
 }
+/**
+ * @function loadGroupDataSource
+ * @description unction to load all the data from the data source existing in the file JSON and put it in local variable
+ * @param { Array } data of the JSON file
+ */
 function loadGroupDataSource(data) {
     if (apple == true) {
         loadDatafromAppleWatch(data);
@@ -1716,6 +2178,12 @@ function loadGroupDataSource(data) {
     if (ourares == true)
         loadDataFromOura_RespiratoryRate(data);
 }
+/**
+ * @function groupGraphic
+ * @description function to group and display all the differente data source
+ * @description Control display of the X-axis / Y-axis / Title graphic
+ * @param {*} data - JSON file
+*/
 function groupGraphic(data) {
     if (revert[1] == 1 || revert[2] == 1 || revert[3] == 1 || revert[4] == 1 || revert[5] == 1) {
         d3.select('#heart-rate-title-ctn').remove();
@@ -1737,6 +2205,12 @@ function groupGraphic(data) {
     mainContainer_RespiratoryRate_oura(axis, maingroup, legendgroup, titlegroup, revert, prob);
 
 }
+/**
+ * @description Create un linear gradient color for the heart rate button by combining each color of all the data source available
+ * @param {*} svgName  - element svg
+ * @param {Array} color 
+ * @param {*} id - id of the element 
+ */
 function createLinearGradient(svgName, color, id) {
     linearGradient = svgName.append("defs")
         .append("linearGradient")
@@ -1748,6 +2222,14 @@ function createLinearGradient(svgName, color, id) {
     }
     return linearGradient;
 }
+/**
+ * @function formatdateshow
+ * @description This function transform a single date with a format (dd/mm) in new format (Jan 01)
+ * @description We display this format of date on the screen
+ * @param { Array } data of the JSON file
+ * @param { String} year - year of the sick incident 
+ * @return { day  } - Array of the new formating date of the JSoN File to display
+ */
 function formatdateshow(data, id) {
     let months = ["Jan", "Fev", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     for (let i = 1; i < months.length + 1; i++) {
@@ -1757,6 +2239,14 @@ function formatdateshow(data, id) {
             return months[i - 1] + " " + data.split('/')[0] + ", 2020" //+ appleyear[id];
     }
 }
+/**
+ * @function formatdateshow2
+ * @description This function transform an array of date with a format (dd/mm) in new format (Jan 01)
+ * @description We display this format of date on the screen 
+ * @param { Array } data of the JSON file
+ * @param { String} year - year of the sick incident 
+ * @return { day  } - Array of the new formating date of the JSoN File to display
+ */
 function formatdateshow2(data, year) {
     let day = [];
     let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -1774,9 +2264,20 @@ function formatdateshow2(data, year) {
     }
     return day;
 }
+/**
+ * This function give a number with a precision of two decimal 
+ * @param {*} x 
+ * @returns {number}
+ */
 function precise(x) {
     return Number.parseFloat(x).toPrecision(2);
 }
+/**
+ * @description This function give a number with a precision of two decimal 
+ * @param {Number} x - first number
+ * @param {Number} y - second number
+ * @returns {number}
+ */
 function compare(x, y) {
     return x - y;
 }
