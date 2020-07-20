@@ -7,6 +7,7 @@
 /** @type {Number} */width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500)
 /** @type {Array} */margin = {top: 30, right: -2, bottom: 27, left: 10};
 createheatmap(url);
+
 /** * @description Function to connect to the JSON file and call of function to display heatmap and graphics of wearable data. 
  * @param {*} url of the JSON file to get the data
  */ function createheatmap(url) {
@@ -33,7 +34,6 @@ createheatmap(url);
     symptom_data = loadDataSymptom(data);
     days_axis = showingDayOnTheMap(completedDays);
     comments = loadComments(data, days);
-
     createSvgReport("heatmap", (((completedDays.length) * gridSize) + 1), (height + margin.top + margin.bottom), "symptom", "heatmap-title", "legend", "legend-phone");
     showDaysAxis(maingroup, formatdateshow2(days_axis, ""));
     showTitleandSubtitle(titlegroup, "Heatmap of Symptom reports");
@@ -42,7 +42,6 @@ createheatmap(url);
     showLegend(legendgroup);
     showLegendPhone(legendgroupphone);
     tooltip_heatmap();
-
     document.getElementById("heatmap").scroll(((moreday) * gridSize ), 0);
     document.getElementById("heatmap").onscroll = function () {
       progressScrollBar();
@@ -261,104 +260,6 @@ function dayControl(data) {
   return days_fixed;
 }
 /**
- * @description Function to add or remove the missing or repeat day
- * @description Return a new array of date for the data source
- * @param {Array} data - timestamp of the data source 
- * @param {*} days2 -  Map of days of the data source 
- * @param {*} month - Map of month of the data source 
- * @example controlday = controlDay(appleday, dayapp, monthapp);
- * @returns {days3_fixed}
- */
-function controlDay(data, days2, month) {
-  const days_fixed = [];
-  const days2_fixed = [];
-  const days3_fixed = [];
-  const days4_fixed = [];
-  var daybeug = [];
-  var count = 0;
-  for (var i = 0; i < data.length - 1; i++) {
-    days4_fixed[i] = days2[i + 1] - days2[i] - 1;
-
-    if (days_fixed[i] > 0) {
-      for (let y = 0; y < days_fixed[i]; y++) {
-        daybeug[count] = i;
-        count++;
-      }
-    }
-  }
-  days4_fixed.push(0);
-
-  for (let i = 0; i < days4_fixed.length; i++) {
-    if (days4_fixed[i] < -1) {
-      if (month[i] == 1 || month[i] == 3 || month[i] == 5 || month[i] == 7 || month[i] == 8 || month[i] == 10 || month[i] == 12) {
-        days_fixed[i] = days4_fixed[i] + 31;
-      } else
-        days_fixed[i] = days4_fixed[i] + 30;
-    } else
-      days_fixed[i] = days4_fixed[i];
-  }
-
-  var counter = 0;
-  for (var i = 0; i < (data.length - 1); i++) {
-
-    if (days_fixed[i] != -1 && days_fixed[i] != -30 && days_fixed[i] != -31) {
-
-      for (var t = 0; t < days_fixed[i] + 1; t++) {
-
-        if ((days2[i] - (-t)) < 10) {
-          days2_fixed[i + counter] = "0" + (days2[i] - (-t)) + "/" + (month[i]);
-          counter++;
-        }
-        else if (month[i] == 1 || month[i] == 3 || month[i] == 5 || month[i] == 7 || month[i] == 8 || month[i] == 10 || month[i] == 12) {
-          if ((days2[i] - (-t)) > 31) {
-            if (month[i] > 9) {
-              days2_fixed[i + counter] = "0" + ((days2[i] - (-t)) - 31) + "/" + (month[i] - (-1));
-              counter++;
-            }
-            else {
-              days2_fixed[i + counter] = "0" + ((days2[i] - (-t)) - 31) + "/" + "0" + (month[i] - (-1));
-              counter++;
-            }
-          } else {
-            days2_fixed[i + counter] = (days2[i] - (-t)) + "/" + (month[i]);
-            counter++;
-          }
-        } else {
-          if ((days2[i] - (-t)) > 30) {
-            if (month[i] > 9) {
-              days2_fixed[i + counter] = "0" + ((days2[i] - (-t)) - 30) + "/" + (month[i] - (-1));
-              counter++;
-            } else {
-              days2_fixed[i + counter] = "0" + ((days2[i] - (-t)) - 30) + "/" + "0" + (month[i] - (-1));
-              counter++;
-            }
-          } else {
-            days2_fixed[i + counter] = (days2[i] - (-t)) + "/" + (month[i]);
-            counter++;
-          }
-        }
-      }
-    }
-    else if (days_fixed[i] == -1) {
-      counter--;
-    }
-    else {
-      days2_fixed[i + counter] = data[i];
-    }
-  }
-  var ii = 0;
-  for (var i = 0; i < days2_fixed.length; i++) {
-    if (days2_fixed[i] == null) i++;
-
-    if (days2_fixed[i] == undefined) i++;
-
-    days3_fixed[ii] = days2_fixed[i];
-    ii++;
-  }
-  days3_fixed.push(data[data.length - 1]);
-  return days3_fixed;
-}
-/**
  * @description Returns the writing name of an months with a formated date (dd/mm)
  * @param {*} data - array of formated timestamp
  * @returns {}
@@ -391,11 +292,9 @@ function showingDayOnTheMap(data) {
     const t = i * 7;
     day_break[i] = data[t];
   }
-
   var ii = 0;
   for (var i = 0; i < day_break.length; i++) {
     if (day_break[i] == undefined) i++;
-
     else {
       day_break1[ii] = day_break[i];
       ii++;
@@ -1001,39 +900,29 @@ function showAppendTitle(data, i, y) {
   var commentScale = ["No report", "No symptom", "Low symptom", "Middle symptom", "Strong symptom", "Unbearable symptom"];
   if (data == -2)
     return "Reports : no comments reported \n Date : " + formatdateshow(completedDays[i], "");
-
   if (data == -1)
     return "Reports : " + commentScale[data + 1]
       + " \n Date : " + formatdateshow(completedDays[i], "");
-
   if (data == 0)
     return "Reports : " + commentScale[data + 1]
       + " \n Date : " + formatdateshow(completedDays[i], "");
-
   if (data == 1 || data == 2 || data == 3 || data == 4) {
     var msg = "Reports :  " + commentScale[data + 1]
       + " \n Date : " + formatdateshow(completedDays[i], "")
       + " \n Symptom : " + $names[y]
       + " \n Values: " + data + "/4";
-
     if (finaldataAppleWatch[i] != undefined && finaldataAppleWatch[i] != '-' && finaldataAppleWatch[i] != 'NO DATA')
       msg += " \n Heart Rate (Apple Watch) : " + finaldataAppleWatch[i] + " bpm";
-
     if (finaldata_fitbit[i] != undefined && finaldata_fitbit[i] != '-' && finaldata_fitbit[i] != 'NO DATA')
       msg += " \n Heart Rate (Fitbit) : " + finaldata_fitbit[i] + " bpm";
-
     if (finaldataOura[i] != undefined && finaldataOura[i] != '-' && finaldataOura[i] != 'NO DATA')
       msg += " \n Heart Rate (Oura) : " + finaldataOura[i] + " bpm";
-
     if (finaldataGoogle[i] != undefined && finaldataGoogle[i] != '-' && finaldataGoogle[i] != 'NO DATA')
       msg += " \n Heart Rate (GoogleFit) : " + finaldataGoogle[i] + " bpm";
-
     if (finaldata_garmin[i] != undefined && finaldata_garmin[i] != '-' && finaldata_garmin[i] != 'NO DATA')
       msg += " \n Heart Rate (Garmin) : " + finaldata_garmin[i] + " bpm";
-
     if (finaldataOuraTemperature[i] != undefined && finaldataOuraTemperature[i] != '-' && finaldataOuraTemperature[i] != 'NO DATA')
       msg += " \n Body Temp. (Oura) : " + finaldataOuraTemperature[i];
-
     if (finaldataOuraRes[i] != undefined && finaldataOuraRes[i] != '-' && finaldataOuraRes[i] != 'NO DATA')
       msg += " \n Resp. Rate (Oura) : " + finaldataOuraRes[i];
     return msg;
@@ -1041,95 +930,13 @@ function showAppendTitle(data, i, y) {
   if (data == 5) {
     return "Comments : " + comments[i] + " \n Date : " + formatdateshow(completedDays[i], "");
   }
-
 }
-/**
- * @description get a scale for the axis y (symptom)
- */
-function yScale() {
-  return d3.scaleBand()
-    .domain($names)
-    .rangeRound([0, symptom_data.length * gridSize]);
-}
-/**
- * @description Get the witdh of the heatmap display
+/** * @description Get the witdh of the heatmap display
  * @returns {height}
- */
-function determineInnerwidth() {
+ */ function determineInnerwidth() {
   return gridSize * 5 + width;
+}/** * @description Get the height of the heatmap display
+* @returns {height}
+ */ function determineHeigth() {
+    return gridSize * $names.length;
 }
-/**
- * @description Get the height of the heatmap display
- * @returns {height}
- */
-function determineHeigth() {
-  return gridSize * $names.length;
-}
-/**
- * @description return a scale colors for the heatmap 
- * @description #fff", "#8a0886", "#cc2efa", "#e2a9f3", "#f5a9f2
- * @returns {ScaleColor}
- */
-function scaleColor() {
-  return d3.scaleLinear()
-    .domain([0, 4])
-    .range(["#fff", "#8a0886", "#cc2efa", "#e2a9f3", "#f5a9f2"]);
-}
-/**
- * @function formatdateshow
- * @description This function transform a single date with a format (dd/mm) in new format (Jan 01)
- * @description We display this format of date on the screen
- * @param { Array } data of the JSON file
- * @param { String} year - year of the sick incident 
- * @return { day  } - Array of the new formating date of the JSoN File to display
- */
-function formatdateshow(data, year) {
-  let months = ["Jan", "Fev", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  for (let i = 1; i < months.length + 1; i++) {
-    if (i <= 9 && "0" + i == data.split('/')[1] && year == "")
-      day = months[i - 1] + " " + data.split('/')[0]
-    else if (i <= 9 && "0" + i == data.split('/')[1] && year != "")
-      day = months[i - 1] + " " + data.split('/')[0] + ", " + year
-    else if (i > 9 && i == data[x].split('/')[1] && year == "")
-      day = months[i - 1] + " " + data.split('/')[0]
-    else if (i > 9 && i == data[x].split('/')[1] && year != "")
-      day = months[i - 1] + " " + data.split('/')[0] + ", " + year
-  }
-}
-/**
- * @function formatdateshow2
- * @description This function transform an array of date with a format (dd/mm) in new format (Jan 01)
- * @description We display this format of date on the screen 
- * @param { Array } data of the JSON file
- * @param { String} year - year of the sick incident 
- * @return { day  } - Array of the new formating date of the JSoN File to display
- */
-function formatdateshow2(data, year) {
-  let day = [];
-  let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  for (let x = 0; x < data.length; x++) {
-    for (let i = 1; i < months.length + 1; i++) {
-      if (i <= 9 && "0" + i == data[x].split('/')[1] && year == "")
-        day[x] = months[i - 1] + " " + data[x].split('/')[0]
-      else if (i <= 9 && "0" + i == data[x].split('/')[1] && year != "")
-        day[x] = months[i - 1] + " " + data[x].split('/')[0] + ", " + year
-      else if (i > 9 && i == data[x].split('/')[1] && year == "")
-        day[x] = months[i - 1] + " " + data[x].split('/')[0]
-      else if (i > 9 && i == data[x].split('/')[1] && year != "")
-        day[x] = months[i - 1] + " " + data[x].split('/')[0] + ", " + year
-    }
-  }
-  return day;
-}
-parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S.%f+00:00");
-parseTimeTemp = d3.timeParse("%Y-%m-%d");
-formatdate = d3.timeFormat("%d/%m");
-formatdateday = d3.timeFormat("%d");
-formatdatemonth = d3.timeFormat("%m");
-formatdateyear = d3.timeFormat("%Y");
-parseTimeOuraSleep = d3.timeParse("%Y-%m-%dT%H:%M:%S%Z");
-parseTimeGarmin = d3.timeParse("%Y-%m-%dT%H:%M:%S");
-formatnewdate = d3.timeFormat("%Y-%m-%d%Z");
-fortmatHour = d3.timeFormat("%H");
-fortmatminutes = d3.timeFormat("%M");
-fortmatsecondes = d3.timeFormat("%S");
