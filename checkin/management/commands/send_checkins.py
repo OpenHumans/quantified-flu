@@ -1,5 +1,6 @@
 import datetime
 from urllib.parse import urljoin
+import warnings
 
 import arrow
 import pytz
@@ -98,4 +99,9 @@ class Command(BaseCommand):
                 print("Subject: {}".format(subject))
                 print(content)
             else:
-                member.message(subject=subject, message=content)
+                try:
+                    member.message(subject=subject, message=content)
+                except Exception:
+                    warnings.warn(
+                        "Message failed for OpenHumansMember {}".format(member.oh_id)
+                    )
