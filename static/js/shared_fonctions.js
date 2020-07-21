@@ -1,3 +1,47 @@
+/** * @description	Allows you to know which graph will be displayed first 
+ * @description	order - (heart rate - temperature - respiration rate)
+ */ function setrevert() {
+    if (apple == true) {
+        revert[1] = 1;
+        maxHr++;
+    }
+    if (fitbit == true) {
+        revert[2] = 1;
+        maxHr++;
+    }
+    if (ouraHR == true) {
+        revert[3] = 1;
+        maxHr++;
+    }
+    if (google == true) {
+        revert[5] = 1;
+        maxHr++;
+    }
+    if (garmin == true) {
+        revert[4] = 1;
+        maxHr++;
+    }
+    if (oura == true && apple == false && fitbit == false && ouraHR == false && google == false && garmin == false) {
+        revert[0] = 1;
+    }
+    if (ourares == true && apple == false && fitbit == false && ouraHR == false && google == false && garmin == false && oura == false) {
+        revert[6] = 1;
+    }
+}
+/**
+ * @description APPLE WATCH - Heart Rate 
+ * @description Load the variable needed to display the svg element - chart pie 
+ * @description Get the sum & standart deviation / axis X day / Axis Y values / data point / reported sick incdent 
+ * @param {Array} data - variable JSON file data
+ * @function controlDatafromAppleWatch
+ * @function calculatSum
+ * @function sickness_event
+ */
+function loadDatafromAppleWatch(data) {
+    dayapp = [], monthapp = [], appledata = [], appleday = [], appleyear = [], symptomData = [];
+    cnt = 0, appledate = [], repeat = [], noRepeatDataApple = []; apple_sum = 0; applereportedIncident = [];
+    controlDatafromAppleWatch(data, type);
+} 
 /**
  * @description APPLE WATCH - Heart Rate 
  * @description Read all the data available from the JSON file for this data source 
@@ -17,6 +61,56 @@ function getAppleDatafromFile(data) {
     });
 }
 /**
+ * @description APPLE WATCH - Heart Rate 
+ * @description Get and control all the element we need to display the graphics of this data source 
+ * @description Get compare / axis Y values element / data values / axis X element - days 
+ * @param {Array} data - variable JSON file data
+ * @function getAppleDatafromFile
+ * @function controlDay
+ * @function getDayonAxis
+ * @function dataControl
+ * @function getAxisLegend
+ * @function addorRemoveday
+ * @function getSymptomDatafromFile
+ * @function compareDateReport
+ */
+function controlDatafromAppleWatch(data, type) {
+    getAppleDatafromFile(data);
+    if (type == "heart-rate") {
+        controlday = controlDay(appleday, dayapp, monthapp);
+        noMissingDay = addorRemoveday(controlday, getDays(), data);
+        comparedateApple = compareDateReport(noMissingDay);
+        apple_date = completedLastDay(comparedateApple, noMissingDay);
+        appledayAxis = getDayonAxis(apple_date);
+        applemonth = determinenamemonth(apple_date);
+        finaldataAppleWatch = dataControl(appledata, appleday, dayapp, monthapp, comparedateApple);
+        heartrateAxis = getAxisLegend(finaldataAppleWatch, 'dizaine');
+        symptomData = getSymptomDatafromFile(0);
+    } else if (type == "event") {
+        controlday = controlDay(appleday, dayapp, monthapp);
+        appledayAxis = getDayonAxis(controlday);
+        finaldataAppleWatch = dataControl(appledata, appleday, dayapp, monthapp, 0);
+        heartrateAxis = getAxisLegend(finaldataAppleWatch, 'dizaine');
+        applecompare = addDayonGraphic(data, getDataSourceonDay(data), 'apple');
+        apple_sum = calculatSum(appledata);
+        applereportedIncident = sickness_event(data, controlday);
+    }
+}
+/**
+ * @description FITBIT - Heart Rate 
+ * @description Load the variable needed to display the svg element - chart pie 
+ * @description Get the sum & standart deviation / axis X day / Axis Y values / data point / reported sick incdent 
+ * @param {Array} data - variable JSON file data
+ * @function controlDatafromFitbit
+  * @function calculatSum
+ * @function sickness_event
+ */
+function loadDataFromFitbit(data) {
+    fitbitdata = [], fitbitdate = [], fitbitday = [], fitbitmonth = [], fitbityear = [];
+    symptomData_fitbit = []; fitbit_sum = 0; fitbitreportedIncident = [];
+    controlDatafromFitbit(data, type);
+}
+/**
  * @description FITBIT - Heart Rate 
  * @description Read all the data available from the JSON file for this data source 
  * @description Get element data / formated element timestamp (day/month - day - month -year)
@@ -33,6 +127,56 @@ function getFitbitSummaryFromFile(data) {
         fitbityear[cnt] = formatyear(parseTimeTemp(element.timestamp));
         cnt++;
     });
+}
+/**
+ * @description FITBIT - Heart Rate 
+ * @description Get and control all the element we need to display the graphics of this data source 
+ * @description Get compare / axis Y values element / data values / axis X element - days 
+ * @param {Array} data - variable JSON file data
+ * @function getFitbitSummaryFromFile
+ * @function controlDay
+ * @function getDayonAxis
+ * @function dataControl
+ * @function getAxisLegend
+ * @function addorRemoveday
+ * @function getSymptomDatafromFile
+ * @function compareDateReport
+ */
+function controlDatafromFitbit(data, type) {
+    getFitbitSummaryFromFile(data);
+    if (type == "heart-rate") {
+        controlday_fitbit = controlDay(fitbitday, fitbitday, fitbitmonth);
+        noMissingDay_fitbit = addorRemoveday(controlday_fitbit, getDays(), data);
+        comparedate_fitbit = compareDateReport(noMissingDay_fitbit);
+        fitbit_date = completedLastDay(comparedate_fitbit, noMissingDay_fitbit);
+        dayAxis_fitbit = getDayonAxis(fitbit_date);
+        monthOnAxis_fitbit = determinenamemonth(fitbit_date);
+        newdataFitbit = dataControl(fitbitdata, fitbitday, fitbitday, fitbitmonth, comparedate_fitbit);
+        symptomData_fitbit = getSymptomDatafromFile(0);
+        fitbitAxis = getAxisLegend(newdataFitbit, 'dizaine');
+    } else if (type == "event") {
+        newfitbitdate = controlDay(fitbitdate, fitbitday, fitbitmonth);
+        dayAxis_fitbit = getDayonAxis(newfitbitdate);
+        fitbitAxis = getAxisLegend(fitbitdata, 'dizaine');
+        newdataFitbit = dataControl(fitbitdata, fitbitdate, fitbitday, fitbitmonth, 0);
+        fitbitcompare = addDayonGraphic(data, getDataSourceonDay(data), 'fitbit');
+        fitbit_sum = calculatSum(fitbitdata);
+        fitbitreportedIncident = sickness_event(data, newfitbitdate);
+    }
+}
+/**
+ * @description OURA SUMMARRY -  Heart Rate
+ * @description Load the variable needed to display the svg element - chart pie 
+ * @description Get the sum & standart deviation / axis X day / Axis Y values / data point / reported sick incdent 
+ * @param {Array} data - variable JSON file data
+ * @function controlDatafromOuraSleep
+ * @function calculatSum
+ * @function sickness_event
+ */
+function loadDatafromOura(data) {
+    ouradata = [], ouraday = [], ourayear = [], ouradayAxis = [], ouradate = [], repeat = [], noRepeatData = [];
+    ouraday = []; ouramonth = []; ourasum = 0; ourareportedIncident = [];
+    controlDatafromOuraSleep(data, type);
 }
 /**
  * @description OURA SUMMARRY -  Heart Rate
@@ -55,6 +199,57 @@ function getHeartRatefromFileOura(data) {
     });
 }
 /**
+ * @description OURA SUMMARRY -  Heart Rate
+ * @function controlDatafromOuraSleep
+ * @description Get and control all the element we need to display the graphics of this data source 
+ * @description Get compare / axis Y values element / data values / axis X element - days 
+ * @param {Array} data - variable JSON file data
+ * @function getHeartRatefromFileOura
+ * @function controlDay
+ * @function getDayonAxis
+ * @function dataControl
+ * @function getAxisLegend
+ * @function addorRemoveday
+ * @function getSymptomDatafromFile
+ * @function compareDateReport
+ */
+function controlDatafromOuraSleep(data, type) {
+    getHeartRatefromFileOura(data);
+    if (type == "heart-rate") {
+        controlday = controlDay(ouradate, ouraday, ouramonth);
+        noMissingDay = addorRemoveday(controlday, getDays(), data);
+        ouracomparedate = compareDateReport(noMissingDay);
+        oura_date = completedLastDay(ouracomparedate, noMissingDay);
+        ouradayAxis = getDayonAxis(oura_date);
+        ouramonth = determinenamemonth(oura_date);
+        finaldataOura = dataControl(ouradata, ouradate, ouraday, ouramonth, ouracomparedate);
+        ouraAxis = getAxisLegend(finaldataOura, 'dizaine');
+        symptomData = getSymptomDatafromFile(0);
+    } else if (type == "event") {
+        ouracontrolday = controlDay(ouradate, ouraday, ouramonth);
+        ouradayAxis = getDayonAxis(ouracontrolday);
+        finaldataOura = dataControl(ouradata, ouradate, ouraday, ouramonth, 0);
+        ouracompare = addDayonGraphic(data, getDataSourceonDay(data), "oura");
+        ouraAxis = getAxisLegend(ouradata, 'dizaine');
+        ourasum = calculatSum(ouradata);
+        ourareportedIncident = sickness_event(data, ouracontrolday);
+    }
+}
+/**
+ * @description Google fit -  Heart Rate
+ * @description Load the variable needed to display the svg element - chart pie 
+ * @description Get the sum & standart deviation / axis X day / Axis Y values / data point / reported sick incdent 
+ * @param {Array} data - variable JSON file data
+ * @function controlDatafromGoogleFit
+ * @function calculatSum
+ * @function sickness_event
+ */
+function loadDatafromGoogle(data) {
+    googledata = [], googleday = [], googleyear = [], googledayAxis = [], googledate = [], repeat = [], noRepeatData = [];
+    googleday = []; googlemonth = [];  googlesum = 0; googlereportedIncident = [];
+    controlDatafromGoogleFit(data, type);
+}
+/**
  * @description Google fit -  Heart Rate
  * @description Read all the data available from the JSON file for this data source 
  * @description Get element data / formated element timestamp (day/month - day - month -year)
@@ -71,6 +266,93 @@ function getHeartRatefromFileGoogle(data) {
         googleyear[cnt] = formatyear(parseTimeGarmin(element.timestamp));
         cnt++;
     });
+}
+/**
+ * @description Google fit -  Heart Rate
+ * @function controlDatafromGoogleFit
+ * @description Get and control all the element we need to display the graphics of this data source 
+ * @description Get compare / axis Y values element / data values / axis X element - days 
+ * @param {Array} data - variable JSON file data
+ * @function getHeartRatefromFileGoogle
+ * @function controlDay
+ * @function getDayonAxis
+ * @function dataControlOura
+ * @function addDayonGraphic
+ * @function addorRemoveday
+ * @function getSymptomDatafromFile
+ * @function compareDateReport
+ */
+function controlDatafromGoogleFit(data, type) {
+    getHeartRatefromFileGoogle(data);
+    if (type == "heart-rate") {
+        controlday = controlDay(googledate, googleday, googlemonth);
+        noMissingDay = addorRemoveday(controlday, getDays(), data);
+        googlecomparedate = compareDateReport(noMissingDay);
+        google_date = completedLastDay(googlecomparedate, noMissingDay);
+        googledayAxis = getDayonAxis(google_date);
+        googlemonth = determinenamemonth(google_date);
+        finaldataGoogle = dataControlOura(googledata, googledate, googleday, googlemonth, 1);
+        googleAxis = getAxisLegend(finaldataGoogle, 'dizaine');
+        symptomData = getSymptomDatafromFile(0);
+    } else if (type == "event") {
+        googlecontrolday = controlDay(googledate, googleday, googlemonth);
+        googledayAxis = getDayonAxis(googlecontrolday);
+        finaldataGoogle = dataControlOura(googledata, googledate, googleday, googlemonth, 1);
+        googlecompare = addDayonGraphic(data, getDataSourceonDay(data), "google");
+        googleAxis = getAxisLegend(finaldataGoogle, 'dizaine');
+        googlesum = calculatSum(googledata);
+        googlereportedIncident = sickness_event(data, googlecontrolday);
+    }
+}
+/**
+ * @description Garmin -  Heart Rate
+ * @description Load the variable needed to display the svg element - chart pie 
+ * @description Get the sum & standart deviation / axis X day / Axis Y values / data point / reported sick incdent 
+ * @param {Array} data - variable JSON file data
+ * @function controlDatafromGarmin
+ * @function calculatSum
+ * @function sickness_event
+ */
+function loadDatafromGarmin(data) {
+    garmindata = [], garmindate = [], garminday = [], garminmonth = [], garminyear = [];
+    symptomData_garmin = []; garminsum = 0; garminreportedIncident = [];
+    controlDatafromGarmin(data, type);
+}
+/**
+ * @description  Garmin -  Heart Rate
+ * @description Get and control all the element we need to display the graphics of this data source 
+ * @description Get compare / axis Y values element / data values / axis X element - days 
+ * @param {Array} data - variable JSON file data
+ * @function getHeartRateDatafromGarmin
+ * @function controlDay
+ * @function getDayonAxis
+ * @function dataControl
+ * @function getAxisLegend
+ * @function addorRemoveday
+ * @function getSymptomDatafromFile
+ * @function compareDateReport
+ */
+function controlDatafromGarmin(data, type) {
+    getHeartRateDatafromGarmin(data);
+    if (type == "heart-rate") {
+        controlday_garmin = controlDay(garminday, garminday, garminmonth);
+        noMissingDay_garmin = addorRemoveday(controlday_garmin, getDays(), data);
+        comparedate_garmin = compareDateReport(noMissingDay_garmin);
+        garmin_date = completedLastDay(comparedate_garmin, noMissingDay_garmin);
+        dayAxis_garmin = getDayonAxis(garmin_date);
+        monthOnAxis_garmin = determinenamemonth(garmin_date);
+        finaldata_garmin = dataControl(garmindata, garminday, garminday, garminmonth, comparedate_garmin);
+        symptomData_garmin = getSymptomDatafromFile(0);
+        garminAxis = getAxisLegend(finaldata_garmin, 'dizaine');
+    } else if (type == 'event') {
+        controlday_garmin = controlDay(garmindate, garminday, garminmonth);
+        dayAxis_garmin = getDayonAxis(controlday_garmin);
+        finaldata_garmin = dataControl(garmindata, garminday, garminday, garminmonth, 0);
+        garminAxis = getAxisLegend(finaldata_garmin, 'dizaine');
+        garmincompare = addDayonGraphic(data, getDataSourceonDay(data), "garmin");
+        garminsum = calculatSum(garmindata);
+        garminreportedIncident = sickness_event(data, controlday_garmin);
+    }
 }
 /**
  * @description  Garmin -  Heart Rate
@@ -92,6 +374,20 @@ function getHeartRateDatafromGarmin(data) {
 }
 /**
  * @description OURA - Temperature
+ * @description Load the variable needed to display the svg element - chart pie 
+ * @description Get the sum & standart deviation / axis X day / Axis Y values / data point / reported sick incdent 
+ * @param {Array} data - variable JSON file data
+ * @function controlDatafromOura
+ * @function calculatSum
+ * @function sickness_event
+ */
+function loadDataFromOura_Temperature(data) {
+    tempdata = [], tempday = [], tempyear = [], tempdayAxis = [], tempdate = [], repeat = [], noRepeatData = [];
+    day = []; monthtemp = []; ouratempreportedIncident = []; ouratemp_sum = 0;
+    controlDatafromOura(data, type);
+}
+/**
+ * @description OURA - Temperature
  * @description Read all the data available from the JSON file for this data source 
  * @description Get element data / formated element timestamp (day/month - day - month -year)
  * @param {Array} data - variable JSON file data
@@ -107,6 +403,59 @@ function getOuraTemperatureDatafromFile(data) {
         tempyear[cnt] = formatyear(parseTimeTemp(element.timestamp));
         cnt++;
     });
+}
+/**
+ * @description OURA - Temperature
+ * @function controlDatafromOura
+ * @description Get and control all the element we need to display the graphics of this data source 
+ * @description Get axis Y values element / data values / axis X element - days 
+ * @param {Array} data - variable JSON file data
+ * @function getOuraTemperatureDatafromFile
+ * @function controlDay
+ * @function getDayonAxis
+ * @function getAxisLegend
+ * @function completedLastDay
+ * @function ompareDateReport
+ * @function determinenamemonth
+ * @function getSymptomDatafromFile
+ */
+function controlDatafromOura(data, type) {
+    getOuraTemperatureDatafromFile(data);
+    if (type == "heart-rate") {
+        controldayTemp = controlDay(tempday, day, monthtemp);
+        noMissingDayTemp = addorRemoveday(controldayTemp, getDays(), data);
+        comparedate = compareDateReport(noMissingDayTemp);
+        oura_date = completedLastDay(comparedate, noMissingDayTemp);
+        tempdayAxis = getDayonAxis(oura_date);
+        month = determinenamemonth(oura_date);
+        finaldataOuraTemp = dataControl(tempdata, tempday, day, monthtemp, comparedate);
+        axisTemperature_oura = getAxisLegend(finaldataOuraTemp, 'decimal');
+        symptomData = getSymptomDatafromFile(0);
+    } else if (type == "event") {
+        ouratempday = controlDay(tempday, day, monthtemp);
+        dayAxis_oura_temp = getDayonAxis(ouratempday);
+        TemperatureOuraAxis = getAxisLegend(tempdata, 'decimal');
+        finaldataOuraTemp = dataControl(tempdata, tempday, day, monthtemp, 1);
+        ouratempreportedIncident = sickness_event(data, ouratempday);
+        ouratemp_sum = calculatSum(tempdata);
+    }
+}
+/**
+ * @description OURA - Oura Respiratory Rate
+ * @description Load the variable needed to display the svg element - chart pie 
+ * @description Get the sum & standart deviation / axis X day / Axis Y values / data point / reported sick incdent 
+ * @param {Array} data - variable JSON file data
+ * @function controlDatarespiratory_ratefromOura
+ * @function calculatSum
+ * @function sickness_event
+ */
+function loadDataFromOura_RespiratoryRate(data) {
+    resdata = [], resday = [], resyear = [], resdayAxis = [], resdate = [], repeat = [], noRepeatData = [];
+    day = [];
+    monthres = [];
+    controlDatarespiratory_ratefromOura(data, type);
+    ouraresp_sum = calculatSum(resdata);
+    ourarespreportedIncident = sickness_event(data, controldayRes);
 }
 /**
  * @description OURA - Oura Respiratory Rate
@@ -127,15 +476,92 @@ function getRespiratory_rateDatafromFile(data) {
     });
 }
 /**
- * @description get the number of diffences between 2 days 
- * @description This number will be useful to display the graphics with a offset
- * @param {*} data - JSON file
- * @param {*} source - data source name which have the most day in 
- * @param {*} type - class name of the data source selected
- * @function getDataSourceonDay
- * @example applecompare = addDayonGraphic(data, getDataSourceonDay(data), 'apple');
- * @returns {compare}
+ * @description OURA - Oura Respiratory Rate
+ * @function controlDatarespiratory_ratefromOura
+ * @description Get and control all the element we need to display the graphics of this data source 
+ * @description Get axis Y values element / data values / axis X element - days 
+ * @param {Array} data - variable JSON file data
+ * @function getRespiratory_rateDatafromFile
+ * @function controlDay
+ * @function getDayonAxis
+ * @function dataControl
+ * @function addorRemoveday
+ * @function getSymptomDatafromFile
+ * @function compareDateReport
  */
+function controlDatarespiratory_ratefromOura(data, type) {
+    getRespiratory_rateDatafromFile(data);
+    if (type == "heart-rate") {
+        controldayRes = controlDay(resday, day, monthres);
+        noMissingDayRes = addorRemoveday(controldayRes, getDays(), data);
+        comparedate = compareDateReport(noMissingDayRes);
+        oura_dateRes = completedLastDay(comparedate, noMissingDayRes);
+        ResdayAxis = getDayonAxis(oura_dateRes);
+        monthRes = determinenamemonth(oura_dateRes);
+        finaldataOuraRes = dataControl(resdata, resday, day, monthres, comparedate);
+        axisRes_oura = getAxisLegend(finaldataOuraRes, 'dizaine');
+        symptomData = getSymptomDatafromFile(0);
+    } else if (type == "event") {
+        controldayRes = controlDay(resday, day, monthres);
+        ResdayAxis = getDayonAxis(controldayRes);
+        finaldataOuraRes = dataControl(resdata, resday, day, monthres, 1);
+        axisRes_oura = getAxisLegend(finaldataOuraRes, 'dizaine');
+    }
+}
+/**
+ * @function loadGroupDataSource
+ * @description Function to load all the data from the data source existing in the file JSON and put it in local variable
+ * @param { Array } data of the JSON file
+ */
+function loadGroupDataSource(data) {
+    if (apple == true) {
+        loadDatafromAppleWatch(data);
+    }
+    if (fitbit == true) {
+        loadDataFromFitbit(data);
+    }
+    if (ouraHR == true) {
+        loadDatafromOura(data);
+    }
+    if (oura == true) {
+        loadDataFromOura_Temperature(data);
+    }
+    if (garmin == true) {
+        loadDatafromGarmin(data);
+    }
+    if (google == true) {
+        loadDatafromGoogle(data);
+    }
+    if (ourares == true)
+        loadDataFromOura_RespiratoryRate(data);
+}
+/** * @function sickness_event
+ * @description	function to get the difference of days between the first and the sick incident day
+ * @param { Array } data of the JSON file
+ * @param { String} datecompare - date of the sick incident 
+ * @return { incident } number of day between the first day and the date of the sick incident 
+ */ function sickness_event(data, datecompare) {
+    if (data.sickness_event != undefined)
+    var date_incidentInfile = data.sickness_event[0].timestamp.split('-');
+else 
+    return 0;
+var date_incident = date_incidentInfile[2] + '/' + date_incidentInfile[1];
+var incident = 0;
+for (let i = 0; i < datecompare.length; i++) {
+    if (datecompare[i] == date_incident)
+        incident = i;
+}
+return incident;
+} /**
+* @description get the number of diffences between 2 days 
+* @description This number will be useful to display the graphics with a offset
+* @param {*} data - JSON file
+* @param {*} source - data source name which have the most day in 
+* @param {*} type - class name of the data source selected
+* @function getDataSourceonDay
+* @example applecompare = addDayonGraphic(data, getDataSourceonDay(data), 'apple');
+* @returns {compare}
+*/
 function addDayonGraphic(data, source, type) {
     var datasource = getDataSourceonDay(data);
 
@@ -173,6 +599,189 @@ function addDayonGraphic(data, source, type) {
         var compare = day - daycompare;
     }
     return compare;
+}
+/**
+ * @description Get the name of the data source which have the first day of data
+ * @description only with the heart rate data source 
+ * @param {*} data - JSON file
+ * @returns {test2} String 
+ */
+function getDataSourceonDay(data) {
+    firstDay_fitbit = 0;
+    firstDay_apple = 0;
+    firstDay_oura = 0;
+    firstDay_oura_hr = 0;
+    firstDay_garmin = 0;
+    firstDay_google = 0;
+    if (data.fitbit_summary != undefined) {
+        firstDay_fitbit = parseTimeTemp(data.fitbit_summary[0].timestamp).getTime();
+    }
+    if (data.apple_health_summary != undefined) {
+        firstDay_apple = parseTime(data.apple_health_summary[0].timestamp).getTime();
+    }
+    if (data.oura_sleep_summary != undefined) {
+        firstDay_oura = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
+    }
+    if (data.oura_sleep_summary != undefined) {
+        firstDay_oura_hr = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
+    }
+    if (data.garmin_heartrate != undefined) {
+        firstDay_garmin = parseTimeGarmin(data.garmin_heartrate[0].timestamp).getTime();
+    }
+    if (data.googlefit_heartrate != undefined) {
+        firstDay_google = parseTimeGarmin(data.googlefit_heartrate[0].timestamp).getTime();
+    }
+    test = 10000000000000;
+    test2 = "none";
+
+    if (firstDay_apple < test && data.apple_health_summary != undefined) {
+        test = firstDay_apple;
+        test2 = 'apple';
+    }
+    if (firstDay_fitbit < test && data.fitbit_summary != undefined) {
+        test = (firstDay_fitbit);
+        test2 = 'fitbit';
+    }
+    if (firstDay_oura_hr < test && data.oura_sleep_summary != undefined) {
+        test = (firstDay_oura_hr);
+        test2 = 'ouraHR';
+    }
+    if (firstDay_garmin < test && data.garmin_heartrate != undefined) {
+        test = (firstDay_garmin);
+        test2 = 'garmin';
+    }
+    if (firstDay_google < test && data.googlefit_heartrate != undefined) {
+        test = (firstDay_google);
+        test2 = 'google';
+    }
+    return test2;
+}
+/**
+ * @description Get the name of the data source which have the last day of data
+ * @param {*} data - JSON file
+ * @returns {test2} String 
+*/
+function getLastDataSourceonDay(data) {
+    firstDay_fitbit = 0;firstDay_apple = 0;firstDay_oura = 0;firstDay_oura_hr = 0;firstDay_garmin = 0;firstDay_google = 0;firstDay_temperature = 0;firstDay_respiratory = 0;
+    if (data.fitbit_summary != undefined) {
+        firstDay_fitbit = parseTimeTemp(data.fitbit_summary[data.fitbit_summary.length - 1].timestamp).getTime();
+    }
+    if (data.apple_health_summary != undefined) {
+        firstDay_apple = parseTime(data.apple_health_summary[data.apple_health_summary.length - 1].timestamp).getTime();
+    }
+    if (data.oura_sleep_summary != undefined) {
+        firstDay_oura = parseTimeTemp(data.oura_sleep_summary[data.oura_sleep_summary.length - 1].timestamp).getTime();
+    }
+    if (data.oura_sleep_summary != undefined) {
+        firstDay_oura_hr = parseTimeTemp(data.oura_sleep_summary[data.oura_sleep_summary.length - 1].timestamp).getTime();
+    }
+    if (data.garmin_heartrate != undefined) {
+        firstDay_garmin = parseTimeGarmin(data.garmin_heartrate[data.garmin_heartrate.length - 1].timestamp).getTime();
+    }
+    if (data.googlefit_heartrate != undefined) {
+        firstDay_google = parseTimeGarmin(data.googlefit_heartrate[data.googlefit_heartrate.length - 1].timestamp).getTime();
+    }
+    if (data.oura_sleep_summary != undefined) {
+        firstDay_temperature = parseTimeTemp(data.oura_sleep_summary[data.oura_sleep_summary.length - 1].timestamp).getTime();
+    }
+    if (data.oura_sleep_summary != undefined) {
+        firstDay_respiratory = parseTimeTemp(data.oura_sleep_summary[data.oura_sleep_summary.length - 1].timestamp).getTime();
+    }
+    test = 0;
+    test2 = "none";
+    if (firstDay_apple > test && data.apple_health_summary != undefined) {
+        test = firstDay_apple;
+        test2 = 'apple';
+    }
+    if (firstDay_fitbit > test && data.fitbit_summary != undefined) {
+        test = (firstDay_fitbit);
+        test2 = 'fitbit';
+    }
+    if (firstDay_oura_hr > test && data.oura_sleep_summary != undefined) {
+        test = (firstDay_oura_hr);
+        test2 = 'ouraHR';
+    }
+    if (firstDay_garmin > test && data.garmin_heartrate != undefined) {
+        test = (firstDay_garmin);
+        test2 = 'garmin';
+    }
+    if (firstDay_google > test && data.googlefit_heartrate != undefined) {
+        test = (firstDay_google);
+        test2 = 'google';
+    }
+    if (firstDay_temperature > test && data.oura_sleep_summary != undefined) {
+        test = (firstDay_temperature);
+        test2 = 'oura';
+    }
+    if (firstDay_respiratory > test && data.oura_sleep_summary != undefined) {
+        test = (firstDay_respiratory);
+        test2 = 'ourares';
+    }
+    return test2;
+}
+/**
+ * @description Get the name of the data source which have the first day of data
+ * @description  with all the data source 
+ * @param {*} data - JSON file
+ * @returns {test2} String 
+ */
+function getFirstDataSourceonDay(data) {
+    firstDay_fitbit = 0;firstDay_apple = 0;firstDay_oura = 0;firstDay_oura_hr = 0;firstDay_garmin = 0;firstDay_google = 0;firstDay_temperature = 0;firstDay_respiratory = 0;
+    if (data.fitbit_summary != undefined) {
+        firstDay_fitbit = parseTimeTemp(data.fitbit_summary[0].timestamp).getTime();
+    }
+    if (data.apple_health_summary != undefined) {
+        firstDay_apple = parseTime(data.apple_health_summary[0].timestamp).getTime();
+    }
+    if (data.oura_sleep_summary != undefined) {
+        firstDay_oura = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
+    }
+    if (data.oura_sleep_summary != undefined) {
+        firstDay_oura_hr = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
+    }
+    if (data.garmin_heartrate != undefined) {
+        firstDay_garmin = parseTimeGarmin(data.garmin_heartrate[0].timestamp).getTime();
+    }
+    if (data.googlefit_heartrate != undefined) {
+        firstDay_google = parseTimeGarmin(data.googlefit_heartrate[0].timestamp).getTime();
+    }
+    if (data.oura_sleep_summary != undefined) {
+        firstDay_temperature = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
+    }
+    if (data.oura_sleep_summary != undefined) {
+        firstDay_respiratory = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
+    }
+    test = 10000000000000;
+    test2 = "none";
+    if (firstDay_apple < test && data.apple_health_summary != undefined) {
+        test = firstDay_apple;
+        test2 = 'apple';
+    }
+    if (firstDay_fitbit < test && data.fitbit_summary != undefined) {
+        test = (firstDay_fitbit);
+        test2 = 'fitbit';
+    }
+    if (firstDay_oura_hr < test && data.oura_sleep_summary != undefined) {
+        test = (firstDay_oura_hr);
+        test2 = 'ouraHR';
+    }
+    if (firstDay_garmin < test && data.garmin_heartrate != undefined) {
+        test = (firstDay_garmin);
+        test2 = 'garmin';
+    }
+    if (firstDay_google < test && data.googlefit_heartrate != undefined) {
+        test = (firstDay_google);
+        test2 = 'google';
+    }
+    if (firstDay_temperature < test && data.oura_sleep_summary != undefined) {
+        test = (firstDay_temperature);
+        test2 = 'oura';
+    }
+    if (firstDay_respiratory < test && data.oura_sleep_summary != undefined) {
+        test = (firstDay_respiratory);
+        test2 = 'ourares';
+    }
+    return test2;
 }
 /**
  * @description Function to add or remove the missing or repeat day
@@ -417,6 +1026,77 @@ function dayControlGraph(data, days2, month) {
     return days_fixed;
 }
 /**
+* @description Function to remove from the screen the SVG and HTML element
+* @function remove
+* @description We identified the graphic elements with their id 
+* @param {*} iddata id of the chart point svg element
+* @param {*} idtitle - id of the title svg element 
+* @param {*} idaxis id of the axis X svg element 
+* @param {*} idaxis2 id of the axis Y svg element 
+* @param {*} idaxis3 id of the sum svg element 
+* @param {*} idaxis4 id of the sick incident  svg element 
+*/
+function tooltipscreen(circleid, data, msg) {
+    const tooltip = d3
+        .select("body")
+        .append("div")
+        .attr("class", "svg-tooltip")
+        .style("position", "absolute")
+        .style("visibility", "hidden");
+    d3.selectAll("#" + circleid)
+        .on("click", function (d) {
+            let coordXY = this.getAttribute('class').split('- ')[1];
+            d3.select(this)
+                .attr("r", gridSize / 5)
+                .attr('stroke-width', 1)
+            tooltip
+                .style("visibility", "visible")
+                .text(formatdateshow(data[coordXY], coordXY) + " " + d + " " + msg);
+        })
+        .on("mousemove", function () {
+            tooltip
+                .style("top", d3.event.pageY + 10 + "px")
+                .style("left", d3.event.pageX - (gridSize * 3.5) + "px");
+        })
+        .on("mouseout", function () {
+            d3.select(this).attr("r", gridSize / 10)
+                .style("stroke", "#015483")
+                .style("stroke-width", "0.5");
+            tooltip.style("visibility", "hidden");
+        });
+  }
+/**
+ * @description Heart Rate displaying - multiple data source - on event.html
+ * @description Display on screen (if data source selected) all svg element depending from this data source
+ * @description Chart point - Axis X - Axis Y - Sum & standart deviation - reported incident - data on tooltip  
+ * @param {*} booleandisplay - variable of click mouse gestion 
+ * @param {*} type - name of the data source 
+ * @param {*} datavalues - values of this data source 
+ * @param {*} dataAxis values of the axis X 
+ * @param {*} propcombined - sum & std deviation data 
+ * @param {*} numberdaysongraph - witdh of the graphics  
+ * @param {*} reportedIncident - number of days between the first day and the report of the sick incident 
+ * @param {*} compare - difference between the first day of al data source and the first day of this data source
+ * @param {*} dataday - array of the day 
+ * @param {*} datayear - to display on screen 
+ * @param {*} color - unique color for the data source
+ * @param {*} msg - String to display on the screen 
+ * @function removeGroup - cleaning the screen from the data
+ * @function createChartePoint - display on screen the chart point 
+ * @function createSumdata - display on screen the sum and the standart deviation 
+ * @function tooltipdata - display informations for each point 
+ */
+function mainContainer_display_multiple_data_source(booleandisplay, type, datavalues, dataAxis, propcombined, numberdaysongraph, reportedIncident, compare, dataday, datayear, color, msg) {
+    if (booleandisplay == 1) {
+        removeGroup(type + '-intraday-incident', type + '-heart-rate-axisX-cnt', type + '-heart-rate-axisY-cnt', 'circle-' + type + '-heart-rate-ctn', type + '-sum');
+        createChartePoint(maingroup, datavalues, dataAxis, "circle-" + type +"-heart-rate-ctn", color, (gridSize / 10), compare);
+        createSumdata(maingroup, propcombined, dataAxis, type + '-sum', numberdaysongraph);
+        tooltipdata("circle-" + type + "-heart-rate-ctn", formatdateshow2(dataday, '20' + datayear[0]), msg, color);
+    } else {
+        removeGroup(type + '-intraday-incident', type + '-heart-rate-axisX-cnt', type + '-heart-rate-axisY-cnt', 'circle-' + type + '-heart-rate-ctn', type + '-sum');
+    }
+}
+/**
  * @description Display on screen the title of the graphic
  * @param {Element} titleapple - svg element
  * @param {String} title - title text message
@@ -528,11 +1208,6 @@ function showreportedSickIncident(svgName, coord, id) {
     svgName.append("line").attr("id",id).attr("x1",((gridSize*.5)+coordX[0]*gridSize)).attr("y1",y).attr("x2",((gridSize*.5)+coordX[0]*gridSize)).attr("y2",heightGraph - margin.bottom).style("stroke", "#A7AAAA").style("stroke-dasharray",5).style("stroke-width","1");
 }
 /**
- * @description function to get the day to display on the graphics - one day every seven - one week 
- * @param { Array } data - of the JSON file 
- * @returns { axisdays }
- */
-/**
  * @description Display on screen rect to show the sum of the value with a double standart deviation 
  * @param {Element} svgName - svg element
  * @param {Array} data - data to display 
@@ -545,6 +1220,11 @@ function createSumdata(svgName, data, axe, id, width) {
     svgName.append("rect").attr('id', id).attr("x", 0).attr("y", ((gap.bottom) - ((data[4] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom)))).attr("width", (width + 1) * gridSize).attr("height", (((gap.bottom) - ((data[0] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))) - ((gap.bottom) - ((data[4] - axe[0]) * (gap.test2 / gap.betweenTopAndBottom))))).style("fill", "#f7f7f7").lower();
     svgName.append("line").attr('id', id).attr("x1", 0).attr("y1", ((gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom)))).attr("x2", (width + 1) * gridSize).attr("y2", ((gap.bottom) - (gap.betweenValues * (gap.test2 / gap.betweenTopAndBottom)))).style("stroke", "#34495e").style("stroke-dasharray", 5).style("stroke-width", "1");
 }
+/**
+ * @description function to get the day to display on the graphics - one day every seven - one week 
+ * @param { Array } data - of the JSON file 
+ * @returns { axisdays }
+ */
 function getDayonAxis(data) {
     axisdays = [];
     var cnt = 0;
@@ -609,7 +1289,7 @@ function getCombineAxisY(revert) {
             test[i + cnt4] = googleAxis[i];
         }
     }
-    test.sort();
+    test.sort((a, b) => a - b);
     var axis = Array.from(new Set(test));
     var newAxis = [];
     var cnt = 0;
@@ -780,7 +1460,6 @@ function calculatSum(data) {
     var N = 0;
     var variance = 0;
     var stddeviation = 0;
-
     for (let i = 0; i < data.length; i++) {
         if (data[i] != '-' && data[i] != undefined && data[i] != "NO DATA" && data[i] != "") {
             sum += data[i];
@@ -791,14 +1470,12 @@ function calculatSum(data) {
         sum = Math.round(sum / N);
     else
         sum = (sum / N);
-
     for (let i = 0; i < data.length; i++) {
         if (data[i] != '-' && data[i] != undefined && data[i] != "NO DATA" && data[i] != "") {
             variance += (1 / N) * ((data[i] - sum) * (data[i] - sum));
         }
     }
     stddeviation = Math.sqrt(variance);
-
     var prop = [];
     if (sum > stddeviation)
         prop[0] = Math.round(sum - (stddeviation * 2));
@@ -820,8 +1497,66 @@ function calculatSum(data) {
         prop[4] = Math.round(sum + (stddeviation * 2));
     else
         prop[4] = (sum + (stddeviation * 2));
-
     return (prop);
+}
+/**
+ * @description Get, calculate and return the combining sum and standart deviation of the data we want to display 
+ * @param { Array } revert 
+ * @returns {prop}
+ */
+function getSum(revert) {
+    var data = [];var cnt1 = 0;var cnt2 = 0;var cnt3 = 0;var cnt4 = 0;var cnt5 = 0;
+    var prop = [0, 0, 0, 0, 0, 0];
+    if (revert[0] == 1 && revert[1] == 0 && revert[2] == 0 && revert[3] == 0 && revert[4] == 0 && revert[5] == 0 && revert[6] == 0) {
+        for (let i = 0; i < finaldataOuraTemp.length; i++) {
+            data[i] = finaldataOuraTemp[i];
+        }
+    }
+    if (revert[6] == 1 && revert[0] == 0 && revert[1] == 0 && revert[2] == 0 && revert[3] == 0 && revert[4] == 0 && revert[5] == 0) {
+       for (let i = 0; i < finaldataOuraRes.length; i++) {
+            data[i] = finaldataOuraRes[i];
+        }
+    }
+    if (revert[1] == 1 && revert[0] == 0) {
+        for (let i = 0; i < finaldataAppleWatch.length; i++) {
+            data[i] = finaldataAppleWatch[i];
+            cnt1++;cnt2++;cnt3++;cnt4++;cnt5++;
+        }
+    }
+    if (revert[2] == 1 && revert[0] == 0) {
+        for (let i = 0; i < newdataFitbit.length; i++) {
+            data[i + cnt1] = newdataFitbit[i]; 
+            cnt2++;cnt3++;cnt4++;cnt5++;
+        }
+    }
+    if (revert[3] == 1 && revert[0] == 0) {
+        for (let i = 0; i < ouradata.length; i++) {
+            data[i + cnt2] = ouradata[i];
+            cnt3++;cnt4++;cnt5++;
+        }
+    }
+    if (revert[4] == 1 && revert[0] == 0) {
+        for (let i = 0; i < finaldata_garmin.length; i++) {
+            data[i + cnt3] = finaldata_garmin[i];
+            cnt4++;cnt5++;
+        }
+    }
+    if (revert[5] == 1 && revert[0] == 0) {
+        for (let i = 0; i < finaldataGoogle.length; i++) {
+            data[i + cnt4] = finaldataGoogle[i];
+            cnt5++;
+        }
+    }
+    if (revert[7] == 1 && revert[0] == 0) {
+        for (let i = 0; i < fitbitintradaydata.length; i++) {
+            data[i + cnt5] = fitbitintradaydata[i];
+        }
+    }
+    if (revert[0] == 0 && revert[1] == 0 && revert[2] == 0 && revert[3] == 0 && revert[4] == 0 && revert[5] == 0 && revert[6] == 0) {
+        prop = [0, 0, 0, 0, 0, 0];
+    } else
+        prop = calculatSum(data);
+    return prop;
 }
 /**
  * @description Select or deselect the button we click on it by changing the stroke of the button
@@ -1213,6 +1948,14 @@ function completedLastDay(rapport, date) {
     }
     return newdate;
 }
+/**
+ * @function formatdateshow
+ * @description This function transform a date with a format (dd/mm) in new format (Jan 01)
+ * @description We display this format of date on the screen 
+ * @param { Array } data of the JSON file
+ * @param { String} year - year of the sick incident 
+ * @return { day  } - Array of the new formating date of the JSoN File to display
+ */
 function formatdateshow(data, id) {
     let months = ["Jan", "Fev", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     for (let i = 1; i < months.length + 1; i++) {
