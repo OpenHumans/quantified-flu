@@ -433,7 +433,7 @@ function controlDatafromOura(data, type) {
         symptomData = getSymptomDatafromFile(0);
     } else if (type == "event") {
         ouratempday = controlDay(tempday, day, monthtemp);
-        dayAxis_oura_temp = getDayonAxis(ouratempday);
+        axisTemperature_oura = getDayonAxis(ouratempday);
         TemperatureOuraAxis = getAxisLegend(tempdata, 'decimal');
         finaldataOuraTemp = dataControl(tempdata, tempday, day, monthtemp, 1);
         ouratempreportedIncident = sickness_event(data, ouratempday);
@@ -1254,6 +1254,11 @@ function getCombineAxisY(revert) {
     var cnt2 = 0;
     var cnt3 = 0;
     var cnt4 = 0;
+    if (revert[0] == 1) {
+        for (let i = 0; i < axisTemperature_oura.length; i++) {
+            test[i] = axisTemperature_oura[i];
+        }
+    }
     if (revert[1] == 1) {
         for (let i = 0; i < heartrateAxis.length; i++) {
             test[i] = heartrateAxis[i];

@@ -926,16 +926,16 @@ function showAppendTitle(data, i, y) {
       + " \n Values: " + data + "/4";
     if (finaldataAppleWatch[i] != undefined && finaldataAppleWatch[i] != '-' && finaldataAppleWatch[i] != 'NO DATA')
       msg += " \n Heart Rate (Apple Watch) : " + finaldataAppleWatch[i] + " bpm";
-    if (finaldata_fitbit[i] != undefined && finaldata_fitbit[i] != '-' && finaldata_fitbit[i] != 'NO DATA')
-      msg += " \n Heart Rate (Fitbit) : " + finaldata_fitbit[i] + " bpm";
+    if (newdataFitbit[i] != undefined && newdataFitbit[i] != '-' && newdataFitbit[i] != 'NO DATA')
+      msg += " \n Heart Rate (Fitbit) : " + newdataFitbit[i] + " bpm";
     if (finaldataOura[i] != undefined && finaldataOura[i] != '-' && finaldataOura[i] != 'NO DATA')
       msg += " \n Heart Rate (Oura) : " + finaldataOura[i] + " bpm";
     if (finaldataGoogle[i] != undefined && finaldataGoogle[i] != '-' && finaldataGoogle[i] != 'NO DATA')
       msg += " \n Heart Rate (GoogleFit) : " + finaldataGoogle[i] + " bpm";
     if (finaldata_garmin[i] != undefined && finaldata_garmin[i] != '-' && finaldata_garmin[i] != 'NO DATA')
       msg += " \n Heart Rate (Garmin) : " + finaldata_garmin[i] + " bpm";
-    if (finaldataOuraTemperature[i] != undefined && finaldataOuraTemperature[i] != '-' && finaldataOuraTemperature[i] != 'NO DATA')
-      msg += " \n Body Temp. (Oura) : " + finaldataOuraTemperature[i];
+    if (finaldataOuraTemp[i] != undefined && finaldataOuraTemp[i] != '-' && finaldataOuraTemp[i] != 'NO DATA')
+      msg += " \n Body Temp. (Oura) : " + finaldataOuraTemp[i];
     if (finaldataOuraRes[i] != undefined && finaldataOuraRes[i] != '-' && finaldataOuraRes[i] != 'NO DATA')
       msg += " \n Resp. Rate (Oura) : " + finaldataOuraRes[i];
     return msg;
@@ -1130,13 +1130,13 @@ function mainContainer_RespiratoryRate_oura(data, maingroupapple, legendapple, t
 * @param {*} titleapple - svg element to display the title
 * @param {*} revert - variable of click mouse gestion 
 */
-function mainContainer_temperature_oura_sleep_summary(data, maingroupapple, legendapple, titleapple, revert) {
+function mainContainer_temperature_oura_sleep_summary(dataAxis, maingroupapple, legendapple, titleapple, revert) {
   if (revert[0] == 1) {
     removeGroup('circle-temperature-ctn', 'oura-axisY-cnt', 'oura-title-ctn', 'oura-sum', 'oura-axisY-cnt-2', 'oura-axisY-cnt');
-    createSumdata(maingroupapple, prob, axisTemperature_oura, 'oura-sum', completedDays.length);
-    createChartePoint(maingroupapple, finaldataOuraTemp, axisTemperature_oura, "circle-temperature-ctn", "#beaed4", (gridSize / 10), 0);
+    createSumdata(maingroupapple, prob, dataAxis, 'oura-sum', completedDays.length);
+    createChartePoint(maingroupapple, finaldataOuraTemp, dataAxis, "circle-temperature-ctn", "#beaed4", (gridSize / 10), 0);
     createTitle(titleapple, "Temperature evolution", 'oura-title-ctn', '50%');
-    createLegendAxeY(legendapple, axisTemperature_oura, "BODY TEMPERATURE", 'oura-axisY-cnt');
+    createLegendAxeY(legendapple, dataAxis, "BODY TEMPERATURE", 'oura-axisY-cnt');
     tooltipscreen("circle-temperature-ctn", oura_date, "");
   } else {
     removeGroup('circle-temperature-ctn', 'oura-axisY-cnt', 'oura-title-ctn', 'oura-sum', 'oura-axisY-cnt-2', 'oura-axisY-cnt');
@@ -1511,7 +1511,7 @@ function groupGraphic(data) {
   }
   mainContainer_heart_rate_google_fit(axis, maingroup, legendgroup, titlegroup, revert, prob);
   mainContainer_garmin_heartrate(axis, maingroup, legendgroup, titlegroup, revert, prob);
-  mainContainer_temperature_oura_sleep_summary(data, maingroup, legendgroup, titlegroup, revert);
+  mainContainer_temperature_oura_sleep_summary(axis, maingroup, legendgroup, titlegroup, revert);
   mainContainer_HeartRate_Apple_Watch(axis, maingroup, legendgroup, titlegroup, revert, prob);
   mainContainer_fitbit_summary_heartrate(axis, maingroup, legendgroup, titlegroup, revert, prob);
   mainContainer_heart_rate_oura_sleep(axis, maingroup, legendgroup, titlegroup, revert, prob);
