@@ -79,7 +79,7 @@ function graphicsGroup() {
     if (revert[1] == 0 && revert[2] == 0 && revert[3] == 0 && revert[4] == 0 && revert[5] == 0) {
         removeGroup('heart-rate-title-ctn', 'heart-rate-axisX-cnt', 'heart-rate-axisY-cnt', 'sick-intraday-incident');
     }
-    if (oura == true) mainContainer_display_single_data_source (revert[0], 'oura-temperature', finaldataOuraTemp, dayAxis_oura_temp, TemperatureOuraAxis, ouratemp_sum, numberdaysongraph, ouratempreportedIncident, 0, ouratempday, tempyear, "#beaed4", "Temperature evolution", "TEMPERATURE BODY");
+    if (oura == true) mainContainer_display_single_data_source (revert[0], 'oura-temperature', finaldataOuraTemp, axiscombined, TemperatureOuraAxis, ouratemp_sum, numberdaysongraph, ouratempreportedIncident, 0, ouratempday, tempyear, "#beaed4", "Temperature evolution", "TEMPERATURE BODY");
     if (apple == true) mainContainer_display_multiple_data_source(revert[1], "apple", finaldataAppleWatch, axiscombined, propcombined, numberdaysongraph, applereportedIncident, applecompare, controlday, appleyear, "#66c2a5", "bpm");
     if (fitbit == true) mainContainer_display_multiple_data_source(revert[2], "fitbit", newdataFitbit, axiscombined, propcombined, numberdaysongraph, fitbitreportedIncident, fitbitcompare, newfitbitdate, fitbityear, "#fc8d62", "bpm");
     if (ouraHR == true) mainContainer_display_multiple_data_source(revert[3], "oura", finaldataOura, axiscombined, propcombined, numberdaysongraph, ourareportedIncident, ouracompare, ouracontrolday, ourayear, "#8da0cb", "bpm");
