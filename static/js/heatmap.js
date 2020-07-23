@@ -80,7 +80,6 @@ createheatmap(url);
   this.month = timestamp.map(d => formatdatemonth(parseTime(d)));
   this.year = timestamp.map(d => formatdateyear(parseTime(d)))
   days = controlDay(file_days, reportday, month);
-
   this.comments = loadComments(data, days);
   this.height = determineHeigth();
   this.innerwidth = determineInnerwidth();
@@ -178,9 +177,7 @@ function loadDataSymptom(data) {
     fever[cnt] = element.data.fever;
     cnt++;
   });
-
   var comments = loadCommentsValues(data);
-
   var symptom_data = [];
   symptom_data[0] = dataControlSymptom(cough);
   symptom_data[1] = dataControlSymptom(wet_cought);
@@ -209,11 +206,10 @@ function loadDataSymptom(data) {
  */
 function dataControlSymptom(data) {
   dayscontrol = dayControl(file_days);
-
   for (i = 0; i < data.length; i++) {
     if (data[i] === undefined || data[i] === "")
       data[i] = 0;
-    if ((data[i] >= 95 && data[i] < 99.5) || (data[i] >= 37 && data[i] < 37.5))
+    if ((data[i] >= 93 && data[i] < 99.5) || (data[i] >= 36 && data[i] < 37.5))
       data[i] = 0;
     if ((data[i] >= 99.5 && data[i] < 100.4) || (data[i] >= 37.5 && data[i] < 38))
       data[i] = 1;
@@ -245,7 +241,7 @@ function dataControlSymptom(data) {
     else
       newdata[x] = data2[x - moreday];
   }
-  newdata.push(data2[data2.length - 1])
+  //newdata.push(data2[data2.length - 1])
   return newdata;
 }
 /**
@@ -328,11 +324,11 @@ function getNoReportValues(data) {
   millisecondes = (hour * 3600000) + (min * 60000) + (sec * 1000);
   firstDay_report = parseTime(data.symptom_report[0].timestamp).getTime();
 
-  if (data.fitbit_summary != undefined)
+  if (data.fitbit_summary != undefined && data.fitbit_summary != null && data.fitbit_summary.length > 0)
     firstDay_fitbit = parseTimeTemp(data.fitbit_summary[0].timestamp).getTime();
   else
     firstDay_fitbit = firstDay_report;
-  if (data.apple_health_summary != undefined)
+  if (data.apple_health_summary != undefined && data.apple_health_summary != null && data.apple_health_summary.length > 0)
     firstDay_apple = parseTime(data.apple_health_summary[0].timestamp).getTime();
   else
     firstDay_apple = firstDay_report;
@@ -340,15 +336,15 @@ function getNoReportValues(data) {
     firstDay_oura = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
   else
     firstDay_oura = firstDay_report;
-  if (data.oura_sleep_summary != undefined)
+  if (data.oura_sleep_summary != undefined && data.oura_sleep_summary != null && data.oura_sleep_summary.length > 0)
     firstDay_oura_hr = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
   else
     firstDay_oura_hr = firstDay_report;
-  if (data.garmin_heartrate != undefined)
+  if (data.garmin_heartrate != undefined && data.garmin_heartrate != null && data.garmin_heartrate.length > 0)
     firstDay_garmin = parseTimeGarmin(data.garmin_heartrate[0].timestamp).getTime();
   else
     firstDay_garmin = firstDay_report;
-  if (data.googlefit_heartrate != undefined)
+  if (data.googlefit_heartrate != undefined && data.googlefit_heartrate != null && data.googlefit_heartrate.length > 0)
     firstDay_google = parseTimeGarmin(data.googlefit_heartrate[0].timestamp).getTime();
   else
     firstDay_google = firstDay_report;
@@ -423,7 +419,7 @@ function getNoReportValues(data) {
     millisecondes2 = (hour2 * 3600000) + (min2 * 60000) + (sec2 * 1000);
     test = test - (millisecondes - millisecondes2);
   }
-  return Math.round(test / (86400000));
+  return Math.round(test/(86400000));
 }
 /**
  * @description Function to get the datasource (symptom report / Fitbit / Oura ...) with the old first day of data
@@ -433,11 +429,11 @@ function getNoReportValues(data) {
  */
 function getNoReportDataSource(data) {
   firstDay_report = parseTime(data.symptom_report[0].timestamp).getTime();
-  if (data.fitbit_summary != undefined)
+  if (data.fitbit_summary != undefined && data.fitbit_summary != null && data.fitbit_summary.length > 0)
     firstDay_fitbit = parseTimeTemp(data.fitbit_summary[0].timestamp).getTime();
   else
     firstDay_fitbit = firstDay_report;
-  if (data.apple_health_summary != undefined)
+  if (data.apple_health_summary != undefined && data.apple_health_summary != null && data.apple_health_summary.length > 0)
     firstDay_apple = parseTime(data.apple_health_summary[0].timestamp).getTime();
   else
     firstDay_apple = firstDay_report;
@@ -445,15 +441,15 @@ function getNoReportDataSource(data) {
     firstDay_oura = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
   else
     firstDay_oura = firstDay_report;
-  if (data.oura_sleep_summary != undefined)
+  if (data.oura_sleep_summary != undefined && data.oura_sleep_summary != null && data.oura_sleep_summary.length > 0)
     firstDay_oura_hr = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
   else
     firstDay_oura_hr = firstDay_report;
-  if (data.garmin_heartrate != undefined)
-    firstDay_garmin = parseTimeGarmin(data.garmin_heartrate[0].timestamp).getTime();
+  if (data.garmin_heartrate != undefined && data.garmin_heartrate != null && data.garmin_heartrate.length > 0)
+   firstDay_garmin = parseTimeGarmin(data.garmin_heartrate[0].timestamp).getTime();
   else
     firstDay_garmin = firstDay_report;
-  if (data.googlefit_heartrate != undefined)
+  if (data.googlefit_heartrate != undefined && data.googlefit_heartrate != null && data.googlefit_heartrate.length > 0)
     firstDay_google = parseTimeGarmin(data.googlefit_heartrate[0].timestamp).getTime();
   else
     firstDay_google = firstDay_report;
