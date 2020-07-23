@@ -31,13 +31,15 @@ function getReportingSymptom(url, id, link) {
  */
 function main(id, data, link) {
     if (data.symptom_report.length > 0) {
+        var cell_date = document.createElement("td");
         let date = document.createElement('a');
         date.id = "date";
         var desiredText = getMessageDate(data);
         var desiredLink = link;
         date.setAttribute('href', desiredLink);
         date.innerHTML = desiredText;
-        document.getElementById("public-list-report-symptom").appendChild(date);
+        cell_date.appendChild(date);
+        document.getElementById("public-list-report-symptom").appendChild(cell_date);
 
         let memberid = document.createElement("td");
         memberid.id = "memberid";
