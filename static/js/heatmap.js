@@ -151,6 +151,25 @@ function loadComments(data, days) {
   return comments;
 }
 /**
+ * @function getSymptomName
+ * @description Function returns an array with all the diffents names of the symptoms in the file of the user
+ * @param {Array} data - JSON file 
+ * @function Set()
+ * @function Array.from()
+ * @returns {Array}
+ */
+function getSymptomName(data) {
+  var cntfile = 0;
+  var keyfile = [];
+  for (let i = 0; i < data.symptom_report.length; i++) {
+      for (var j in data.symptom_report[i].data) {
+          keyfile[cntfile] = j;
+          cntfile++;
+      }
+  }
+  return Array.from(new Set(keyfile));
+}
+/**
  * @description	Get the existing data values of the syptoms from the symptom report 
  * @description	Once we had read them, we "control the values with the "
  * @function dataControlSymptom to add or remove data from missing or repeat day

@@ -67,7 +67,7 @@ function getDataSource(data) {
     var datasource = "";
     if (data.apple_health_summary != undefined)
         datasource += "Apple watch ";
-    if (data.garmin_heartrate != undefined)
+    if (data.garmin_heartrate != undefined )
         datasource += "Garmin ";
     if (data.fitbit_summary != undefined)
         datasource += "Fitbit ";
@@ -80,42 +80,54 @@ function getDataSource(data) {
     return datasource;
 }
 /**
+ * @function getSymptomName
+ * @description Function returns an array with all the diffents names of the symptoms in the file of the user
+ * @param {Array} data - JSON file 
+ * @function Set()
+ * @function Array.from()
+ * @returns {Array}
+ */
+function getSymptomName(data) {
+    var cntfile = 0;
+    var keyfile = [];
+    for (let i = 0; i < data.symptom_report.length; i++) {
+        for (var j in data.symptom_report[i].data) {
+            keyfile[cntfile] = j;
+            cntfile++;
+        }
+    }
+    return Array.from(new Set(keyfile));
+}
+/**
  * @function getSickIncident
  * @description Return the number of reported sick incidents 
- * @param {*} data - JSON file 
- * @returns {cnt}
+ * @param {*} data - JSON file
+ * @function getSymptomName
+ * @returns {cntSickIncident}
  */
 function getSickIncident(data) {
-    var cnt = 0;
-    for (let i = 0; i < data.symptom_report.length; i++) {
-        if (data.symptom_report[i].data.fever != undefined && data.symptom_report[i].data.fever != "" && data.symptom_report[i].data.fever != 0)
-            cnt++;
-        else if (data.symptom_report[i].data.symptom_anosmia != undefined && data.symptom_report[i].data.symptom_anosmia != "" && data.symptom_report[i].data.symptom_anosmia != 0)
-            cnt++;
-        else if (data.symptom_report[i].data.symptom_body_ache != undefined && data.symptom_report[i].data.symptom_body_ache != "" && data.symptom_report[i].data.symptom_body_ache != 0)
-            cnt++;
-        else if (data.symptom_report[i].data.symptom_chills != undefined && data.symptom_report[i].data.symptom_chills != "" && data.symptom_report[i].data.symptom_chills != 0)
-            cnt++;
-        else if (data.symptom_report[i].data.symptom_cough != undefined && data.symptom_report[i].data.symptom_cough != "" && data.symptom_report[i].data.symptom_cough != 0)
-            cnt++;
-        else if (data.symptom_report[i].data.symptom_diarrhea != undefined && data.symptom_report[i].data.symptom_diarrhea != "" && data.symptom_report[i].data.symptom_diarrhea != 0)
-            cnt++;
-        else if (data.symptom_report[i].data.symptom_fatigue != undefined && data.symptom_report[i].data.symptom_fatigue != "" && data.symptom_report[i].data.symptom_fatigue != 0)
-            cnt++;
-        else if (data.symptom_report[i].data.symptom_headache != undefined && data.symptom_report[i].data.symptom_headache != "" && data.symptom_report[i].data.symptom_headache != 0)
-            cnt++;
-        else if (data.symptom_report[i].data.symptom_nausea != undefined && data.symptom_report[i].data.symptom_nausea != "" && data.symptom_report[i].data.symptom_nausea != 0)
-            cnt++;
-        else if (data.symptom_report[i].data.symptom_runny_nose != undefined && data.symptom_report[i].data.symptom_runny_nose != "" && data.symptom_report[i].data.symptom_runny_nose != 0)
-            cnt++;
-        else if (data.symptom_report[i].data.symptom_short_breath != undefined && data.symptom_report[i].data.symptom_short_breath != "" && data.symptom_report[i].data.symptom_short_breath != 0)
-            cnt++;
-        else if (data.symptom_report[i].data.symptom_sore_throat != undefined && data.symptom_report[i].data.symptom_sore_throat != "" && data.symptom_report[i].data.symptom_sore_throat != 0)
-            cnt++;
-        else if (data.symptom_report[i].data.symptom_wet_cough != undefined && data.symptom_report[i].data.symptom_wet_cough != "" && data.symptom_report[i].data.symptom_wet_cough != 0)
-            cnt++;
-    }
-    return cnt;
+    var cnt = 0, cntDayReport = 0, cntSickIncident = 0; cntlastday = 0;
+    var setKeyfile = getSymptomName(data);
+    JSON.parse(JSON.stringify(data, null, '\t'), function (key, value) {
+        for (let i = 0; i < setKeyfile.length; i++) {
+            if (key === setKeyfile[i] && value > 0 && value < 5) {
+                cnt++;
+                break;
+            }
+        }
+        if (key == setKeyfile[0]) {
+            cntDayReport++;
+            if (cnt > 0) {
+                cntSickIncident++;
+                cnt = 0;
+            }
+        }
+        if (cntDayReport == data.symptom_report.length && value > 0 && value < 5)
+            cntlastday ++;
+    });
+    if (cntlastday  > 0)
+        cntSickIncident++;
+    return cntSickIncident;
 }
 /**
  * @function getReports
@@ -140,7 +152,11 @@ function getReports(data) {
  * @returns {Array}
  */
 function getMessageDate(data) {
-    return formatdateshow(formatdate(parseTime(data.symptom_report[0].timestamp))) + " - " + formatdateshow(formatdate(parseTime(data.symptom_report[data.symptom_report.length - 1].timestamp)));
+    if (data.symptom_report.length == 1)
+        return formatdateshow(formatdate(parseTime(data.symptom_report[0].timestamp)));
+    else
+        return formatdateshow(formatdate(parseTime(data.symptom_report[0].timestamp))) + " - " + formatdateshow(formatdate(parseTime(data.symptom_report[data.symptom_report.length - 1].timestamp)));
+
 }
 /**
  * @function formatdateshow
