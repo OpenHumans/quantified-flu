@@ -5,6 +5,10 @@
 /**
  * @description This array determine the order of displaying we want for the caption legend 
  * @type {Array} */
+$captionLegendString = ["fever", "symptom_anosmia", "symptom_body_ache", "symptom_chills", "symptom_cough", "symptom_diarrhea", "symptom_fatigue", "symptom_headache", "symptom_nausea", "symptom_runny_nose", "symptom_short_breath", "symptom_sore_throat", "symptom_wet_cough"];
+/**
+ * @description This array determine the order of displaying we want for the caption legend 
+ * @type {Array} */
 $names = ["Cough", "Wet cough", "Anosmia", "Runny nose", "Sore throat", "Short breath", "Diarrhea", "Nausea", "Chills", "Fatigue", "Headache", "Body ache", "Fever", "", "Comments"];
 /** * @description This array is use to determine the number of symptom in this categorie
  * @type {Array} */$respiratory = ["Cough", "Wet cough", "Anosmia", "Runny nose", "Sore throat", "Short breath"];
@@ -168,8 +172,9 @@ function loadComments(data, days) {
  * @returns {Array}
  */
 function getSymptomName(data) {
-  var cntfile = 0;
+  var cntfile = $captionLegendString.length;
   var keyfile = [];
+  keyfile = $captionLegendString;
   for (let i = 0; i < data.symptom_report.length; i++) {
     for (var j in data.symptom_report[i].data) {
       if (j != "notes" && j != "fever_guess" && j != "other_symptoms" && j != "suspected_virus") {
@@ -298,6 +303,8 @@ function getdatavaluesfromfile(data, firstkey, keySymptom) {
       values[cnt] = value;
       cnt++;
       clickon = 1;
+    } else {
+      values[cnt] = "";
     }
   });
   if (cnt != cntday)

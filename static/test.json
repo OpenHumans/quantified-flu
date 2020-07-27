@@ -6,21 +6,7 @@
                 "fever_guess": null,
                 "notes": "",
                 "other_symptoms": "",
-                "suspected_virus": "",
-                "symptom_anosmia": 0,
-                "symptom_body_ache": 0,
-                "symptom_chills": 0,
-                "symptom_cough": 0,
-                "symptom_diarrhea": 0,
-                "symptom_fatigue": 0,
-                "symptom_headache": 0,
-                "symptom_nausea": 0,
-                "symptom_runny_nose": 0,
-                "symptom_short_breath": 0,
-                "symptom_sore_throat": 0,
-                "symptom_wet_cough": 0,
-                "symptom_adding": 0,
-                "symptom_adding3": 0
+                "suspected_virus": ""
             },
             "timestamp": "2020-07-02T08:54:44.522086+00:00"
         },
@@ -40,8 +26,7 @@
                 "fever_guess": null,
                 "notes": "",
                 "other_symptoms": "",
-                "suspected_virus": "",
-                "symptom_anosmia": 4
+                "suspected_virus": ""
             },
             "timestamp": "2020-07-06T07:48:17.571791+00:00"
         },
@@ -101,9 +86,7 @@
                 "fever_guess": null,
                 "notes": "",
                 "other_symptoms": "",
-                "suspected_virus": "",
-                "symptom_adding2": 1,
-                "symptom_adding4": 2
+                "suspected_virus": ""
             },
             "timestamp": "2020-07-15T07:30:35.009749+00:00"
         },
@@ -179,7 +162,7 @@
         },
         {
             "data": {
-                "fever": 104,
+                "fever": "",
                 "fever_guess": null,
                 "notes": "",
                 "other_symptoms": "",
@@ -189,7 +172,7 @@
         },
         {
             "data": {
-                "fever": 104,
+                "fever": "",
                 "fever_guess": null,
                 "notes": "",
                 "other_symptoms": "",
@@ -199,31 +182,33 @@
         },
         {
             "data": {
-                "fever": 99.6,
+                "fever": "",
                 "fever_guess": null,
                 "notes": "",
                 "other_symptoms": "",
-                "suspected_virus": ""
+                "suspected_virus": "",
+                "symptom_adding": 4
             },
             "timestamp": "2020-07-24T08:00:27.074431+00:00"
         },
         {
             "data": {
-                "fever": 102.6,
+                "fever": "",
                 "fever_guess": null,
                 "notes": "",
                 "other_symptoms": "",
                 "suspected_virus": ""
             },
-            "timestamp": "2020-07-24T08:00:27.074431+00:00"
+            "timestamp": "2020-07-27T08:00:27.074431+00:00"
         },
         {
             "data": {
-                "fever": "99.68",
+                "fever": "",
                 "fever_guess": null,
                 "notes": "",
                 "other_symptoms": "",
-                "suspected_virus": ""
+                "suspected_virus": "",
+                "symptom_adding": 1
             },
             "timestamp": "2020-07-27T08:00:27.074431+00:00"
         }
