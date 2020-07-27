@@ -103,9 +103,7 @@ createheatmap(url);
  */ function loadCommentsValues(data) {
   const values = [];
   var data1 = data.symptom_report.map(d => d.data.notes);
-
   var dayscontrol = dayControl(file_days);
-
   const data2 = [];
   var cnt = 0;
   for (var i = 0; i < dayscontrol.length; i++) {
@@ -183,8 +181,15 @@ function getSymptomName(data) {
   return Array.from(new Set(keyfile));
 }
 /**
- * 
- * @param {*} str 
+ * @description Function which returns an lowercase array in an array with the first letter in uppercase
+ * @param {*} str - String of caption
+ * @function toLowerCase() - put the array in lowercase
+ * @function split() - allaow to split the array with more than one word
+ * @function charAt() - take the first letter
+ * @function toUpperCase() - put the letter in uppercase
+ * @function splitStr - split the array 
+ * @function substring
+ * @returns {Array}
  */
 function titleCase(str) {
   var splitStr = str.toLowerCase().split(' ');
@@ -193,7 +198,12 @@ function titleCase(str) {
   }
   return splitStr.join(' ');
 }
-
+/**
+ * @description Function which returns the caption of the symptom in the officiel order (by categories)
+ * @description The unknow caption will be add at the end of the official one
+ * @param {*} arrayValue - Array of string of caption
+ * @returns {Array} 
+ */
 function shortCaptionSymptom(arrayValue) {
   var orderCaption = [], cnt = 0;
   for (let j = 0; j < $names.length; j++) {
@@ -220,6 +230,12 @@ function shortCaptionSymptom(arrayValue) {
   orderCaption[cnt + 1] = "Comments";
   return (orderCaption);
 }
+/**
+ * @description Function which returns the indice of the captions to know which values is
+ * @param {*} arrayValue - Array of string of caption
+ * @function Math.max
+ * @returns {Array} 
+ */
 function shortCaptionSymptomIndice(arrayValue) {
   var orderCaption = [], cnt = 0;
   for (let j = 0; j < $names.length; j++) {
@@ -238,8 +254,12 @@ function shortCaptionSymptomIndice(arrayValue) {
   return (orderCaption);
 }
 /**
- * 
- * @param {*} symptomname 
+ * @description Returns the good syntaxe of the symptoms caption (with a uppercase first letter)
+ * @description Depending of the number of words in the cpation symptom 
+ * @param {*} symptomname - String of the symptom caption
+ * @function split
+ * @function titleCase
+ * @returns {Array}
  */
 function setSymptomNameOnScreen(symptomname) {
   var caption = [];
@@ -255,29 +275,39 @@ function setSymptomNameOnScreen(symptomname) {
   return caption;
 }
 /**
- * 
- * @param {*} symptom 
+ * @description Function returning the values available in the JSON file of a specific symptom
+ * @param {*} data - JSON file
+ * @param {*} firstkey - key of the first symptom of the file (to know when we read one day)
+ * @param {*} keySymptom - key of the specific symptom we want the values
+ * @function JSON.parse
+ * @function JSON.stringify
+ * @returns {values} - Array of String
  */
 function getdatavaluesfromfile(data, firstkey, keySymptom) {
-  var values = [], cnt = 0, cntDayReport = 0, cntSickIncident = 0; test = 1;
+  var values = [], cnt = 0, clickon = 1;
   JSON.parse(JSON.stringify(data, null, '\t'), function (key, value) {
     if (key === firstkey) {
-      cntDayReport++;
-      if (test == 0) {
+      if (clickon == 0) {
         values[cnt] = "";
         cnt++;
       } else
-        test = 0;
+        clickon = 0;
     }
     if (key === keySymptom) {
       values[cnt] = value;
       cnt++;
-      test = 1;
+      clickon = 1;
     }
   });
   return values;
 }
 
+/**
+ * @description Function wich returns the number of symptom by categories 
+ * @description This will allow us to display properly the title of the categories
+ * @param {*} arrayCaption - array of string of the symptom caption
+ * @returns {List}
+ */
 function getCategorie(arrayCaption) {
   var cntResp = 0, cntSys = 0, cntGastro = 0;
   for (let i = 0; i < arrayCaption.length; i++) {
