@@ -284,21 +284,24 @@ function setSymptomNameOnScreen(symptomname) {
  * @returns {values} - Array of String
  */
 function getdatavaluesfromfile(data, firstkey, keySymptom) {
-  var values = [], cnt = 0, clickon = 1;
+  var values = [], cnt = 0, clickon = 1, cntday = 0;
   JSON.parse(JSON.stringify(data, null, '\t'), function (key, value) {
-    if (key === firstkey) {
+    if (key === firstkey ) {
+      cntday ++; 
       if (clickon == 0) {
         values[cnt] = "";
         cnt++;
-      } else
+      } else if (clickon == 1)
         clickon = 0;
     }
-    if (key === keySymptom) {
+    if (key === keySymptom ){
       values[cnt] = value;
       cnt++;
       clickon = 1;
     }
   });
+  if (cnt != cntday)
+   values[cnt] = "";
   return values;
 }
 
@@ -693,42 +696,19 @@ function getDays() {
  * @description Can show also the data of our wearable data source if we connect one
  */
 function tooltip_heatmap() {
-  const tooltip = d3
-    .select("body")
-    .append("div")
-    .attr("class", "svg-tooltip-heatmap")
-    .style("position", "absolute")
-    .style("visibility", "hidden");
-
+  const tooltip = d3.select("body").append("div").attr("class", "svg-tooltip-heatmap").style("position", "absolute").style("visibility", "hidden");
   d3.selectAll("#rect-heatmap")
     .on("mouseover", function (d) {
       var coordXY = this.getAttribute('class').split('-');
-      d3.select(this)
-        .attr('stroke-width', 2)
-        .attr("width", gridSize - 1)
-        .attr("height", gridSize - 1)
-        .style("fill", "#EE79FE")
-        .attr("stroke", "black");
-      tooltip
-        .style("visibility", "visible")
-        .text(`${showAppendTitle(d, coordXY[0], coordXY[1])}`);
-
+      d3.select(this).attr('stroke-width', 2).attr("width", gridSize - 1).attr("height", gridSize - 1).style("fill", "#EE79FE").attr("stroke", "black");
+      tooltip.style("visibility", "visible").text(`${showAppendTitle(d, coordXY[0], coordXY[1])}`);
       selectSymptomOnclick(symptomgroup, coordXY[1]);
     })
-
     .on("mousemove", function () {
-      tooltip
-        .style("top", d3.event.pageY + 10 + "px")
-        .style("left", d3.event.pageX - (gridSize * 3.5) + "px");
+      tooltip.style("top", d3.event.pageY + 10 + "px").style("left", d3.event.pageX - (gridSize * 3.5) + "px");
     })
-
     .on("mouseout", function () {
-      d3.select(this).attr("stroke", "#e2e2e2")
-        .attr('stroke-width', '1')
-        .attr("width", gridSize)
-        .attr("height", gridSize)
-        .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
-
+      d3.select(this).attr("stroke", "#e2e2e2").attr('stroke-width', '1').attr("width", gridSize).attr("height", gridSize).style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
       d3.select('.select-symptom').remove();
       tooltip.style("visibility", "hidden");
     });
@@ -793,26 +773,12 @@ function showHeatmap(maingroup, symptom_data) {
   colorScale = scaleColor();
   y = yScale();
   let cnt = -1;
-  var heatmap = maingroup.append("g")
-    .attr('id', 'heatmape')
-    .selectAll("g")
-    .data(symptom_data)
-    .enter().append("g")
-    .attr("transform", (d, i) => `translate(0, ${gridSize * i})`)
-    .selectAll("rect")
-    .data(d => d)
-    .enter().append("rect")
-    .attr('id', 'rect-heatmap')
-    .attr("x", (d, i) => i * (gridSize))
+  var heatmap = maingroup.append("g").attr('id', 'heatmape').selectAll("g").data(symptom_data).enter().append("g").attr("transform", (d, i) => `translate(0, ${gridSize * i})`).selectAll("rect").data(d => d).enter().append("rect").attr('id', 'rect-heatmap').attr("x", (d, i) => i * (gridSize))
     .attr('class', function (d, i) {
       if (i == 0) cnt++;
       if (i == 0 && cnt == (captionSymptom.length - 2)) cnt++;
       return i + "-" + cnt
-    })
-    .attr("width", gridSize)
-    .attr("height", gridSize)
-    .attr("stroke", "#e2e2e2")
-    .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
+    }).attr("width", gridSize).attr("height", gridSize).attr("stroke", "#e2e2e2").style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
 }
 /**
  * @description Display on screen the axis X - showing on the heatmap the days
@@ -821,30 +787,8 @@ function showHeatmap(maingroup, symptom_data) {
  * @param {*} days_axis - data of symptom report (days)
  */
 function showDaysAxis(maingroup, days_axis) {
-
-  var dayLabel = maingroup.selectAll(".daysLabel")
-    .data(days_axis)
-    .enter().append("text")
-    .attr('id', 'xAxis')
-    .text(function (d) { return d; })
-    .attr("x", function (d, i) { return (i * gridSize * 7); })
-    .attr("y", 0)
-    .attr("transform", "translate(" + (gridSize * 0.5) + ",-" + (gridSize * 0.5) + ")")
-    .style("text-anchor", "middle")
-    .attr("font-weight", "200")
-    .attr("font-size", ".7em");
-
-  var ticksize = maingroup.selectAll(".tickSize")
-    .data(days_axis)
-    .enter().append("line")
-    .attr('id', 'tickSize')
-    .attr("transform", "translate(" + (gridSize * 0.5) + ",-" + (gridSize * 0.3) + ")")
-    .attr("x1", function (d, i) { return (i * gridSize * 7); })
-    .attr("y1", 0)
-    .attr("x2", function (d, i) { return (i * gridSize * 7); })
-    .attr("y2", 10)
-    .style("stroke", "#212529")
-    .style("stroke-width", ".5");
+  var dayLabel = maingroup.selectAll(".daysLabel").data(days_axis).enter().append("text").attr('id', 'xAxis').text(function (d) { return d; }).attr("x", function (d, i) { return (i * gridSize * 7); }).attr("y", 0).attr("transform", "translate(" + (gridSize * 0.5) + ",-" + (gridSize * 0.5) + ")").style("text-anchor", "middle").attr("font-weight", "200").attr("font-size", ".7em");
+  var ticksize = maingroup.selectAll(".tickSize").data(days_axis).enter().append("line").attr('id', 'tickSize').attr("transform", "translate(" + (gridSize * 0.5) + ",-" + (gridSize * 0.3) + ")").attr("x1", function (d, i) { return (i * gridSize * 7); }).attr("y1", 0).attr("x2", function (d, i) { return (i * gridSize * 7); }).attr("y2", 10).style("stroke", "#212529").style("stroke-width", ".5");
 }
 /**
  * @description Display on screen the title of the heatmap
@@ -853,30 +797,9 @@ function showDaysAxis(maingroup, days_axis) {
  * @param {String} title - title text message
  */
 function showTitleandSubtitle(maingroup, title) {
-  var title = maingroup.append("text")
-    .attr("x", 50 + "%")
-    .attr("y", 50 + "%")
-    .attr("font-size", 1.4 + "rem")
-    .style("text-anchor", "middle")
-    .style("font-weight", "300")
-    .attr("class", "mg-chart-title")
-    .text(title);
-
-  var subtitle = maingroup.append("text")
-    .attr("x", 50 + "%")
-    .attr("y", 70 + "%")
-    .style("text-anchor", "middle")
-    .attr("font-size", 1 + "rem")
-    .style("font-weight", "300")
-    .text("Study on " + days.length + " days - start the " + formatdateshow(days[0], year[0]));
-
-  var subtitle2 = maingroup.append("text")
-    .attr("x", 50 + "%")
-    .attr("y", 90 + "%")
-    .style("text-anchor", "middle")
-    .attr("font-size", 1 + "rem")
-    .style("font-weight", "300")
-    .text("Last update - " + formatdateshow(days[days.length - 1], year[year.length - 1]));
+  var title = maingroup.append("text").attr("x", 50 + "%").attr("y", 50 + "%").attr("font-size", 1.4 + "rem").style("text-anchor", "middle").style("font-weight", "300").attr("class", "mg-chart-title").text(title);
+  var subtitle = maingroup.append("text").attr("x", 50 + "%").attr("y", 70 + "%").style("text-anchor", "middle").attr("font-size", 1 + "rem").style("font-weight", "300").text("Study on " + days.length + " days - start the " + formatdateshow(days[0], year[0]));
+  var subtitle2 = maingroup.append("text").attr("x", 50 + "%").attr("y", 90 + "%").style("text-anchor", "middle").attr("font-size", 1 + "rem").style("font-weight", "300").text("Last update - " + formatdateshow(days[days.length - 1], year[year.length - 1]));
 }
 /**
  * @description Display on the screen the caption of the symptoms 
@@ -903,15 +826,8 @@ function showSymptomAxis(maingroup) {
  * @param {*} num - indice of the symptom caption
  */
 function selectSymptomOnclick(maingroup, num) {
-  if (num < 13)
-    maingroup.append("rect")
-      .attr('class', "select-symptom")
-      .attr("x", '25%')
-      .attr("y", num * gridSize)
-      .attr("width", '100%')
-      .attr("height", gridSize)
-      .style('fill', '#00CC99')
-      .lower();
+  if (num < (captionSymptom.length - 2))
+    maingroup.append("rect").attr('class', "select-symptom").attr("x", '25%').attr("y", num * gridSize).attr("width", '100%').attr("height", gridSize).style('fill', '#00CC99').lower();
 }
 /**
  * @description Display on the screen the color scale of the symptom 

@@ -6,7 +6,21 @@
                 "fever_guess": null,
                 "notes": "",
                 "other_symptoms": "",
-                "suspected_virus": ""
+                "suspected_virus": "",
+                "symptom_anosmia": 0,
+                "symptom_body_ache": 0,
+                "symptom_chills": 0,
+                "symptom_cough": 0,
+                "symptom_diarrhea": 0,
+                "symptom_fatigue": 0,
+                "symptom_headache": 0,
+                "symptom_nausea": 0,
+                "symptom_runny_nose": 0,
+                "symptom_short_breath": 0,
+                "symptom_sore_throat": 0,
+                "symptom_wet_cough": 0,
+                "symptom_adding": 0,
+                "symptom_adding3": 0
             },
             "timestamp": "2020-07-02T08:54:44.522086+00:00"
         },
@@ -26,7 +40,8 @@
                 "fever_guess": null,
                 "notes": "",
                 "other_symptoms": "",
-                "suspected_virus": ""
+                "suspected_virus": "",
+                "symptom_anosmia": 4
             },
             "timestamp": "2020-07-06T07:48:17.571791+00:00"
         },
@@ -86,7 +101,9 @@
                 "fever_guess": null,
                 "notes": "",
                 "other_symptoms": "",
-                "suspected_virus": ""
+                "suspected_virus": "",
+                "symptom_adding2": 1,
+                "symptom_adding4": 2
             },
             "timestamp": "2020-07-15T07:30:35.009749+00:00"
         },
@@ -114,25 +131,9 @@
             "data": {
                 "fever": "",
                 "fever_guess": null,
-                "notes": "'(rr",
+                "notes": "",
                 "other_symptoms": "",
-                "suspected_virus": "",
-                "symptom_anosmia": 0,
-                "symptom_body_ache": 0,
-                "symptom_chills": 0,
-                "symptom_cough": 0,
-                "symptom_diarrhea": 0,
-                "symptom_fatigue": 0,
-                "symptom_headache": 0,
-                "symptom_nausea": 0,
-                "symptom_runny_nose": 1,
-                "symptom_short_breath": 0,
-                "symptom_sore_throat": 0,
-                "symptom_wet_cough": 0,
-                "symptom_adding": 1,
-                "symptom_adding3": 3,
-                "symptom_adding2": 2,
-                "symptom_adding4": 2
+                "suspected_virus": ""
             },
             "timestamp": "2020-07-17T15:36:42.397526+00:00"
         },
@@ -172,51 +173,59 @@
                 "fever_guess": null,
                 "notes": "",
                 "other_symptoms": "",
-                "suspected_virus": "",
-                "symptom_anosmia": 0,
-                "symptom_body_ache": 0,
-                "symptom_chills": 0,
-                "symptom_cough": 2,
-                "symptom_diarrhea": 0,
-                "symptom_fatigue": 0,
-                "symptom_headache": 0,
-                "symptom_nausea": 1,
-                "symptom_runny_nose": 0,
-                "symptom_short_breath": 2,
-                "symptom_sore_throat": 0,
-                "symptom_wet_cough": 0,
-                "symptom_adding": 1,
-                "symptom_adding3": 3,
-                "symptom_adding2": 2,
-                "symptom_adding4": 2
+                "suspected_virus": ""
             },
             "timestamp": "2020-07-22T13:57:34.179388+00:00"
         },
         {
             "data": {
-                "fever": "",
+                "fever": 104,
                 "fever_guess": null,
-                "notes": "This is a test",
+                "notes": "",
                 "other_symptoms": "",
-                "suspected_virus": "",
-                "symptom_anosmia": 0,
-                "symptom_body_ache": 2,
-                "symptom_chills": 2,
-                "symptom_cough": 0,
-                "symptom_diarrhea": 0,
-                "symptom_fatigue": 0,
-                "symptom_headache": 0,
-                "symptom_nausea": 0,
-                "symptom_runny_nose": 0,
-                "symptom_short_breath": 1,
-                "symptom_sore_throat": 0,
-                "symptom_wet_cough": 0,
-                "symptom_adding": 1,
-                "symptom_adding3": 3,
-                "symptom_adding2": 2,
-                "symptom_adding4": 2
+                "suspected_virus": ""
             },
             "timestamp": "2020-07-23T08:00:27.074431+00:00"
+        },
+        {
+            "data": {
+                "fever": 104,
+                "fever_guess": null,
+                "notes": "",
+                "other_symptoms": "",
+                "suspected_virus": ""
+            },
+            "timestamp": "2020-07-24T08:00:27.074431+00:00"
+        },
+        {
+            "data": {
+                "fever": 99.6,
+                "fever_guess": null,
+                "notes": "",
+                "other_symptoms": "",
+                "suspected_virus": ""
+            },
+            "timestamp": "2020-07-24T08:00:27.074431+00:00"
+        },
+        {
+            "data": {
+                "fever": 102.6,
+                "fever_guess": null,
+                "notes": "",
+                "other_symptoms": "",
+                "suspected_virus": ""
+            },
+            "timestamp": "2020-07-24T08:00:27.074431+00:00"
+        },
+        {
+            "data": {
+                "fever": "99.68",
+                "fever_guess": null,
+                "notes": "",
+                "other_symptoms": "",
+                "suspected_virus": ""
+            },
+            "timestamp": "2020-07-27T08:00:27.074431+00:00"
         }
     ]
 }
