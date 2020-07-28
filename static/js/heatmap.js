@@ -1,7 +1,21 @@
 /** * @author Basile Morane
  * @description heatmap.js (javascript). Mai 2020
  * @fileOverview This file is useful for displaying on screen the heatmap of the symptom reports
- */ /** @type {Array} */$names = ["Cough", "Wet cough", "Anosmia", "Runny nose", "Sore throat", "Short breath", "Diarrhea", "Nausea", "Chills", "Fatigue", "Headache", "Body ache", "Fever", "", "Comments"];
+ */
+/**
+ * @description This array determine the order of displaying we want for the caption legend 
+ * @type {Array} */
+$captionLegendString = ["fever", "symptom_anosmia", "symptom_body_ache", "symptom_chills", "symptom_cough", "symptom_diarrhea", "symptom_fatigue", "symptom_headache", "symptom_nausea", "symptom_runny_nose", "symptom_short_breath", "symptom_sore_throat", "symptom_wet_cough"];
+/**
+ * @description This array determine the order of displaying we want for the caption legend 
+ * @type {Array} */
+$names = ["Cough", "Wet cough", "Anosmia", "Runny nose", "Sore throat", "Short breath", "Diarrhea", "Nausea", "Chills", "Fatigue", "Headache", "Body ache", "Fever", "", "Comments"];
+/** * @description This array is use to determine the number of symptom in this categorie
+ * @type {Array} */$respiratory = ["Cough", "Wet cough", "Anosmia", "Runny nose", "Sore throat", "Short breath"];
+/** * @description This array is use to determine the number of symptom in this categorie
+ * @type {Array} */$gastronitestinal = ["Diarrhea", "Nausea"];
+/** * @description This array is use to determine the number of symptom in this categorie
+ * @type {Array} */$sytemic = ["Chills", "Fatigue", "Headache", "Body ache"];
 /** @type {Array} */symptom_data = [];/** @type {Array} */ days_axis = []; /** @type {Array} */days = []; /** @type {Array} */year = []; /** @type {Array} */completedDays = [];
 /** @type {Number} */gridSize = 30; /** @type {Number} */heightGraph = 14 * gridSize;
 /** @type {Number} */width = 0.9 * Math.max(Math.min(window.innerWidth, 1000), 500)
@@ -25,9 +39,10 @@ createheatmap(url);
  * @param {*} url of the JSON file to get the data
  */ function createheatmap(url) {
   $.getJSON(url, function (data) {
+    captionSymptom = shortCaptionSymptom(setSymptomNameOnScreen(getSymptomName(data)));
     height = determineHeigth();
     innerwidth = determineInnerwidth();
-    heightGraph = (height / 2);
+    heightGraph = determineHeigthgraphics();
     main_heatmap(data);
     main_wearable_data(data);
   })
@@ -80,7 +95,6 @@ createheatmap(url);
   this.month = timestamp.map(d => formatdatemonth(parseTime(d)));
   this.year = timestamp.map(d => formatdateyear(parseTime(d)))
   days = controlDay(file_days, reportday, month);
-
   this.comments = loadComments(data, days);
   this.height = determineHeigth();
   this.innerwidth = determineInnerwidth();
@@ -93,9 +107,7 @@ createheatmap(url);
  */ function loadCommentsValues(data) {
   const values = [];
   var data1 = data.symptom_report.map(d => d.data.notes);
-
   var dayscontrol = dayControl(file_days);
-
   const data2 = [];
   var cnt = 0;
   for (var i = 0; i < dayscontrol.length; i++) {
@@ -152,6 +164,179 @@ function loadComments(data, days) {
   return comments;
 }
 /**
+ * @function getSymptomName
+ * @description Function returns an array with all the diffents names of the symptoms in the file of the user
+ * @param {Array} data - JSON file 
+ * @function Set()
+ * @function Array.from()
+ * @returns {Array}
+ */
+function getSymptomName(data) {
+  var cntfile = $captionLegendString.length;
+  var keyfile = [];
+  keyfile = $captionLegendString;
+  for (let i = 0; i < data.symptom_report.length; i++) {
+    for (var j in data.symptom_report[i].data) {
+      if (j != "notes" && j != "fever_guess" && j != "other_symptoms" && j != "suspected_virus") {
+        keyfile[cntfile] = j;
+        cntfile++;
+      }
+    }
+  }
+  return Array.from(new Set(keyfile));
+}
+/**
+ * @description Function which returns an lowercase array in an array with the first letter in uppercase
+ * @param {*} str - String of caption
+ * @function toLowerCase() - put the array in lowercase
+ * @function split() - allaow to split the array with more than one word
+ * @function charAt() - take the first letter
+ * @function toUpperCase() - put the letter in uppercase
+ * @function splitStr - split the array 
+ * @function substring
+ * @returns {Array}
+ */
+function titleCase(str) {
+  var splitStr = str.toLowerCase().split(' ');
+  for (var i = 0; i < splitStr.length; i++) {
+    splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+  }
+  return splitStr.join(' ');
+}
+/**
+ * @description Function which returns the caption of the symptom in the officiel order (by categories)
+ * @description The unknow caption will be add at the end of the official one
+ * @param {*} arrayValue - Array of string of caption
+ * @returns {Array} 
+ */
+function shortCaptionSymptom(arrayValue) {
+  var orderCaption = [], cnt = 0;
+  for (let j = 0; j < $names.length; j++) {
+    for (let i = 0; i < arrayValue.length; i++) {
+      if (arrayValue[i] == $names[j]) {
+        validation = 1;
+        orderCaption[cnt] = arrayValue[i];
+        cnt++;
+      }
+    }
+  }
+  for (let i = 0; i < arrayValue.length; i++) {
+    for (let j = 0; j < $names.length; j++) {
+      if (arrayValue[i] == $names[j]) {
+       startIndice = i;  
+      }
+    }
+  }
+  for (let i = startIndice + 1; i < (arrayValue.length); i++) {
+    orderCaption[cnt] = arrayValue[i];
+    cnt++;
+  }
+  orderCaption[cnt] = "";
+  orderCaption[cnt + 1] = "Comments";
+  return (orderCaption);
+}
+/**
+ * @description Function which returns the indice of the captions to know which values is
+ * @param {*} arrayValue - Array of string of caption
+ * @function Math.max
+ * @returns {Array} 
+ */
+function shortCaptionSymptomIndice(arrayValue) {
+  var orderCaption = [], cnt = 0;
+  for (let j = 0; j < $names.length; j++) {
+    for (let i = 0; i < arrayValue.length; i++) {
+      if (arrayValue[i] == $names[j]) {
+        orderCaption[cnt] = i;
+        cnt++;
+      }
+    }
+  }
+  var indice = Math.max(...orderCaption) + 1;
+  for (let i = indice; i < arrayValue.length; i++) {
+    orderCaption[cnt] = i;
+    cnt++;
+  }
+  return (orderCaption);
+}
+/**
+ * @description Returns the good syntaxe of the symptoms caption (with a uppercase first letter)
+ * @description Depending of the number of words in the cpation symptom 
+ * @param {*} symptomname - String of the symptom caption
+ * @function split
+ * @function titleCase
+ * @returns {Array}
+ */
+function setSymptomNameOnScreen(symptomname) {
+  var caption = [];
+  for (var j = 0; j < symptomname.length; j++) {
+    var stepSplit = symptomname[j].split('_');
+    if (stepSplit.length == 1)
+      caption[j] = titleCase(stepSplit[0]);
+    else if (stepSplit.length == 2)
+      caption[j] = titleCase(stepSplit[1]);
+    else if (stepSplit.length == 3)
+      caption[j] = titleCase(stepSplit[1]) + " " + stepSplit[2];
+  }
+  return caption;
+}
+/**
+ * @description Function returning the values available in the JSON file of a specific symptom
+ * @param {*} data - JSON file
+ * @param {*} firstkey - key of the first symptom of the file (to know when we read one day)
+ * @param {*} keySymptom - key of the specific symptom we want the values
+ * @function JSON.parse
+ * @function JSON.stringify
+ * @returns {values} - Array of String
+ */
+function getdatavaluesfromfile(data, firstkey, keySymptom) {
+  var values = [], cnt = 0, clickon = 1, cntday = 0;
+  JSON.parse(JSON.stringify(data, null, '\t'), function (key, value) {
+    if (key === firstkey ) {
+      cntday ++; 
+      if (clickon == 0) {
+        values[cnt] = "";
+        cnt++;
+      } else if (clickon == 1)
+        clickon = 0;
+    }
+    if (key === keySymptom ){
+      values[cnt] = value;
+      cnt++;
+      clickon = 1;
+    } else {
+      values[cnt] = "";
+    }
+  });
+  if (cnt != cntday)
+   values[cnt] = "";
+  return values;
+}
+
+/**
+ * @description Function wich returns the number of symptom by categories 
+ * @description This will allow us to display properly the title of the categories
+ * @param {*} arrayCaption - array of string of the symptom caption
+ * @returns {List}
+ */
+function getCategorie(arrayCaption) {
+  var cntResp = 0, cntSys = 0, cntGastro = 0;
+  for (let i = 0; i < arrayCaption.length; i++) {
+    for (let j = 0; j < $respiratory.length; j++) {
+      if (cntResp != $respiratory.length && arrayCaption[i] == $respiratory[j])
+        cntResp++;
+    }
+    for (let j = 0; j < $sytemic.length; j++) {
+      if (cntSys != $sytemic.length && arrayCaption[i] == $sytemic[j])
+        cntSys++;
+    }
+    for (let j = 0; j < $gastronitestinal.length; j++) {
+      if (cntGastro != $gastronitestinal && arrayCaption[i] == $gastronitestinal[j])
+        cntGastro++;
+    }
+  }
+  return [cntResp, cntGastro, cntSys];
+}
+/**
  * @description	Get the existing data values of the syptoms from the symptom report 
  * @description	Once we had read them, we "control the values with the "
  * @function dataControlSymptom to add or remove data from missing or repeat day
@@ -159,44 +344,16 @@ function loadComments(data, days) {
  * @returns {symptom_data}
  */
 function loadDataSymptom(data) {
+  var keysymptom = getSymptomName(data);
+  var newIndice = shortCaptionSymptomIndice(setSymptomNameOnScreen(keysymptom));
   cnt = 0;
-  cough = [], wet_cought = [], anosmia = [], runny_nose = [], short_breath = [], diarrhea = [], nausea = [], chills = [], fatigue = [], headache = [], body_ache = [], sore_throat = [], fever = [];
-  this.file = data.symptom_report.map(d => d);
-  this.file.forEach(element => {
-    cough[cnt] = element.data.symptom_cough;
-    wet_cought[cnt] = element.data.symptom_wet_cough;
-    anosmia[cnt] = element.data.symptom_anosmia;
-    runny_nose[cnt] = element.data.symptom_runny_nose;
-    short_breath[cnt] = element.data.symptom_short_breath;
-    diarrhea[cnt] = element.data.symptom_diarrhea;
-    nausea[cnt] = element.data.symptom_nausea;
-    chills[cnt] = element.data.symptom_chills;
-    fatigue[cnt] = element.data.symptom_fatigue;
-    headache[cnt] = element.data.symptom_headache;
-    body_ache[cnt] = element.data.symptom_body_ache;
-    sore_throat[cnt] = element.data.symptom_sore_throat;
-    fever[cnt] = element.data.fever;
-    cnt++;
-  });
-
   var comments = loadCommentsValues(data);
-
   var symptom_data = [];
-  symptom_data[0] = dataControlSymptom(cough);
-  symptom_data[1] = dataControlSymptom(wet_cought);
-  symptom_data[2] = dataControlSymptom(anosmia);
-  symptom_data[3] = dataControlSymptom(runny_nose);
-  symptom_data[4] = dataControlSymptom(sore_throat);
-  symptom_data[5] = dataControlSymptom(short_breath);
-  symptom_data[6] = dataControlSymptom(diarrhea);
-  symptom_data[7] = dataControlSymptom(nausea);
-  symptom_data[8] = dataControlSymptom(chills);
-  symptom_data[9] = dataControlSymptom(fatigue);
-  symptom_data[10] = dataControlSymptom(headache);
-  symptom_data[11] = dataControlSymptom(body_ache);
-  symptom_data[12] = dataControlSymptom(fever);
-  symptom_data[13] = "";
-  symptom_data[14] = comments;
+  for (let i = 0; i < newIndice.length; i++) {
+    symptom_data[i] = dataControlSymptom(getdatavaluesfromfile(data, keysymptom[0], keysymptom[newIndice[i]]));
+  }
+  symptom_data[newIndice.length] = "";
+  symptom_data[newIndice.length + 1] = comments;
   return symptom_data;
 }
 /**
@@ -209,11 +366,10 @@ function loadDataSymptom(data) {
  */
 function dataControlSymptom(data) {
   dayscontrol = dayControl(file_days);
-
   for (i = 0; i < data.length; i++) {
     if (data[i] === undefined || data[i] === "")
       data[i] = 0;
-    if ((data[i] >= 95 && data[i] < 99.5) || (data[i] >= 37 && data[i] < 37.5))
+    if ((data[i] >= 93 && data[i] < 99.5) || (data[i] >= 36 && data[i] < 37.5))
       data[i] = 0;
     if ((data[i] >= 99.5 && data[i] < 100.4) || (data[i] >= 37.5 && data[i] < 38))
       data[i] = 1;
@@ -245,7 +401,7 @@ function dataControlSymptom(data) {
     else
       newdata[x] = data2[x - moreday];
   }
-  newdata.push(data2[data2.length - 1])
+  //newdata.push(data2[data2.length - 1])
   return newdata;
 }
 /**
@@ -328,11 +484,11 @@ function getNoReportValues(data) {
   millisecondes = (hour * 3600000) + (min * 60000) + (sec * 1000);
   firstDay_report = parseTime(data.symptom_report[0].timestamp).getTime();
 
-  if (data.fitbit_summary != undefined)
+  if (data.fitbit_summary != undefined && data.fitbit_summary != null && data.fitbit_summary.length > 0)
     firstDay_fitbit = parseTimeTemp(data.fitbit_summary[0].timestamp).getTime();
   else
     firstDay_fitbit = firstDay_report;
-  if (data.apple_health_summary != undefined)
+  if (data.apple_health_summary != undefined && data.apple_health_summary != null && data.apple_health_summary.length > 0)
     firstDay_apple = parseTime(data.apple_health_summary[0].timestamp).getTime();
   else
     firstDay_apple = firstDay_report;
@@ -340,15 +496,15 @@ function getNoReportValues(data) {
     firstDay_oura = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
   else
     firstDay_oura = firstDay_report;
-  if (data.oura_sleep_summary != undefined)
+  if (data.oura_sleep_summary != undefined && data.oura_sleep_summary != null && data.oura_sleep_summary.length > 0)
     firstDay_oura_hr = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
   else
     firstDay_oura_hr = firstDay_report;
-  if (data.garmin_heartrate != undefined)
+  if (data.garmin_heartrate != undefined && data.garmin_heartrate != null && data.garmin_heartrate.length > 0)
     firstDay_garmin = parseTimeGarmin(data.garmin_heartrate[0].timestamp).getTime();
   else
     firstDay_garmin = firstDay_report;
-  if (data.googlefit_heartrate != undefined)
+  if (data.googlefit_heartrate != undefined && data.googlefit_heartrate != null && data.googlefit_heartrate.length > 0)
     firstDay_google = parseTimeGarmin(data.googlefit_heartrate[0].timestamp).getTime();
   else
     firstDay_google = firstDay_report;
@@ -433,11 +589,11 @@ function getNoReportValues(data) {
  */
 function getNoReportDataSource(data) {
   firstDay_report = parseTime(data.symptom_report[0].timestamp).getTime();
-  if (data.fitbit_summary != undefined)
+  if (data.fitbit_summary != undefined && data.fitbit_summary != null && data.fitbit_summary.length > 0)
     firstDay_fitbit = parseTimeTemp(data.fitbit_summary[0].timestamp).getTime();
   else
     firstDay_fitbit = firstDay_report;
-  if (data.apple_health_summary != undefined)
+  if (data.apple_health_summary != undefined && data.apple_health_summary != null && data.apple_health_summary.length > 0)
     firstDay_apple = parseTime(data.apple_health_summary[0].timestamp).getTime();
   else
     firstDay_apple = firstDay_report;
@@ -445,15 +601,15 @@ function getNoReportDataSource(data) {
     firstDay_oura = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
   else
     firstDay_oura = firstDay_report;
-  if (data.oura_sleep_summary != undefined)
+  if (data.oura_sleep_summary != undefined && data.oura_sleep_summary != null && data.oura_sleep_summary.length > 0)
     firstDay_oura_hr = parseTimeTemp(data.oura_sleep_summary[0].timestamp).getTime();
   else
     firstDay_oura_hr = firstDay_report;
-  if (data.garmin_heartrate != undefined)
+  if (data.garmin_heartrate != undefined && data.garmin_heartrate != null && data.garmin_heartrate.length > 0)
     firstDay_garmin = parseTimeGarmin(data.garmin_heartrate[0].timestamp).getTime();
   else
     firstDay_garmin = firstDay_report;
-  if (data.googlefit_heartrate != undefined)
+  if (data.googlefit_heartrate != undefined && data.googlefit_heartrate != null && data.googlefit_heartrate.length > 0)
     firstDay_google = parseTimeGarmin(data.googlefit_heartrate[0].timestamp).getTime();
   else
     firstDay_google = firstDay_report;
@@ -547,42 +703,19 @@ function getDays() {
  * @description Can show also the data of our wearable data source if we connect one
  */
 function tooltip_heatmap() {
-  const tooltip = d3
-    .select("body")
-    .append("div")
-    .attr("class", "svg-tooltip-heatmap")
-    .style("position", "absolute")
-    .style("visibility", "hidden");
-
+  const tooltip = d3.select("body").append("div").attr("class", "svg-tooltip-heatmap").style("position", "absolute").style("visibility", "hidden");
   d3.selectAll("#rect-heatmap")
     .on("mouseover", function (d) {
       var coordXY = this.getAttribute('class').split('-');
-      d3.select(this)
-        .attr('stroke-width', 2)
-        .attr("width", gridSize - 1)
-        .attr("height", gridSize - 1)
-        .style("fill", "#EE79FE")
-        .attr("stroke", "black");
-      tooltip
-        .style("visibility", "visible")
-        .text(`${showAppendTitle(d, coordXY[0], coordXY[1])}`);
-
+      d3.select(this).attr('stroke-width', 2).attr("width", gridSize - 1).attr("height", gridSize - 1).style("fill", "#EE79FE").attr("stroke", "black");
+      tooltip.style("visibility", "visible").text(`${showAppendTitle(d, coordXY[0], coordXY[1])}`);
       selectSymptomOnclick(symptomgroup, coordXY[1]);
     })
-
     .on("mousemove", function () {
-      tooltip
-        .style("top", d3.event.pageY + 10 + "px")
-        .style("left", d3.event.pageX - (gridSize * 3.5) + "px");
+      tooltip.style("top", d3.event.pageY + 10 + "px").style("left", d3.event.pageX - (gridSize * 3.5) + "px");
     })
-
     .on("mouseout", function () {
-      d3.select(this).attr("stroke", "#e2e2e2")
-        .attr('stroke-width', '1')
-        .attr("width", gridSize)
-        .attr("height", gridSize)
-        .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
-
+      d3.select(this).attr("stroke", "#e2e2e2").attr('stroke-width', '1').attr("width", gridSize).attr("height", gridSize).style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
       d3.select('.select-symptom').remove();
       tooltip.style("visibility", "hidden");
     });
@@ -647,26 +780,12 @@ function showHeatmap(maingroup, symptom_data) {
   colorScale = scaleColor();
   y = yScale();
   let cnt = -1;
-  var heatmap = maingroup.append("g")
-    .attr('id', 'heatmape')
-    .selectAll("g")
-    .data(symptom_data)
-    .enter().append("g")
-    .attr("transform", (d, i) => `translate(0, ${y($names[i])})`)
-    .selectAll("rect")
-    .data(d => d)
-    .enter().append("rect")
-    .attr('id', 'rect-heatmap')
-    .attr("x", (d, i) => i * (gridSize))
+  var heatmap = maingroup.append("g").attr('id', 'heatmape').selectAll("g").data(symptom_data).enter().append("g").attr("transform", (d, i) => `translate(0, ${gridSize * i})`).selectAll("rect").data(d => d).enter().append("rect").attr('id', 'rect-heatmap').attr("x", (d, i) => i * (gridSize))
     .attr('class', function (d, i) {
       if (i == 0) cnt++;
-      if (i == 0 && cnt == 14) cnt++;
+      if (i == 0 && cnt == (captionSymptom.length - 2)) cnt++;
       return i + "-" + cnt
-    })
-    .attr("width", gridSize)
-    .attr("height", gridSize)
-    .attr("stroke", "#e2e2e2")
-    .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
+    }).attr("width", gridSize).attr("height", gridSize).attr("stroke", "#e2e2e2").style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
 }
 /**
  * @description Display on screen the axis X - showing on the heatmap the days
@@ -675,30 +794,8 @@ function showHeatmap(maingroup, symptom_data) {
  * @param {*} days_axis - data of symptom report (days)
  */
 function showDaysAxis(maingroup, days_axis) {
-
-  var dayLabel = maingroup.selectAll(".daysLabel")
-    .data(days_axis)
-    .enter().append("text")
-    .attr('id', 'xAxis')
-    .text(function (d) { return d; })
-    .attr("x", function (d, i) { return (i * gridSize * 7); })
-    .attr("y", 0)
-    .attr("transform", "translate(" + (gridSize * 0.5) + ",-" + (gridSize * 0.5) + ")")
-    .style("text-anchor", "middle")
-    .attr("font-weight", "200")
-    .attr("font-size", ".7em");
-
-  var ticksize = maingroup.selectAll(".tickSize")
-    .data(days_axis)
-    .enter().append("line")
-    .attr('id', 'tickSize')
-    .attr("transform", "translate(" + (gridSize * 0.5) + ",-" + (gridSize * 0.3) + ")")
-    .attr("x1", function (d, i) { return (i * gridSize * 7); })
-    .attr("y1", 0)
-    .attr("x2", function (d, i) { return (i * gridSize * 7); })
-    .attr("y2", 10)
-    .style("stroke", "#212529")
-    .style("stroke-width", ".5");
+  var dayLabel = maingroup.selectAll(".daysLabel").data(days_axis).enter().append("text").attr('id', 'xAxis').text(function (d) { return d; }).attr("x", function (d, i) { return (i * gridSize * 7); }).attr("y", 0).attr("transform", "translate(" + (gridSize * 0.5) + ",-" + (gridSize * 0.5) + ")").style("text-anchor", "middle").attr("font-weight", "200").attr("font-size", ".7em");
+  var ticksize = maingroup.selectAll(".tickSize").data(days_axis).enter().append("line").attr('id', 'tickSize').attr("transform", "translate(" + (gridSize * 0.5) + ",-" + (gridSize * 0.3) + ")").attr("x1", function (d, i) { return (i * gridSize * 7); }).attr("y1", 0).attr("x2", function (d, i) { return (i * gridSize * 7); }).attr("y2", 10).style("stroke", "#212529").style("stroke-width", ".5");
 }
 /**
  * @description Display on screen the title of the heatmap
@@ -707,105 +804,28 @@ function showDaysAxis(maingroup, days_axis) {
  * @param {String} title - title text message
  */
 function showTitleandSubtitle(maingroup, title) {
-  var title = maingroup.append("text")
-    .attr("x", 50 + "%")
-    .attr("y", 50 + "%")
-    .attr("font-size", 1.4 + "rem")
-    .style("text-anchor", "middle")
-    .style("font-weight", "300")
-    .attr("class", "mg-chart-title")
-    .text(title);
-
-  var subtitle = maingroup.append("text")
-    .attr("x", 50 + "%")
-    .attr("y", 70 + "%")
-    .style("text-anchor", "middle")
-    .attr("font-size", 1 + "rem")
-    .style("font-weight", "300")
-    .text("Study on " + days.length + " days - start the " + formatdateshow(days[0], year[0]));
-
-  var subtitle2 = maingroup.append("text")
-    .attr("x", 50 + "%")
-    .attr("y", 90 + "%")
-    .style("text-anchor", "middle")
-    .attr("font-size", 1 + "rem")
-    .style("font-weight", "300")
-    .text("Last update - " + formatdateshow(days[days.length - 1], year[year.length - 1]));
+  var title = maingroup.append("text").attr("x", 50 + "%").attr("y", 50 + "%").attr("font-size", 1.4 + "rem").style("text-anchor", "middle").style("font-weight", "300").attr("class", "mg-chart-title").text(title);
+  var subtitle = maingroup.append("text").attr("x", 50 + "%").attr("y", 70 + "%").style("text-anchor", "middle").attr("font-size", 1 + "rem").style("font-weight", "300").text("Study on " + days.length + " days - start the " + formatdateshow(days[0], year[0]));
+  var subtitle2 = maingroup.append("text").attr("x", 50 + "%").attr("y", 90 + "%").style("text-anchor", "middle").attr("font-size", 1 + "rem").style("font-weight", "300").text("Last update - " + formatdateshow(days[days.length - 1], year[year.length - 1]));
 }
 /**
  * @description Display on the screen the caption of the symptoms 
- * @description This Caption is dependable of the variable $names 
+ * @description This Caption is dependable of the variable caption legend
  * @param {*} maingroup 
  */
 function showSymptomAxis(maingroup) {
-
-  var symptomLabel = maingroup.selectAll(".symptomLabel")
-    .data($names)
-    .enter().append("text")
-    .text(function (d) { return d; })
-    .attr("x", "80%")
-    .attr("y", function (d, i) { return (i * gridSize * 1) })
-    .attr("transform", "translate(" + 0 + "," + gridSize / 1.5 + ")")
-    .style("text-anchor", "end")
-    .style("font-weight", "300")
-    .attr("font-size", 0.6 + "rem");
-
-  maingroup.append("g")
-    .attr("class", "y axis")
-    .append("text")
-    .style("fill", "#212529")
-    .attr("transform", "rotate(-90)")
-    .attr("x", - 3 * gridSize)
-    .attr("y", '1%')
-    .style("text-anchor", "middle")
-    .attr("font-size", 0.5 + "rem")
-    .text("RESPIRATORY");
-
-  maingroup.append("line")
-    .attr("x1", '10%')
-    .attr("y1", 0.5 * gridSize)
-    .attr("x2", '10%')
-    .attr("y2", 5.5 * gridSize)
-    .style("stroke", "#212529")
-    .style("stroke-width", "0.5");
-
-  maingroup.append("g")
-    .attr("class", "y axis")
-    .append("text")
-    .attr("transform", "rotate(-90)")
-    .style("fill", "#212529")
-    .attr("x", - 7 * gridSize)
-    .attr("y", '1%')
-    .style("text-anchor", "middle")
-    .attr("font-size", 0.5 + "rem")
-    .text("GASTROINTESTINAL");
-
-  maingroup.append("line")
-    .attr("x1", '10%')
-    .attr("y1", 6.25 * gridSize)
-    .attr("x2", '10%')
-    .attr("y2", 7.75 * gridSize)
-    .style("stroke", "#212529")
-    .style("stroke-width", "0.5");
-
-  maingroup.append("g")
-    .attr("class", "y axis")
-    .append("text")
-    .attr("transform", "rotate(-90)")
-    .style("fill", "#212529")
-    .attr("x", - 10 * gridSize)
-    .attr("y", '1%')
-    .style("text-anchor", "middle")
-    .attr("font-size", 0.5 + "rem")
-    .text("SYSTEMIC");
-
-  maingroup.append("line")
-    .attr("x1", '10%')
-    .attr("y1", 8.5 * gridSize)
-    .attr("x2", '10%')
-    .attr("y2", 11.5 * gridSize)
-    .style("stroke", "#212529")
-    .style("stroke-width", "0.5");
+  var labelsize = getCategorie(captionSymptom);
+  var symptomLabel = maingroup.selectAll(".symptomLabel").data(captionSymptom).enter().append("text").text(function (d) { return d; }).attr("x", "80%").attr("y", function (d, i) { return (i * gridSize * 1) }).attr("transform", "translate(" + 0 + "," + gridSize / 1.5 + ")").style("text-anchor", "end").style("font-weight", "300").attr("font-size", 0.6 + "rem");
+  if (labelsize[0] > 0) {
+    maingroup.append("g").attr("class", "y axis").append("text").style("fill", "#212529").attr("transform", "rotate(-90)").attr("x", - (labelsize[0] / 2) * gridSize).attr("y", '1%').style("text-anchor", "middle").attr("font-size", 0.5 + "rem").text("RESPIRATORY");
+    maingroup.append("line").attr("x1", '10%').attr("y1", 0.5 * gridSize).attr("x2", '10%').attr("y2", ((labelsize[0] - 1) + .5) * gridSize).style("stroke", "#212529").style("stroke-width", "0.5");
+  } if (labelsize[1] > 0) {
+    maingroup.append("g").attr("class", "y axis").append("text").attr("transform", "rotate(-90)").style("fill", "#212529").attr("x", - (labelsize[0] + (labelsize[1] / 2)) * gridSize).attr("y", '1%').style("text-anchor", "middle").attr("font-size", 0.5 + "rem").text("GASTRONITESTINAL");
+    maingroup.append("line").attr("x1", '10%').attr("y1", ((labelsize[0]) + .25) * gridSize).attr("x2", '10%').attr("y2", ((labelsize[0] + labelsize[1]) - .25) * gridSize).style("stroke", "#212529").style("stroke-width", "0.5");
+  } if (labelsize[2] > 0) {
+    maingroup.append("g").attr("class", "y axis").append("text").attr("transform", "rotate(-90)").style("fill", "#212529").attr("x", - (labelsize[0] + labelsize[1] + (labelsize[2] / 2)) * gridSize).attr("y", '1%').style("text-anchor", "middle").attr("font-size", 0.5 + "rem").text("SYSTEMIC");
+    maingroup.append("line").attr("x1", '10%').attr("y1", (labelsize[0] + labelsize[1] + .5) * gridSize).attr("x2", '10%').attr("y2", (labelsize[0] + labelsize[1] + labelsize[2] - .5) * gridSize).style("stroke", "#212529").style("stroke-width", "0.5");
+  }
 }
 /**
  * @description Display on screen the symptom we look at when we click on a case
@@ -813,15 +833,8 @@ function showSymptomAxis(maingroup) {
  * @param {*} num - indice of the symptom caption
  */
 function selectSymptomOnclick(maingroup, num) {
-  if (num < 13)
-    maingroup.append("rect")
-      .attr('class', "select-symptom")
-      .attr("x", '25%')
-      .attr("y", num * gridSize)
-      .attr("width", '100%')
-      .attr("height", gridSize)
-      .style('fill', '#00CC99')
-      .lower();
+  if (num < (captionSymptom.length - 2))
+    maingroup.append("rect").attr('class', "select-symptom").attr("x", '25%').attr("y", num * gridSize).attr("width", '100%').attr("height", gridSize).style('fill', '#00CC99').lower();
 }
 /**
  * @description Display on the screen the color scale of the symptom 
@@ -871,37 +884,9 @@ function showLegendPhone(maingroup) {
 function showLegend(maingroup) {
   var countPoint = [-1, 0, 1, 2, 3, 4];
   var commentScale = ["No report", "No symptom", "Low symptom", "Middle symptom", "Strong symptom", "Unbearable symptom"];
-
-  var title = maingroup.append("text")
-    .attr("class", "title")
-    .attr("x", gridSize)
-    .attr("y", (height / 2 - gridSize * 3))
-    .attr("font-size", 1 + "rem")
-    .style("font-weight", "300")
-    .text("Legend");
-
-  var rect = maingroup.selectAll('rect-legend')
-    .data(countPoint)
-    .enter()
-    .append("rect")
-    .attr("x", gridSize)
-    .attr("y", function (d, i) { return i * (height / symptom_data.length); })
-    .attr("height", gridSize / 1.5)
-    .attr("width", gridSize / 1.5)
-    .attr("stroke", "#e2e2e2")
-    .attr("transform", "translate(" + 0 + "," + (height / 2 - gridSize * 2) + ")")
-    .style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
-
-
-  var legende = maingroup.selectAll(".legende")
-    .data(commentScale)
-    .enter().append("text")
-    .text(function (d) { return d; })
-    .attr("x", gridSize)
-    .attr("y", function (d, i) { return i * (height / symptom_data.length); })
-    .attr("transform", "translate(" + gridSize + "," + (height / 2 - gridSize * 2 + 12) + ")")
-    .attr("font-size", 0.6 + "rem")
-    .style("font-weight", "300");
+  var title = maingroup.append("text").attr("class", "title").attr("x", gridSize).attr("y", (height / 2 - gridSize * 3)).attr("font-size", 1 + "rem").style("font-weight", "300").text("Legend");
+  var rect = maingroup.selectAll('rect-legend').data(countPoint).enter().append("rect").attr("x", gridSize).attr("y", function (d, i) { return i * gridSize; }).attr("height", gridSize / 1.5).attr("width", gridSize / 1.5).attr("stroke", "#e2e2e2").attr("transform", "translate(" + 0 + "," + (height / 2 - gridSize * 2) + ")").style("fill", function (d) { return ((d == -1) ? "#faf6f6" : (d == -2) ? "#fff" : (d == 5) ? "#90ee90" : colorScale(d)); });
+  var legende = maingroup.selectAll(".legende").data(commentScale).enter().append("text").text(function (d) { return d; }).attr("x", gridSize).attr("y", function (d, i) { return i * gridSize; }).attr("transform", "translate(" + gridSize + "," + (height / 2 - gridSize * 2 + 12) + ")").attr("font-size", 0.6 + "rem").style("font-weight", "300");
 }
 /**
  * @description Display on screen the values of the selected cases of the heatmap depending of the day. 
@@ -922,7 +907,7 @@ function showAppendTitle(data, i, y) {
   if (data == 1 || data == 2 || data == 3 || data == 4) {
     var msg = "Reports :  " + commentScale[data + 1]
       + " \n Date : " + formatdateshow(completedDays[i], "")
-      + " \n Symptom : " + $names[y]
+      + " \n Symptom : " + captionSymptom[y]
       + " \n Values: " + data + "/4";
     if (finaldataAppleWatch[i] != undefined && finaldataAppleWatch[i] != '-' && finaldataAppleWatch[i] != 'NO DATA')
       msg += " \n Heart Rate (Apple Watch) : " + finaldataAppleWatch[i] + " bpm";
@@ -951,7 +936,16 @@ function showAppendTitle(data, i, y) {
 }/** * @description Get the height of the heatmap display
 * @returns {height}
  */ function determineHeigth() {
-  return gridSize * $names.length;
+  if (captionSymptom.length >= 7)
+    return (gridSize * captionSymptom.length);
+  else return (gridSize * 7);
+}
+/**
+ * @description Get the height of the wearable graphics display
+ * @returns {height}
+ */
+function determineHeigthgraphics() {
+  return (gridSize * 9);
 }
 /**
  * @description This part of the code is dedicated for the displaying of the wearable graphics
