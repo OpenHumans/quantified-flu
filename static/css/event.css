@@ -27,12 +27,6 @@
     .textbuttonprincipal {
       font-size: .55em;
       transform: translate(10px);
-      position: absolute;
-      text-overflow: ellipsis;
-      white-space: pre-line;
-      display: inline;
-      justify-content: flex-start;
-      display: block;
     }
     .titlenameAxisY {
     visibility: hidden;
@@ -56,11 +50,5 @@
     .textbuttonprincipal {
       font-size: .7em;
       transform: translate(10px);
-      position: absolute;
-      text-overflow: ellipsis;
-      white-space: pre-line;
-      display: inline;
-      justify-content: flex-start;
-      display: block;
     }
   }
