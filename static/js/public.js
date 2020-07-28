@@ -31,6 +31,8 @@ function getReportingSymptom(url, id, link) {
  */
 function main(id, data, link) {
     if (data.symptom_report.length > 0) {
+        ligne = document.createElement("tr");
+
         var cell_date = document.createElement("td");
         let date = document.createElement('a');
         date.id = "date";
@@ -39,24 +41,30 @@ function main(id, data, link) {
         date.setAttribute('href', desiredLink);
         date.innerHTML = desiredText;
         cell_date.appendChild(date);
-        document.getElementById("public-list-report-symptom").appendChild(cell_date);
+        ligne.appendChild(cell_date);
+        
 
         let memberid = document.createElement("td");
         memberid.id = "memberid";
         memberid.textContent = id;
-        document.getElementById("public-list-report-symptom").appendChild(memberid);
+        ligne.appendChild(memberid);
+        
         let report = document.createElement("td");
         report.id = "report";
         report.textContent = getReports(data);
-        document.getElementById("public-list-report-symptom").appendChild(report);
+        ligne.appendChild(report);
+        
         let sickincident = document.createElement("td");
         sickincident.id = "sickincident";
         sickincident.textContent = getSickIncident(data);
-        document.getElementById("public-list-report-symptom").appendChild(sickincident);
+        ligne.appendChild(sickincident);
+        
         let datasource = document.createElement("td");
         datasource.id = "datasource";
         datasource.textContent = getDataSource(data);
-        document.getElementById("public-list-report-symptom").appendChild(datasource);
+        ligne.appendChild(datasource);
+
+        document.getElementById("public-list-report-symptom").appendChild(ligne);
     }
 }
 /**

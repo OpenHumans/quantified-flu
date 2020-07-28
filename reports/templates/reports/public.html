@@ -48,6 +48,7 @@
     <th>Data sources</th>
   </thead>
   {% for member in object_list %}
+  <tbody>
   <tr>
     <script> 
       url = "{% url 'reports:list_member' member.oh_id %}.json";
@@ -56,6 +57,7 @@
     </script>
     <script src="{% static 'js/public.js' %}" ></script>
   </tr>
+</tbody>
   {% endfor %}
 </table>
 {% endblock main %}
