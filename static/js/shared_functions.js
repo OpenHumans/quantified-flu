@@ -186,7 +186,6 @@ function loadDatafromOura(data) {
  */
 function getHeartRatefromFileOura(data) {
     cnt = 0;
-
     this.file = data.oura_sleep_summary.map(d => d);
     this.file.forEach(element => {
         ouradata[cnt] = element.data.heart_rate;
@@ -194,7 +193,6 @@ function getHeartRatefromFileOura(data) {
         ouraday[cnt] = formatdateday(parseTimeTemp(element.timestamp));
         ouramonth[cnt] = formatdatemonth(parseTimeTemp(element.timestamp));
         ourayear[cnt] = formatyear(parseTimeTemp(element.timestamp));
-
         cnt++;
     });
 }
@@ -221,8 +219,8 @@ function controlDatafromOuraSleep(data, type) {
         ouracomparedate = compareDateReport(noMissingDay);
         oura_date = completedLastDay(ouracomparedate, noMissingDay);
         ouradayAxis = getDayonAxis(oura_date);
+        finaldataOura = dataControl(ouradata, ouradate, ouraday, ouramonth, 0);
         ouramonth = determinenamemonth(oura_date);
-        finaldataOura = dataControl(ouradata, ouradate, ouraday, ouramonth, ouracomparedate);
         ouraAxis = getAxisLegend(finaldataOura, 'dizaine');
         symptomData = getSymptomDatafromFile(0);
     } else if (type == "event") {
