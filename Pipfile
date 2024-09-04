@@ -9,7 +9,7 @@ pre-commit = "*"
 ipython = "*"
 
 [packages]
-celery = "*"
+celery = "4.4.7"
 django = "*"
 django-heroku = "*"
 gunicorn = "*"
