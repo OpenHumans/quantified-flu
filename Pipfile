@@ -10,7 +10,7 @@ ipython = "*"
 
 [packages]
 celery = "*"
-django = "~=2.2"
+django = "*"
 django-heroku = "*"
 gunicorn = "*"
 django-open-humans = "*"
