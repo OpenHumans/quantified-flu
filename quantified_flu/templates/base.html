@@ -89,7 +89,7 @@
             <div class="mt-2">
             {% for message in messages %}
               <div class="alert {% if message.tags %}
-                  alert-{% ifequal message.tags 'error' %}danger{% else %}{{ message.tags }}{% endifequal %}
+                  alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}
                   {% endif %}">
                 {{ message }}
               </div>
