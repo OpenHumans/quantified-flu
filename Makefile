@@ -10,7 +10,7 @@ deps: redis pipenv
 
 .PHONY: pip
 pip:
-	@pipenv install --python 3.6 --dev --verbose
+	@pipenv install --python 3.9 --dev --verbose
 
 .PHONY: pipenv
 pipenv:

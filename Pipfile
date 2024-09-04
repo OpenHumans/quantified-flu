@@ -9,8 +9,8 @@ pre-commit = "*"
 ipython = "*"
 
 [packages]
-celery = "*"
-django = "~=2.2"
+celery = "4.4.7"
+django = "*"
 django-heroku = "*"
 gunicorn = "*"
 django-open-humans = "*"
@@ -25,6 +25,8 @@ google-auth = "*"
 google-auth-oauthlib = "*"
 google-auth-httplib2 = "*"
 
+[requires]
+python_version = '3.9'
 
 [pipenv]
 allow_prereleases = true
