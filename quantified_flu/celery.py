@@ -7,9 +7,15 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "quantified_flu.settings")
 
 app = Celery("quantified_flu")
 
+redis_url = os.getenv("REDIS_URL", "redis://")
+
+if redis_url.startswith("rediss://"):
+    redis_url += "?ssl_cert_reqs=required"
+
+
 app.conf.update(
-    CELERY_BROKER_URL=os.getenv("REDIS_URL", "redis://"),
-    CELERY_RESULT_BACKEND=os.getenv("REDIS_URL", "redis://"),
+    CELERY_BROKER_URL=redis_url,
+    CELERY_RESULT_BACKEND=redis_url,
 )
 
 # Using a string here means the worker doesn't have to serialize
