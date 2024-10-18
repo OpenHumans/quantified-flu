@@ -10,7 +10,7 @@ app = Celery("quantified_flu")
 redis_url = os.getenv("REDIS_URL", "redis://")
 
 if redis_url.startswith("rediss://"):
-    redis_url += "?ssl_cert_reqs=required"
+    redis_url += "?ssl_cert_reqs=none"
 
 
 app.conf.update(
