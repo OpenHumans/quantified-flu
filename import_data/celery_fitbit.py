@@ -10,8 +10,7 @@ import tempfile
 import requests
 import arrow
 from datetime import datetime
-from quantified_flu.settings import rr
-from requests_respectful import RequestsRespectfulRateLimitedError
+import time
 
 # Set up logging.
 logger = logging.getLogger(__name__)
@@ -146,12 +145,6 @@ def fetch_fitbit_data(fitbit_member):
     # Get existing data as currently stored on OH
     fitbit_data, old_fid = get_existing_fitbit(fitbit_member.member, fitbit_urls)
 
-    # Set up user realm since rate limiting is per-user
-    print(fitbit_member.member)
-    user_realm = "fitbit-{}".format(fitbit_member.member.oh_id)
-    rr.register_realm(user_realm, max_requests=150, timespan=3600)
-    rr.update_realm(user_realm, max_requests=150, timespan=3600)
-
     # Get initial information about user from Fitbit
     print("Creating header and going to get user profile for:")
     print(fitbit_member.id)
@@ -212,12 +205,11 @@ def fetch_fitbit_data(fitbit_member):
             final_url = fitbit_api_base_url + url["url"].format(user_id=user_id)
             # Fetch the data
             print(final_url)
-            r = rr.get(
+            r = requests.get(
                 url=final_url,
                 headers=headers,
-                realms=["Fitbit", "fitbit-{}".format(fitbit_member.member.oh_id)],
             )
-            print(r.text)
+            time.sleep(25)
 
             # print(fitbit_data)
             fitbit_data[url["name"]] = r.json()
@@ -255,10 +247,9 @@ def fetch_fitbit_data(fitbit_member):
                 )
                 # Fetch the data
                 print(final_url)
-                r = rr.get(
+                r = requests.get(
                     url=final_url,
                     headers=headers,
-                    realms=["Fitbit", "fitbit-{}".format(fitbit_member.member.oh_id)],
                 )
 
                 # print([url['name']]['blah'])
@@ -313,7 +304,7 @@ def fetch_fitbit_data(fitbit_member):
         fitbit_member.last_updated = arrow.now().format()
         fitbit_member.save()
 
-    except RequestsRespectfulRateLimitedError:
+    except:
         logging.info("Requests-respectful reports rate limit hit.")
         print("hit requests respectful rate limit, going to requeue")
         restart_job = "yes please"

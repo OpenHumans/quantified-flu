@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 import django_heroku
 import os
-from requests_respectful import RespectfulRequester
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -176,15 +175,6 @@ if REMOTE:
     from urllib.parse import urlparse
 
     url_object = urlparse(os.getenv("REDIS_URL"))
-    RespectfulRequester.configure(
-        redis={
-            "host": url_object.hostname,
-            "port": url_object.port,
-            "password": url_object.password,
-            "database": 0,
-        },
-        safety_threshold=5,
-    )
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
@@ -199,7 +189,3 @@ if REMOTE:
         integrations=[DjangoIntegration(), CeleryIntegration(), RedisIntegration()],
     )
 
-
-# Requests Respectful (rate limiting, waiting)
-rr = RespectfulRequester()
-rr.register_realm("Fitbit", max_requests=3600, timespan=3600)
