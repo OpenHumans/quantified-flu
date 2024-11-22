@@ -82,7 +82,7 @@ def update_openhumans_reportslist(oh_member):
 
     data = {
         "reports": [json.loads(r.as_json()) for r in reports],
-        "timezone": timezone.zone,
+        "timezone": str(timezone),
     }
 
     with tempfile.TemporaryFile() as f:
